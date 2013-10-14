@@ -4,8 +4,8 @@
  * \author Micha Laszkowski
  */
 
-#ifndef PLANEGENERATOR_HPP_
-#define PLANEGENERATOR_HPP_
+#ifndef SPHEREGENERATOR_HPP_
+#define SPHEREGENERATOR_HPP_
 
 #include "Component_Aux.hpp"
 #include "Component.hpp"
@@ -15,29 +15,27 @@
 
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-#include <pcl/ModelCoefficients.h>
-#include <pcl/filters/project_inliers.h>
 
 namespace Processors {
-namespace PlaneGenerator {
+namespace SphereGenerator {
 
 /*!
- * \class PlaneGenerator
- * \brief PlaneGenerator processor class.
+ * \class SphereGenerator
+ * \brief SphereGenerator processor class.
  *
- * PlaneGenerator processor.
+ * SphereGenerator processor.
  */
-class PlaneGenerator: public Base::Component {
+class SphereGenerator: public Base::Component {
 public:
 	/*!
 	 * Constructor.
 	 */
-	PlaneGenerator(const std::string & name = "PlaneGenerator");
+	SphereGenerator(const std::string & name = "SphereGenerator");
 
 	/*!
 	 * Destructor
 	 */
-	virtual ~PlaneGenerator();
+	virtual ~SphereGenerator();
 
 	/*!
 	 * Prepare components interface (register streams and handlers).
@@ -74,35 +72,29 @@ protected:
 
 // Output data streams
 
-		Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZ>::Ptr > out_pcl_ptr;
+		Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZ>::Ptr> out_pcl_ptr;
 		Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZ> > out_pcl;
-	// Handlers
-	Base::EventHandler2 h_Generate;
 
-	
-	// Handlers
-	void Generate();
-	
-	
-	//pcl::PointCloud<pcl::PointXYZ>::Ptr cloud;
-	//pcl::PointCloud<pcl::PointXYZ>::Ptr cloudPtr;
-	
-	
-	Base::Property<int> nr_of_points;
-	Base::Property<int> nr_of_outliers;
-	Base::Property<float> a;
-	Base::Property<float> b;
-	Base::Property<float> c;
-	Base::Property<float> d;
+
+		pcl::PointCloud<pcl::PointXYZ> cloud;
+		pcl::PointCloud<pcl::PointXYZ>::Ptr cloudPtr;
+		
+		
+		Base::Property<float> r;
+		Base::Property<float> x;
+		Base::Property<float> y;
+		Base::Property<float> z;
+		Base::Property<int> nr_of_points;
+		Base::Property<int> nr_of_outliers;
 
 };
 
-} //: namespace PlaneGenerator
+} //: namespace SphereGenerator
 } //: namespace Processors
 
 /*
  * Register processor component.
  */
-REGISTER_COMPONENT("PlaneGenerator", Processors::PlaneGenerator::PlaneGenerator)
+REGISTER_COMPONENT("SphereGenerator", Processors::SphereGenerator::SphereGenerator)
 
-#endif /* PLANEGENERATOR_HPP_ */
+#endif /* SPHEREGENERATOR_HPP_ */

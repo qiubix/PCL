@@ -22,12 +22,12 @@ PlaneGenerator::PlaneGenerator(const std::string & name) :
 		Base::Component(name),
 		nr_of_points("nr_of_points", 150),
 		nr_of_outliers("nr_of_outliers", 10),
-		a("a", 1.0),
-		b("b", 0.0),
-		c("c", 0.0),
-		d("d", 0.0),
-		mi("mi", 0.0),
-		sigma("sigma", 0.001)    {
+		a("equation.a", 1.0),
+		b("equation.b", 0.0),
+		c("equation.c", 0.0),
+		d("equation.d", 0.0),
+		mi("noise.mi", 0.0),
+		sigma("noise.sigma", 0.001)    {
 			
 			registerProperty(nr_of_points);
 			registerProperty(nr_of_outliers);
@@ -37,6 +37,10 @@ PlaneGenerator::PlaneGenerator(const std::string & name) :
 			registerProperty(d);
 			registerProperty(mi);
 			registerProperty(sigma);
+			nr_of_points.addConstraint("0");
+			nr_of_points.addConstraint("10000");
+			nr_of_outliers.addConstraint("0");
+			nr_of_outliers.addConstraint("1000");
 }
 
 PlaneGenerator::~PlaneGenerator() {
@@ -49,11 +53,31 @@ registerStream("out_pcl_ptr", &out_pcl_ptr);
 	// Register handlers
 	h_Generate.setup(boost::bind(&PlaneGenerator::Generate, this));
 	registerHandler("Generate", &h_Generate);
-	addDependency("Generate", NULL);
 
 }
 
 bool PlaneGenerator::onInit() {
+	Generate();
+
+	return true;
+}
+
+bool PlaneGenerator::onFinish() {
+	return true;
+}
+
+bool PlaneGenerator::onStop() {
+	return true;
+}
+
+bool PlaneGenerator::onStart() {
+	return true;
+}
+
+void PlaneGenerator::Generate() {
+	
+if (nr_of_outliers > nr_of_points)
+		nr_of_outliers = 0;
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
   
   cloud->width  = nr_of_points;
@@ -117,25 +141,6 @@ bool PlaneGenerator::onInit() {
 
 	out_pcl_ptr.write(cloud); 
 	
-
-	return true;
-}
-
-bool PlaneGenerator::onFinish() {
-	return true;
-}
-
-bool PlaneGenerator::onStop() {
-	return true;
-}
-
-bool PlaneGenerator::onStart() {
-	return true;
-}
-
-void PlaneGenerator::Generate() {
-
-	//out_pcl.write(cloudPtr);
 }
 
 

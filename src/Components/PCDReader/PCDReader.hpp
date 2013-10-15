@@ -77,7 +77,7 @@ protected:
 		Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZ>::Ptr > out_pcl_ptr;
 	// Handlers
 	Base::EventHandler2 h_Read;
-	//Base::Property<std::string> filename;
+	Base::Property<std::string> filename;
 
 	
 	// Handlers

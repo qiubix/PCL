@@ -21,13 +21,13 @@ namespace SphereGenerator {
 SphereGenerator::SphereGenerator(const std::string & name) :
 		Base::Component(name),
 		r("r", 1),
-		x("x", 0),
-		y("y", 0),
-		z("z", 0),
+		x("center.x", 0),
+		y("center.y", 0),
+		z("center.z", 0),
 		nr_of_points("nr_of_points", 150),
 		nr_of_outliers("nr_of_outliers", 10),
-		mi("mi", 0),
-		sigma("sigma", 0.001)   {
+		mi("noise.mi", 0),
+		sigma("noise.sigma", 0.001)   {
 			registerProperty(r);
 			registerProperty(x);
 			registerProperty(y);
@@ -36,6 +36,10 @@ SphereGenerator::SphereGenerator(const std::string & name) :
 			registerProperty(nr_of_outliers);
 			registerProperty(mi);
 			registerProperty(sigma);
+			nr_of_points.addConstraint("0");
+			nr_of_points.addConstraint("10000");
+			nr_of_outliers.addConstraint("0");
+			nr_of_outliers.addConstraint("1000");
 }
 
 SphereGenerator::~SphereGenerator() {
@@ -46,12 +50,38 @@ void SphereGenerator::prepareInterface() {
 registerStream("out_pcl_ptr", &out_pcl_ptr);
 registerStream("out_pcl", &out_pcl);
 	// Register handlers
+	h_Generate.setup(boost::bind(&SphereGenerator::Generate, this));
+	registerHandler("Generate", &h_Generate);
 
 }
 
 bool SphereGenerator::onInit() {
+	Generate();
 
+for (size_t i = 0; i < cloud.points.size (); ++i)
+    std::cerr << "    " << cloud.points[i].x << " " 
+                        << cloud.points[i].y << " " 
+                        << cloud.points[i].z << std::endl;	
+
+	return true;
+}
+
+bool SphereGenerator::onFinish() {
+	return true;
+}
+
+bool SphereGenerator::onStop() {
+	return true;
+}
+
+bool SphereGenerator::onStart() {
+	return true;
+}
+
+void SphereGenerator::Generate() {
 //generate 
+	if (nr_of_outliers > nr_of_points)
+		nr_of_outliers = 0;
  
   // Fill in the cloud data
   cloud.width  = nr_of_points;
@@ -108,27 +138,8 @@ bool SphereGenerator::onInit() {
 	out_pcl.write(cloud);	
 	cloudPtr = cloud.makeShared();
 	out_pcl_ptr.write(cloudPtr);
-
-for (size_t i = 0; i < cloud.points.size (); ++i)
-    std::cerr << "    " << cloud.points[i].x << " " 
-                        << cloud.points[i].y << " " 
-                        << cloud.points[i].z << std::endl;	
-
-	return true;
+	
 }
-
-bool SphereGenerator::onFinish() {
-	return true;
-}
-
-bool SphereGenerator::onStop() {
-	return true;
-}
-
-bool SphereGenerator::onStart() {
-	return true;
-}
-
 
 
 } //: namespace SphereGenerator

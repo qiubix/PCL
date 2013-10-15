@@ -75,7 +75,8 @@ protected:
 
 	// Handlers
 	Base::EventHandler2 h_Write;
-
+	
+	Base::Property<std::string> filename;
 	
 	// Handlers
 	void Write();

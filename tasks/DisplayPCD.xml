@@ -18,6 +18,7 @@
 		<Subtask name="Processing">
 			<Executor name="Exec1"  period="0.1">
 				<Component name="Source" type="PCL:PCDReader" priority="1" bump="0">
+					<param name="filename">/home/mlaszkow/pcd/table_scene_lms400.pcd</param>
 				</Component>
 			</Executor>
 		</Subtask>

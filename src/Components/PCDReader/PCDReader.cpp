@@ -16,10 +16,10 @@ namespace Processors {
 namespace PCDReader {
 
 PCDReader::PCDReader(const std::string & name) :
-		Base::Component(name)//, 
-		//file_name("file_name", "") 
+		Base::Component(name), 
+		filename("filename", std::string("")) 
 		{
-		//registerProperty(file_name);
+		registerProperty(filename);
 
 }
 
@@ -33,7 +33,7 @@ void PCDReader::prepareInterface() {
 	// Register handlers
 	h_Read.setup(boost::bind(&PCDReader::Read, this));
 	registerHandler("Read", &h_Read);
-	addDependency("Read", NULL);
+	//addDependency("Read", NULL);
 
 }
 
@@ -56,8 +56,8 @@ bool PCDReader::onStart() {
 
 void PCDReader::Read() {
 		pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
-	
-	  if (pcl::io::loadPCDFile<pcl::PointXYZ> ("/home/mlaszkow/pcd/table_scene_lms400.pcd", *cloud) == -1) //* load the file
+	//"/home/mlaszkow/pcd/table_scene_lms400.pcd"
+	  if (pcl::io::loadPCDFile<pcl::PointXYZ> (filename, *cloud) == -1) //* load the file
 	  {
 		cout <<"Błąd"<<endl;
 	  }

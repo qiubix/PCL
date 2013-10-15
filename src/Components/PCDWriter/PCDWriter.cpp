@@ -21,8 +21,9 @@ namespace Processors {
 namespace PCDWriter {
 
 PCDWriter::PCDWriter(const std::string & name) :
-		Base::Component(name)  {
-
+		Base::Component(name),
+		filename("filename", std::string(""))   {
+			registerProperty(filename);
 }
 
 PCDWriter::~PCDWriter() {
@@ -34,7 +35,7 @@ void PCDWriter::prepareInterface() {
 	// Register handlers
 	h_Write.setup(boost::bind(&PCDWriter::Write, this));
 	registerHandler("Write", &h_Write);
-	addDependency("Write", &in_pcl);
+	//addDependency("Write", &in_pcl);
 
 }
 
@@ -59,7 +60,7 @@ void PCDWriter::Write() {
 	pcl::PointCloud<pcl::PointXYZRGB> cloud;
 	
 	cloud = in_pcl.read();
-	pcl::io::savePCDFileASCII ("/home/mlaszkow/test2_pcd.pcd", cloud);
+	pcl::io::savePCDFileASCII (filename, cloud);
 	std::cerr << "Saved " << cloud.points.size () << " data points to test2_pcd.pcd." << std::endl;
 	
 }

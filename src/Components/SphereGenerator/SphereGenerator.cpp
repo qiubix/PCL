@@ -12,6 +12,9 @@
 
 #include <boost/bind.hpp>
 
+#include <boost/random.hpp> 
+#include <boost/random/normal_distribution.hpp> 
+
 namespace Processors {
 namespace SphereGenerator {
 
@@ -22,13 +25,17 @@ SphereGenerator::SphereGenerator(const std::string & name) :
 		y("y", 0),
 		z("z", 0),
 		nr_of_points("nr_of_points", 150),
-		nr_of_outliers("nr_of_outliers", 10)   {
+		nr_of_outliers("nr_of_outliers", 10),
+		mi("mi", 0),
+		sigma("sigma", 0.001)   {
 			registerProperty(r);
 			registerProperty(x);
 			registerProperty(y);
 			registerProperty(z);
 			registerProperty(nr_of_points);
 			registerProperty(nr_of_outliers);
+			registerProperty(mi);
+			registerProperty(sigma);
 }
 
 SphereGenerator::~SphereGenerator() {
@@ -78,6 +85,23 @@ bool SphereGenerator::onInit() {
 	   cloud.points[i].y += (rand () / (RAND_MAX + 1.0f) * 10) -5;
 	   cloud.points[i].z += (rand () / (RAND_MAX + 1.0f) * 10) -5;
    }
+  
+//noise
+        struct timeval start; 
+        gettimeofday (&start, NULL); 
+        boost::mt19937 rng; 
+        rng.seed (start.tv_usec); 
+        boost::normal_distribution<> nd (mi, sigma); 
+        boost::variate_generator<boost::mt19937&, 
+			boost::normal_distribution<> > var_nor (rng, nd); 
+        // Noisify each point in the dataset 
+        for (size_t i = nr_of_outliers; i < cloud.points.size (); ++i) 
+        { 
+          cloud.points[i].x += var_nor ();
+          cloud.points[i].y += var_nor ();
+          cloud.points[i].z += var_nor (); 
+        } 
+
   
 
 	

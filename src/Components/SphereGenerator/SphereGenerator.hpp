@@ -84,6 +84,8 @@ protected:
 		Base::Property<float> x;
 		Base::Property<float> y;
 		Base::Property<float> z;
+		Base::Property<float> mi;
+		Base::Property<float> sigma;
 		Base::Property<int> nr_of_points;
 		Base::Property<int> nr_of_outliers;
 

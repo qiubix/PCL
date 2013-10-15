@@ -94,6 +94,8 @@ protected:
 	Base::Property<float> b;
 	Base::Property<float> c;
 	Base::Property<float> d;
+	Base::Property<float> mi;
+	Base::Property<float> sigma;
 
 };
 

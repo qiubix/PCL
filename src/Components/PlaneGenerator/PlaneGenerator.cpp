@@ -49,7 +49,6 @@ PlaneGenerator::~PlaneGenerator() {
 void PlaneGenerator::prepareInterface() {
 	// Register data streams, events and event handlers HERE!
 registerStream("out_pcl", &out_pcl);
-registerStream("out_pcl_ptr", &out_pcl_ptr);
 	// Register handlers
 	h_Generate.setup(boost::bind(&PlaneGenerator::Generate, this));
 	registerHandler("Generate", &h_Generate);
@@ -139,7 +138,7 @@ if (nr_of_outliers > nr_of_points)
 
 
 
-	out_pcl_ptr.write(cloud); 
+	out_pcl.write(cloud); 
 	
 }
 

@@ -4,8 +4,8 @@
  * \author Micha Laszkowski
  */
 
-#ifndef PCDREADER_HPP_
-#define PCDREADER_HPP_
+#ifndef VOXELGRID_HPP_
+#define VOXELGRID_HPP_
 
 #include "Component_Aux.hpp"
 #include "Component.hpp"
@@ -15,34 +15,35 @@
 
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-#include <pcl/io/pcd_io.h>
+
 
 namespace Processors {
-namespace PCDReader {
+namespace VoxelGrid {
 
 /*!
- * \class PCDReader
- * \brief PCDReader processor class.
+ * \class VoxelGrid
+ * \brief VoxelGrid processor class.
  *
- * PCDReader processor.
+ * VoxelGrid processor.
  */
-class PCDReader: public Base::Component {
+class VoxelGrid: public Base::Component {
 public:
 	/*!
 	 * Constructor.
 	 */
-	PCDReader(const std::string & name = "PCDReader");
+	VoxelGrid(const std::string & name = "VoxelGrid");
 
 	/*!
 	 * Destructor
 	 */
-	virtual ~PCDReader();
+	virtual ~VoxelGrid();
 
 	/*!
 	 * Prepare components interface (register streams and handlers).
 	 * At this point, all properties are already initialized and loaded to 
 	 * values set in config file.
 	 */
+
 	void prepareInterface();
 
 protected:
@@ -70,26 +71,29 @@ protected:
 
 // Input data streams
 
+		Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZ>::Ptr> in_pcl;
 
 // Output data streams
-		Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZ>::Ptr > out_pcl;
-		
+
+		Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZ>::Ptr> out_pcl;
 	// Handlers
-	Base::EventHandler2 h_Read;
-	Base::Property<std::string> filename;
+	Base::EventHandler2 h_filter;
+		Base::Property<float> x;
+		Base::Property<float> y;
+		Base::Property<float> z;
 
 	
 	// Handlers
-	void Read();
+	void filter();
 
 };
 
-} //: namespace PCDReader
+} //: namespace VoxelGrid
 } //: namespace Processors
 
 /*
  * Register processor component.
  */
-REGISTER_COMPONENT("PCDReader", Processors::PCDReader::PCDReader)
+REGISTER_COMPONENT("VoxelGrid", Processors::VoxelGrid::VoxelGrid)
 
-#endif /* PCDREADER_HPP_ */
+#endif /* VOXELGRID_HPP_ */

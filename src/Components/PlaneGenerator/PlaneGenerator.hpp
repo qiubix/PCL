@@ -74,8 +74,7 @@ protected:
 
 // Output data streams
 
-		Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZ>::Ptr > out_pcl_ptr;
-		Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZ> > out_pcl;
+		Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZ>::Ptr > out_pcl;
 	// Handlers
 	Base::EventHandler2 h_Generate;
 

@@ -53,7 +53,7 @@ bool RANSACPlane::onStart() {
 }
 
 void RANSACPlane::ransac() {
-	pcl::PointCloud<pcl::PointXYZ> cloud = in_pcl.read();
+	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud = in_pcl.read();
 	
   pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients);
   pcl::PointIndices::Ptr inliers (new pcl::PointIndices);
@@ -66,7 +66,7 @@ void RANSACPlane::ransac() {
   seg.setMethodType (pcl::SAC_RANSAC);
   seg.setDistanceThreshold (0.01);
 
-  seg.setInputCloud (cloud.makeShared ());
+  seg.setInputCloud (cloud);
   seg.segment (*inliers, *coefficients);
 
   if (inliers->indices.size () == 0)
@@ -81,17 +81,17 @@ void RANSACPlane::ransac() {
                                       << coefficients->values[3] << std::endl;
 
   std::cout << "Model inliers: " << inliers->indices.size () << std::endl;
-  for (size_t i = 0; i < inliers->indices.size (); ++i)
-    std::cout << inliers->indices[i] << "    " << cloud.points[inliers->indices[i]].x << " "
-                                               << cloud.points[inliers->indices[i]].y << " "
-                                               << cloud.points[inliers->indices[i]].z << std::endl;	
+//  for (size_t i = 0; i < inliers->indices.size (); ++i)
+//    std::cout << inliers->indices[i] << "    " << cloud->points[inliers->indices[i]].x << " "
+//                                               << cloud->points[inliers->indices[i]].y << " "
+//                                               << cloud->points[inliers->indices[i]].z << std::endl;	
 //////////////////////////
 
 	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_inliers (new pcl::PointCloud<pcl::PointXYZ> ());
 	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_outliers (new pcl::PointCloud<pcl::PointXYZ> ());
 
     pcl::ExtractIndices<pcl::PointXYZ> extract;
-    extract.setInputCloud (cloud.makeShared());
+    extract.setInputCloud (cloud);
     extract.setIndices (inliers);
     extract.setNegative (false);
 

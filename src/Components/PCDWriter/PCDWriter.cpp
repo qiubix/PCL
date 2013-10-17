@@ -57,11 +57,9 @@ bool PCDWriter::onStart() {
 }
 
 void PCDWriter::Write() {
-	pcl::PointCloud<pcl::PointXYZRGB> cloud;
-	
-	cloud = in_pcl.read();
-	pcl::io::savePCDFileASCII (filename, cloud);
-	std::cerr << "Saved " << cloud.points.size () << " data points to test2_pcd.pcd." << std::endl;
+	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud = in_pcl.read();
+	pcl::io::savePCDFileASCII (filename, *cloud);
+	std::cerr << "Saved " << cloud->points.size () << " data points to "<< filename << std::endl;
 	
 }
 

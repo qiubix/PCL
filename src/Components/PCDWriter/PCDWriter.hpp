@@ -16,6 +16,7 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
+
 namespace Processors {
 namespace PCDWriter {
 
@@ -69,7 +70,7 @@ protected:
 
 // Input data streams
 
-		Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZRGB> > in_pcl;
+		Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZ>::Ptr > in_pcl;
 
 // Output data streams
 

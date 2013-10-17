@@ -15,3 +15,7 @@ ADD_COMPONENT(RANSACPlane)
 ADD_COMPONENT(RANSACSphere)
 
 ADD_COMPONENT(SphereGenerator)
+
+ADD_COMPONENT(VoxelGrid)
+
+ADD_COMPONENT(ClusterExtraction)

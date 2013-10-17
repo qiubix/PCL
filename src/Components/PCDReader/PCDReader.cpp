@@ -12,6 +12,7 @@
 
 #include <boost/bind.hpp>
 
+
 namespace Processors {
 namespace PCDReader {
 
@@ -29,7 +30,6 @@ PCDReader::~PCDReader() {
 void PCDReader::prepareInterface() {
 	// Register data streams, events and event handlers HERE!
 	registerStream("out_pcl", &out_pcl);
-	registerStream("out_pcl_ptr", &out_pcl_ptr);
 	// Register handlers
 	h_Read.setup(boost::bind(&PCDReader::Read, this));
 	registerHandler("Read", &h_Read);
@@ -61,8 +61,8 @@ void PCDReader::Read() {
 	  {
 		cout <<"Błąd"<<endl;
 	  }
-	out_pcl_ptr.write(cloud);
-	out_pcl.write(*cloud);
+	out_pcl.write(cloud);
+	
 }
 
 

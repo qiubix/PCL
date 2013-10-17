@@ -4,8 +4,8 @@
  * \author Micha Laszkowski
  */
 
-#ifndef RANSACPLANE_HPP_
-#define RANSACPLANE_HPP_
+#ifndef CLUSTEREXTRACTION_HPP_
+#define CLUSTEREXTRACTION_HPP_
 
 #include "Component_Aux.hpp"
 #include "Component.hpp"
@@ -15,38 +15,32 @@
 
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
+#include <pcl/kdtree/kdtree.h>
 #include <pcl/sample_consensus/method_types.h>
 #include <pcl/sample_consensus/model_types.h>
 #include <pcl/segmentation/sac_segmentation.h>
 #include <pcl/segmentation/extract_clusters.h>
-#include <pcl/ModelCoefficients.h>
-#include <pcl/io/pcd_io.h>
-#include <pcl/filters/extract_indices.h>
-#include <pcl/filters/voxel_grid.h>
-#include <pcl/features/normal_3d.h>
-#include <pcl/kdtree/kdtree.h>
-
 
 namespace Processors {
-namespace RANSACPlane {
+namespace ClusterExtraction {
 
 /*!
- * \class RANSACPlane
- * \brief RANSACPlane processor class.
+ * \class ClusterExtraction
+ * \brief ClusterExtraction processor class.
  *
- * RANSACPlane processor.
+ * ClusterExtraction processor.
  */
-class RANSACPlane: public Base::Component {
+class ClusterExtraction: public Base::Component {
 public:
 	/*!
 	 * Constructor.
 	 */
-	RANSACPlane(const std::string & name = "RANSACPlane");
+	ClusterExtraction(const std::string & name = "ClusterExtraction");
 
 	/*!
 	 * Destructor
 	 */
-	virtual ~RANSACPlane();
+	virtual ~ClusterExtraction();
 
 	/*!
 	 * Prepare components interface (register streams and handlers).
@@ -80,27 +74,30 @@ protected:
 
 // Input data streams
 
-		Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZ>::Ptr > in_pcl;
+		Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZ>::Ptr> in_pcl;
+		
+		Base::DataStreamOut<std::vector<pcl::PointIndices> > out;
 
 // Output data streams
 
-		Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZ>::Ptr> out_outliers;
-		Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZ>::Ptr> out_inliers;
 	// Handlers
-	Base::EventHandler2 h_ransac;
-
+	Base::EventHandler2 h_extract;
 	
 	// Handlers
-	void ransac();
+	void extract();
+	
+	Base::Property<float> clusterTolerance;
+	Base::Property<int> minClusterSize;
+	Base::Property<int> maxClusterSize;
 
 };
 
-} //: namespace RANSACPlane
+} //: namespace ClusterExtraction
 } //: namespace Processors
 
 /*
  * Register processor component.
  */
-REGISTER_COMPONENT("RANSACPlane", Processors::RANSACPlane::RANSACPlane)
+REGISTER_COMPONENT("ClusterExtraction", Processors::ClusterExtraction::ClusterExtraction)
 
-#endif /* RANSACPLANE_HPP_ */
+#endif /* CLUSTEREXTRACTION_HPP_ */

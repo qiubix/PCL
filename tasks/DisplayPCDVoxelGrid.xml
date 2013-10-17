@@ -17,9 +17,10 @@
 	<Subtasks>
 		<Subtask name="Processing">
 			<Executor name="Exec1"  period="0.1">
-				<Component name="Source" type="PCL:PlaneGenerator" priority="1" bump="0">
+				<Component name="Source" type="PCL:PCDReader" priority="1" bump="0">
+					<param name="filename">/home/mlaszkow/pcd/stol.pcd</param>
 				</Component>
-				<Component name="RANSAC" type="PCL:RANSACPlane" priority="1" bump="0">
+				<Component name="Filter" type="PCL:VoxelGrid" priority="1" bump="0">
 				</Component>
 			</Executor>
 		</Subtask>
@@ -40,12 +41,9 @@
 	<!-- pipes connecting datastreams -->
 	<DataStreams>
 		<Source name="Source.out_pcl">
-			<sink>RANSAC.in_pcl</sink>
+			<sink>Filter.in_pcl</sink>
 		</Source>
-<!--		<Source name="Source.out_pcl_ptr">
-			<sink>Window.in_cloud_xyz</sink>
-		</Source>-->
-		<Source name="RANSAC.out_inliers">
+		<Source name="Filter.out_pcl">
 			<sink>Window.in_cloud_xyz</sink>
 		</Source>
 	</DataStreams>

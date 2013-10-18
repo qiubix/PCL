@@ -13,7 +13,6 @@
 #include <boost/bind.hpp>
 
 
-
 namespace Processors {
 namespace ClusterExtraction {
 
@@ -37,7 +36,8 @@ ClusterExtraction::~ClusterExtraction() {
 void ClusterExtraction::prepareInterface() {
 	// Register data streams, events and event handlers HERE!
 registerStream("in_pcl", &in_pcl);
-registerStream("out", &out);
+registerStream("out_indices", &out_indices);
+registerStream("out_clusters", &out_clusters);
 	// Register handlers
 	h_extract.setup(boost::bind(&ClusterExtraction::extract, this));
 	registerHandler("extract", &h_extract);
@@ -67,18 +67,19 @@ void ClusterExtraction::extract() {
   // Creating the KdTree object for the search method of the extraction
   pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ>);
   tree->setInputCloud (cloud);
-
   
   std::vector<pcl::PointIndices> cluster_indices;
   pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
-  ec.setClusterTolerance (0.02); // 2cm
-  ec.setMinClusterSize (100);
-  ec.setMaxClusterSize (25000);
+  ec.setClusterTolerance (clusterTolerance); // 2cm
+  ec.setMinClusterSize (minClusterSize);
+  ec.setMaxClusterSize (maxClusterSize);
   ec.setSearchMethod (tree);
   ec.setInputCloud (cloud);
   ec.extract (cluster_indices);
 
-  int j = 0;
+  std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> clusters;
+  
+  //int j = 0;
   for (std::vector<pcl::PointIndices>::const_iterator it = cluster_indices.begin (); it != cluster_indices.end (); ++it)
   {
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_cluster (new pcl::PointCloud<pcl::PointXYZ>);
@@ -88,15 +89,19 @@ void ClusterExtraction::extract() {
     cloud_cluster->height = 1;
     cloud_cluster->is_dense = true;
 
+	clusters.push_back(cloud_cluster);
     std::cout << "PointCloud representing the Cluster: " << cloud_cluster->points.size () << " data points." << std::endl;
     //std::stringstream ss;
     //ss << "cloud_cluster_" << j << ".pcd";
     //writer.write<pcl::PointXYZ> (ss.str (), *cloud_cluster, false); //*
-    j++;
+    //j++;
   }	
 	
-	std::cout<<"j=="<<j<<endl;
-	out.write(cluster_indices);
+	//std::cout<<"j=="<<j<<endl;
+	//std::cout<<clusters.size()<<endl;
+	out_indices.write(cluster_indices);
+	out_clusters.write(clusters);
+	
 }
 
 

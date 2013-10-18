@@ -76,7 +76,8 @@ protected:
 
 		Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZ>::Ptr> in_pcl;
 		
-		Base::DataStreamOut<std::vector<pcl::PointIndices> > out;
+		Base::DataStreamOut<std::vector<pcl::PointIndices> > out_indices;
+		Base::DataStreamOut<std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> > out_clusters;
 
 // Output data streams
 

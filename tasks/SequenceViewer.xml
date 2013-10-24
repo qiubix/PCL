@@ -1,0 +1,77 @@
+<Task>
+	<!-- reference task information -->
+	<Reference>
+		<Author>
+			<name>Tomasz Kornuta</name>
+			<link></link>
+		</Author>
+		
+		<Description>
+			<brief>ecovi:t1/SequenceViewer</brief>
+			<full>Loads and displays a sequence of images</full>	
+		</Description>
+	</Reference>
+	
+	<!-- task definition -->
+	<Subtasks>
+		<Subtask name="Main">
+			<Executor name="Processing"  period="1">
+				<Component name="SequenceRGB" type="CvBasic:Sequence" priority="1" bump="0">
+					<param name="sequence.directory">/home/mlaszkow/obiekty/apple_2</param>
+					<param name="sequence.pattern">.*\_[0-9]{1,3}\.png</param>
+					
+				</Component>
+				<Component name="SequenceDepth" type="CvBasic:Sequence" priority="1" bump="0">
+					<param name="sequence.directory">/home/mlaszkow/obiekty/apple_2</param>
+					<param name="sequence.pattern">.*\_[0-9]{1,3}\_depth.png</param>
+					
+				</Component>
+				<Component name="SequenceMask" type="CvBasic:Sequence" priority="1" bump="0">
+					<param name="sequence.directory">/home/mlaszkow/obiekty/apple_2</param>
+					<param name="sequence.pattern">.*\_[0-9]{1,3}\_mask.png</param>
+					
+				</Component>
+				<Component name="CameraInfo" type="CvCoreTypes:CameraInfoProvider" priority="1" bump="2">
+					<param name="camera_matrix">525 0 319.5; 0 525 239.5; 0 0 1</param>
+				</Component>
+				<Component name="Converter" type="PCL:DepthConverter" priority="1" bump="0">
+				</Component>
+			</Executor>
+
+			<Executor name="Visualization" period="0.2">
+				<Component name="Window" type="CvBasic:CvWindow" priority="1" bump="5">
+					<param name="count">3</param>
+					<param name="title">Window,Depth,Mask</param>
+				</Component>
+				<Component name="WindowPCL" type="PCL:CloudViewer" priority="1" bump="0">
+				</Component>
+			</Executor>
+		</Subtask>	
+	
+	</Subtasks>
+	
+	<!-- pipes connecting datastreams -->
+	<DataStreams>
+		<Source name="SequenceRGB.out_img">
+			<sink>Window.in_img</sink>	
+		</Source>
+		<Source name="SequenceDepth.out_img">
+			<sink>Window.in_img1</sink>	
+			<sink>Converter.in_depth</sink>	
+		</Source>
+		<Source name="SequenceMask.out_img">
+			<sink>Window.in_img2</sink>
+			<sink>Converter.in_mask</sink>		
+		</Source>
+		<Source name="CameraInfo.out_camerainfo">
+			<sink>Converter.in_camera_info</sink>	
+		</Source>
+		<Source name="Converter.out_cloud_xyz">
+			<sink>WindowPCL.in_cloud_xyz</sink>			
+		</Source>
+	</DataStreams>
+</Task>
+
+
+
+

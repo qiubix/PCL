@@ -69,17 +69,20 @@ protected:
 	// Data streams
 	Base::DataStreamIn<cv::Mat> in_depth;
 	Base::DataStreamIn<cv::Mat> in_color;
+	Base::DataStreamIn<cv::Mat> in_mask;
 	Base::DataStreamIn<Types::CameraInfo> in_camera_info;
 	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZ>::Ptr > out_cloud_xyz;
 	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZRGB>::Ptr > out_cloud_xyzrgb;
 
 	// Handlers
 	Base::EventHandler2 h_process_depth;
+	Base::EventHandler2 h_process_depth_mask;
 	Base::EventHandler2 h_process_all;
 
 	
 	// Handlers
 	void process_depth();
+	void process_depth_mask();
 	void process_all();
 
 };

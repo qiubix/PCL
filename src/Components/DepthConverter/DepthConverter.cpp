@@ -33,13 +33,14 @@ void DepthConverter::prepareInterface() {
 	registerStream("in_mask", &in_mask);
 	registerStream("in_camera_info", &in_camera_info);
 	registerStream("out_cloud_xyz", &out_cloud_xyz);
+	registerStream("out_cloud_xyz_masked", &out_cloud_xyz_masked);
 	registerStream("out_cloud_xyzrgb", &out_cloud_xyzrgb);
 
 	// Register handlers
 	h_process_depth.setup(boost::bind(&DepthConverter::process_depth, this));
 	registerHandler("process_depth", &h_process_depth);
-	addDependency("process_depth", &in_depth);
-	addDependency("process_depth", &in_camera_info);
+	//addDependency("process_depth", &in_depth);
+	//addDependency("process_depth", &in_camera_info);
 	h_process_depth_mask.setup(boost::bind(&DepthConverter::process_depth_mask, this));
 	registerHandler("process_depth_mask", &h_process_depth_mask);
 	addDependency("process_depth_mask", &in_depth);
@@ -155,7 +156,7 @@ void DepthConverter::process_depth_mask() {
 		}
 	}
 
-	out_cloud_xyz.write(cloud);
+	out_cloud_xyz_masked.write(cloud);
 	/*pcl::io::savePCDFileASCII ("test_pcd.pcd", *cloud);
 	CLOG(LNOTICE) << "Saved " << cloud->points.size () << " data points to test_pcd.pcd.";*/
 }

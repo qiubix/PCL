@@ -18,17 +18,17 @@
 			<Executor name="Processing"  period="1">
 				<Component name="SequenceRGB" type="CvBasic:Sequence" priority="1" bump="0">
 					<param name="sequence.directory">/home/mlaszkow/obiekty/apple_2</param>
-					<param name="sequence.pattern">.*\_[0-9]{1,3}\.png</param>
+					<param name="sequence.pattern">.*\_color.png</param>
 					
 				</Component>
 				<Component name="SequenceDepth" type="CvBasic:Sequence" priority="1" bump="0">
 					<param name="sequence.directory">/home/mlaszkow/obiekty/apple_2</param>
-					<param name="sequence.pattern">.*\_[0-9]{1,3}\_depth.png</param>
+					<param name="sequence.pattern">.*\_depth.png</param>
 					
 				</Component>
 				<Component name="SequenceMask" type="CvBasic:Sequence" priority="1" bump="0">
 					<param name="sequence.directory">/home/mlaszkow/obiekty/apple_2</param>
-					<param name="sequence.pattern">.*\_[0-9]{1,3}\_mask.png</param>
+					<param name="sequence.pattern">.*\_mask.png</param>
 					
 				</Component>
 				<Component name="CameraInfo" type="CvCoreTypes:CameraInfoProvider" priority="1" bump="2">
@@ -36,14 +36,20 @@
 				</Component>
 				<Component name="Converter" type="PCL:DepthConverter" priority="1" bump="0">
 				</Component>
+				<Component name="SIFT" type="CvBasic:CvSIFT" priority="1" bump="0">
+				</Component>
+				<Component name="SHOT" type="PCL:SHOT" priority="1" bump="0">
+				</Component>
 			</Executor>
 
 			<Executor name="Visualization" period="0.2">
 				<Component name="Window" type="CvBasic:CvWindow" priority="1" bump="5">
-					<param name="count">3</param>
-					<param name="title">Window,Depth,Mask</param>
+					<param name="count">4</param>
+					<param name="title">Window,Depth,Mask,SIFT</param>
 				</Component>
 				<Component name="WindowPCL" type="PCL:CloudViewer" priority="1" bump="0">
+				</Component>
+				<Component name="WindowPCLKeypoints" type="PCL:CloudViewer" priority="1" bump="0">
 				</Component>
 			</Executor>
 		</Subtask>	
@@ -54,6 +60,7 @@
 	<DataStreams>
 		<Source name="SequenceRGB.out_img">
 			<sink>Window.in_img</sink>	
+			<sink>SIFT.in_img</sink>
 		</Source>
 		<Source name="SequenceDepth.out_img">
 			<sink>Window.in_img1</sink>	
@@ -66,9 +73,13 @@
 		<Source name="CameraInfo.out_camerainfo">
 			<sink>Converter.in_camera_info</sink>	
 		</Source>
-		<Source name="Converter.out_cloud_xyz">
-			<sink>WindowPCL.in_cloud_xyz</sink>			
+		<Source name="Converter.out_cloud_xyz_masked">
+			<sink>WindowPCL.in_cloud_xyz</sink>	
+			<sink>SHOT.in_pcl</sink>				
 		</Source>
+		<!--<Source name="SHOT.out_keypoints">
+			<sink>WindowPCLKeypoints.in_cloud_xyz</sink>			
+		</Source>-->
 	</DataStreams>
 </Task>
 

@@ -72,6 +72,7 @@ protected:
 	Base::DataStreamIn<cv::Mat> in_mask;
 	Base::DataStreamIn<Types::CameraInfo> in_camera_info;
 	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZ>::Ptr > out_cloud_xyz;
+	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZ>::Ptr > out_cloud_xyz_masked;
 	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZRGB>::Ptr > out_cloud_xyzrgb;
 
 	// Handlers

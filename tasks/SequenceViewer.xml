@@ -40,6 +40,8 @@
 				</Component>
 				<Component name="SHOT" type="PCL:SHOT" priority="1" bump="0">
 				</Component>
+				<Component name="SIFTAdder" type="PCL:SIFTAdder" priority="1" bump="0">
+				</Component>
 			</Executor>
 
 			<Executor name="Visualization" period="0.2">
@@ -75,7 +77,10 @@
 		</Source>
 		<Source name="Converter.out_cloud_xyz_masked">
 			<sink>WindowPCL.in_cloud_xyz</sink>	
-			<sink>SHOT.in_pcl</sink>				
+			<!--<sink>SHOT.in_pcl</sink>-->				
+		</Source>
+		<Source name="SIFT.out_descriptors">
+			<sink>SIFTAdder.in_descriptors</sink>		
 		</Source>
 		<!--<Source name="SHOT.out_keypoints">
 			<sink>WindowPCLKeypoints.in_cloud_xyz</sink>			

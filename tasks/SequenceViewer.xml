@@ -21,23 +21,22 @@
 					<param name="sequence.pattern">.*\_color.png</param>
 					
 				</Component>
-				<Component name="SequenceDepth" type="CvBasic:Sequence" priority="1" bump="0">
+				<Component name="SequenceDepth" type="CvBasic:Sequence" priority="2" bump="0">
 					<param name="sequence.directory">/home/mlaszkow/obiekty/apple_2</param>
-					<param name="sequence.pattern">.*\_depth.png</param>
-					
+					<param name="sequence.pattern">.*\_depth.png</param>	
 				</Component>
-				<Component name="SequenceMask" type="CvBasic:Sequence" priority="1" bump="0">
+				<Component name="SequenceMask" type="CvBasic:Sequence" priority="3" bump="0">
 					<param name="sequence.directory">/home/mlaszkow/obiekty/apple_2</param>
 					<param name="sequence.pattern">.*\_mask.png</param>
-					
 				</Component>
-				<Component name="CameraInfo" type="CvCoreTypes:CameraInfoProvider" priority="1" bump="2">
+				<Component name="CameraInfo" type="CvCoreTypes:CameraInfoProvider" priority="4" bump="0">
 					<param name="camera_matrix">525 0 319.5; 0 525 239.5; 0 0 1</param>
 				</Component>
-				<Component name="Converter" type="PCL:DepthConverter" priority="1" bump="0">
+				<Component name="SIFT" type="CvBasic:CvSIFT" priority="5" bump="0">
 				</Component>
-				<Component name="SIFT" type="CvBasic:CvSIFT" priority="1" bump="0">
+				<Component name="Converter" type="PCL:DepthConverter" priority="6" bump="10">
 				</Component>
+
 				<Component name="SHOT" type="PCL:SHOT" priority="1" bump="0">
 				</Component>
 				<Component name="SIFTAdder" type="PCL:SIFTAdder" priority="1" bump="0">
@@ -45,15 +44,18 @@
 			</Executor>
 
 			<Executor name="Visualization" period="0.2">
-				<Component name="Window" type="CvBasic:CvWindow" priority="1" bump="5">
-					<param name="count">4</param>
-					<param name="title">Window,Depth,Mask,SIFT</param>
+				<Component name="Window" type="CvBasic:CvWindow" priority="1" bump="0">
+					<param name="count">3</param>
+					<param name="title">Window,Depth,Mask</param>
 				</Component>
-				<Component name="WindowPCL" type="PCL:CloudViewer" priority="1" bump="0">
+				<Component name="WindowPCL" type="PCL:CloudViewer" priority="1" bump="10">
 				</Component>
-				<Component name="WindowPCLKeypoints" type="PCL:CloudViewer" priority="1" bump="0">
+				<Component name="Writer" type="PCL:PCDWriter" priority="1" bump="5">
+					<param name="filename">/home/mlaszkow/pcd/testttt.pcd</param>
 				</Component>
-			</Executor>
+				<!--<Component name="WindowPCLKeypoints" type="PCL:CloudViewer" priority="1" bump="0">
+				</Component>-->
+			</Executor>process_depth_mask
 		</Subtask>	
 	
 	</Subtasks>
@@ -63,6 +65,8 @@
 		<Source name="SequenceRGB.out_img">
 			<sink>Window.in_img</sink>	
 			<sink>SIFT.in_img</sink>
+			<sink>Converter.in_color</sink>
+			<!--<sink>Converter.in_color</sink>-->
 		</Source>
 		<Source name="SequenceDepth.out_img">
 			<sink>Window.in_img1</sink>	
@@ -75,12 +79,17 @@
 		<Source name="CameraInfo.out_camerainfo">
 			<sink>Converter.in_camera_info</sink>	
 		</Source>
-		<Source name="Converter.out_cloud_xyz_masked">
+		<Source name="Converter.out_cloud_xyzrgbsift">
 			<sink>WindowPCL.in_cloud_xyz</sink>	
+			<sink>Writer.in_pcl</sink>	
 			<!--<sink>SHOT.in_pcl</sink>-->				
 		</Source>
 		<Source name="SIFT.out_descriptors">
-			<sink>SIFTAdder.in_descriptors</sink>		
+			<sink>Converter.in_descriptors</sink>
+			<!--<sink>SIFTAdder.in_descriptors</sink>-->		
+		</Source>
+		<Source name="SIFT.out_features">
+			<sink>Converter.in_features</sink>		
 		</Source>
 		<!--<Source name="SHOT.out_keypoints">
 			<sink>WindowPCLKeypoints.in_cloud_xyz</sink>			

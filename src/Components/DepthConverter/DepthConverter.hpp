@@ -15,6 +15,8 @@
 #include "EventHandler2.hpp"
 
 #include <Types/CameraInfo.hpp>
+#include <Types/Features.hpp> 
+#include <Types/PointXYZRGBSIFT.hpp> 
 
 #include <opencv2/core/core.hpp>
 
@@ -70,20 +72,25 @@ protected:
 	Base::DataStreamIn<cv::Mat> in_depth;
 	Base::DataStreamIn<cv::Mat> in_color;
 	Base::DataStreamIn<cv::Mat> in_mask;
+	Base::DataStreamIn<Types::Features> in_features;
+	Base::DataStreamIn<cv::Mat> in_descriptors;
 	Base::DataStreamIn<Types::CameraInfo> in_camera_info;
 	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZ>::Ptr > out_cloud_xyz;
-	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZ>::Ptr > out_cloud_xyz_masked;
 	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZRGB>::Ptr > out_cloud_xyzrgb;
+	Base::DataStreamOut<pcl::PointCloud<PointXYZRGBSIFT>::Ptr > out_cloud_xyzrgbsift;
 
 	// Handlers
 	Base::EventHandler2 h_process_depth;
 	Base::EventHandler2 h_process_depth_mask;
+	Base::EventHandler2 h_process_depth_mask_color_descriptor;
 	Base::EventHandler2 h_process_all;
 
 	
 	// Handlers
-	void process_depth();
 	void process_depth_mask();
+	void process_depth();
+	
+	void process_depth_mask_color_descriptor();
 	void process_all();
 
 };

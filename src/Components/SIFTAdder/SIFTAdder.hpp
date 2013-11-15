@@ -15,6 +15,7 @@
 
 #include <opencv2/opencv.hpp>
 #include <vector>
+//#include "Types/Features.hpp"
 
 namespace Processors {
 namespace SIFTAdder {

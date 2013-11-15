@@ -77,16 +77,21 @@ void SHOT::shot() {
   pcl::PointCloud<NormalType>::Ptr normals (new pcl::PointCloud<NormalType> ());
   pcl::PointCloud<PointType>::Ptr keypoints (new pcl::PointCloud<PointType> ());
   pcl::PointCloud<DescriptorType>::Ptr descriptors (new pcl::PointCloud<DescriptorType> ());
-  
+  cout<<"dupa 1"<<endl;
   float model_ss_ = 0.01f;
   float descr_rad_ = 0.02f;
-  
+  cout<<"dupa 2"<<endl;
   //normals
-  pcl::NormalEstimationOMP<PointType, NormalType> norm_est;
-  norm_est.setKSearch (10);
+  pcl::NormalEstimation<PointType, NormalType> norm_est;
+  cout<<"dupa 2.1"<<endl;
+  norm_est.setKSearch (0);
+  cout<<"dupa 2.2"<<endl;
+  norm_est.setRadiusSearch (0.1);
+  cout<<"dupa 2.3"<<endl;
   norm_est.setInputCloud (cloud);
+  cout<<"dupa 2.4"<<endl;
   norm_est.compute (*normals);
-
+cout<<"dupa 3"<<endl;
 
   //indeces
   pcl::PointCloud<int> sampled_indices;
@@ -96,19 +101,19 @@ void SHOT::shot() {
   uniform_sampling.compute (sampled_indices);
   pcl::copyPointCloud (*cloud, sampled_indices.points, *keypoints);
   std::cout << "Model total points: " << cloud->size () << "; Selected Keypoints: " << keypoints->size () << std::endl;
-
+cout<<"dupa 4"<<endl;
 
   //SHOT
   pcl::SHOTEstimationOMP<PointType, NormalType, DescriptorType> descr_est;
   descr_est.setRadiusSearch (descr_rad_);
-
+cout<<"dupa 5"<<endl;
   descr_est.setInputCloud (keypoints);
   descr_est.setInputNormals (normals);
   descr_est.setSearchSurface (cloud);
   descr_est.compute (*descriptors);
   
   //out_keypoints.write(keypoints);
-
+cout<<"dupa 6"<<endl;
 
 }
 

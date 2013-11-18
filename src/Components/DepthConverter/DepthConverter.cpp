@@ -230,6 +230,8 @@ void DepthConverter::process_depth_mask_color_descriptor() {
 			pt.z = depth * 0.001;
 			
 //TODO		// Fill in RGB
+			pt.rgba = color.at<float>(v, u);
+			//cout<<pt.rgba<<" ";
 			//pt.rgba = color.at<float>(v, u);
 			//pt.data_c[0]=255;
 			//pt.data_c[1]=255;
@@ -243,7 +245,8 @@ void DepthConverter::process_depth_mask_color_descriptor() {
 					//pt.data_c[0]=255;
 					//pt.data_c[1]=255;
 					//pt.data_c[2]=0;
-					//cout<<descriptors.row(i)<<endl;					
+					//cout<<descriptors.row(i)<<endl;
+					//cout<<pt.descriptor<<endl;					
 					break;
 				}
 			}

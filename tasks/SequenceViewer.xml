@@ -50,12 +50,16 @@
 				</Component>
 				<Component name="WindowPCL" type="PCL:CloudViewer" priority="1" bump="10">
 				</Component>
+<!--
 				<Component name="Writer" type="PCL:PCDWriter" priority="1" bump="5">
 					<param name="filename">/home/mlaszkow/pcd/testttt.pcd</param>
 				</Component>
+-->
+				<Component name="Writer" type="PCL:JSONWriter" priority="1" bump="5">
+				</Component>
 				<!--<Component name="WindowPCLKeypoints" type="PCL:CloudViewer" priority="1" bump="0">
 				</Component>-->
-			</Executor>process_depth_mask
+			</Executor>
 		</Subtask>	
 	
 	</Subtasks>
@@ -81,7 +85,7 @@
 		</Source>
 		<Source name="Converter.out_cloud_xyzrgbsift">
 			<sink>WindowPCL.in_cloud_xyz</sink>	
-			<sink>Writer.in_pcl</sink>	
+			<sink>Writer.in_cloud_xyzrgbsift</sink>	
 			<!--<sink>SHOT.in_pcl</sink>-->				
 		</Source>
 		<Source name="SIFT.out_descriptors">

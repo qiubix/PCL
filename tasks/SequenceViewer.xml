@@ -56,6 +56,7 @@
 				</Component>
 -->
 				<Component name="Writer" type="PCL:JSONWriter" priority="1" bump="5">
+					<param name="filename">/home/mlaszkow/pcd/test.json</param>
 				</Component>
 				<!--<Component name="WindowPCLKeypoints" type="PCL:CloudViewer" priority="1" bump="0">
 				</Component>-->

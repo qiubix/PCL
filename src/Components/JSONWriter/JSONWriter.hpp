@@ -81,15 +81,12 @@ protected:
 	Base::EventHandler2 h_write_xyzrgb;
 	Base::EventHandler2 h_write_xyzrgbsift;
 
+	Base::Property<std::string> filename;
 	
 	// Handlers
 	void write_xyz();
 	void write_xyzrgb();
 	void write_xyzrgbsift();
-	
-	
-	
-	int i;
 
 };
 

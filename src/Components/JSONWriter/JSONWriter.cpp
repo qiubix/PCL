@@ -22,8 +22,9 @@ namespace Processors {
 namespace JSONWriter {
 
 JSONWriter::JSONWriter(const std::string & name) :
-		Base::Component(name)  {
-
+		Base::Component(name),
+		filename("filename", std::string(""))  {
+		registerProperty(filename);
 }
 
 JSONWriter::~JSONWriter() {
@@ -48,7 +49,6 @@ void JSONWriter::prepareInterface() {
 }
 
 bool JSONWriter::onInit() {
-	i=0;
 	return true;
 }
 
@@ -76,10 +76,9 @@ void JSONWriter::write_xyzrgbsift() {
 	
 	ptree ptree_file;
 	try{
-		read_json("/home/mlaszkow/pcd/test.json", ptree_file);
+		read_json(filename, ptree_file);
 	}
 	catch(std::exception const& e){}
-	cout<<"I: "<<++i<<endl;
 	
 	pcl::PointCloud<PointXYZRGBSIFT>::iterator pt_iter = cloud->begin();
 	
@@ -105,8 +104,7 @@ void JSONWriter::write_xyzrgbsift() {
 				for(int j = 0; j<128;j++){
 					ptree child;
 					child.put("", pt.descriptor.at<float>(j));
-					descriptor.push_back(std::make_pair("", child));	
-					//cout<<pt.descriptor.at<float>(j)<<" ";
+					descriptor.push_back(std::make_pair("", child));
 				}
 				ptree_point.add_child("SIFT", descriptor);
 			}
@@ -115,34 +113,7 @@ void JSONWriter::write_xyzrgbsift() {
 	}
 	ptree_file.add_child("cloud", ptree_cloud);
 	
-	write_json ("/home/mlaszkow/pcd/test.json", ptree_file);
-/*	
-	ptree ptree_cloud;
-	for (size_t i = 0; i < 10 ; ++i){ //cloud_xyzrgbsift->points.size(); ++i){
-		if (isnan(cloud_xyzrgbsift->points[i].x))
-			continue;
-		ptree ptree_point; 
-		ptree_point.put ("x", cloud_xyzrgbsift->points[i].x);
-		ptree_point.put ("y", cloud_xyzrgbsift->points[i].y);
-		ptree_point.put ("z", cloud_xyzrgbsift->points[i].z);
-		ptree_point.put ("R", rand()%255);
-		ptree_point.put ("G", rand()%255);
-		ptree_point.put ("B", rand()%255);
-		if(rand()%3==1){
-			ptree descriptor;
-			for(int k=0;k<120;k++){
-				ptree child;
-				child.put("", rand()%250);
-				descriptor.push_back(std::make_pair("", child));	
-			}
-			ptree_point.add_child("SIFT", descriptor);
-		}
-		ptree_cloud.push_back(std::make_pair("", point));
-	}
-	ptree_file.add_child("cloud", cloud);
-	
-	write_json ("/home/mlaszkow/pcd/test.json", ptree_file);	
- */
+	write_json (filename, ptree_file);
 }
 
 

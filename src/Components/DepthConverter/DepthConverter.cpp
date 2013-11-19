@@ -194,9 +194,9 @@ void DepthConverter::process_depth_mask_color_descriptor() {
 	cv::Mat descriptors = in_descriptors.read();
 	
 	
-	for(int i=0; i < features.features.size(); i++){
-		//cout<<features.features[i].pt<<endl;
-	}
+	//for(int i=0; i < features.features.size(); i++){
+		////cout<<features.features[i].pt<<endl;
+	//}
 	
 	
 	pcl::PointCloud<PointXYZRGBSIFT>::Ptr cloud (new pcl::PointCloud<PointXYZRGBSIFT>(camera_info.width(), camera_info.height()));
@@ -230,7 +230,13 @@ void DepthConverter::process_depth_mask_color_descriptor() {
 			pt.z = depth * 0.001;
 			
 //TODO		// Fill in RGB
-			pt.rgba = color.at<float>(v, u);
+			//uint32_t rgb = color.at<float>(v, u);
+			//uint8_t r = (rgb >> 16) & 0x0000ff;
+			//uint8_t g = (rgb >> 8)  & 0x0000ff;
+			//uint8_t b = (rgb)       & 0x0000ff;
+			//pt.r = r;
+			//pt.g = g;
+			//pt.b = b;
 			//cout<<pt.rgba<<" ";
 			//pt.rgba = color.at<float>(v, u);
 			//pt.data_c[0]=255;

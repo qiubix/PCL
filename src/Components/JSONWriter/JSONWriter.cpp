@@ -83,6 +83,7 @@ void JSONWriter::write_xyzrgbsift() {
 	pcl::PointCloud<PointXYZRGBSIFT>::iterator pt_iter = cloud->begin();
 	
 	ptree ptree_cloud;
+	//ptree_cloud.put("size", 400);
 	for (int v = 0; v < (int) cloud->height; ++v) {
 		for (int u = 0; u < (int) cloud->width; ++u) {
 			PointXYZRGBSIFT& pt = *pt_iter++;
@@ -93,13 +94,13 @@ void JSONWriter::write_xyzrgbsift() {
 			ptree_point.put ("x", pt.x);
 			ptree_point.put ("y", pt.y);
 			ptree_point.put ("z", pt.z);
-			ptree_point.put ("RGB", pt.rgba); //TODO
-			//ptree_point.put ("R", rand()%255);
-			//ptree_point.put ("G", rand()%255);
-			//ptree_point.put ("B", rand()%255);
+			ptree_point.put ("R", pt.r); 
+			ptree_point.put ("G", pt.g);
+			ptree_point.put ("B", pt.b);
 			cv::Mat descriptor = pt.descriptor;
 			
 			if(!descriptor.empty()) {
+				//cout<<"Typ: "<<pt.descriptor.depth()<<endl;
 				ptree descriptor;
 				for(int j = 0; j<128;j++){
 					ptree child;

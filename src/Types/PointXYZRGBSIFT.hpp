@@ -11,14 +11,7 @@
 struct PointXYZRGBSIFT
 {
   PCL_ADD_POINT4D;                  // preferred way of adding a XYZ+padding
-  union
-{
-  struct
-  {
-    uint32_t rgba;
-  };
-  float data_c[4];
-};
+  PCL_ADD_RGB;
   cv::Mat descriptor; 
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 } EIGEN_ALIGN16;

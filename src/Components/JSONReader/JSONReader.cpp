@@ -1,0 +1,130 @@
+/*!
+ * \file
+ * \brief
+ * \author Micha Laszkowski
+ */
+
+#include <memory>
+#include <string>
+
+#include "JSONReader.hpp"
+#include "Common/Logger.hpp"
+
+#include <boost/bind.hpp>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
+#include <boost/lexical_cast.hpp>
+#include <boost/foreach.hpp>
+using boost::property_tree::ptree;
+using boost::property_tree::read_json;
+using boost::property_tree::write_json;
+
+namespace Processors {
+namespace JSONReader {
+
+JSONReader::JSONReader(const std::string & name) :
+		Base::Component(name) , 
+		filename("filename", std::string("")) {
+		registerProperty(filename);
+
+}
+
+JSONReader::~JSONReader() {
+}
+
+void JSONReader::prepareInterface() {
+	// Register data streams, events and event handlers HERE!
+	registerStream("out_cloud_xyzrgbsift", &out_cloud_xyzrgbsift);
+	registerStream("out_cloud_xyz", &out_cloud_xyz);
+	registerStream("out_cloud_xyzrgb", &out_cloud_xyzrgb);
+	// Register handlers
+	h_read.setup(boost::bind(&JSONReader::read, this));
+	registerHandler("read", &h_read);
+	addDependency("read", NULL);
+
+}
+
+bool JSONReader::onInit() {
+
+	return true;
+}
+
+bool JSONReader::onFinish() {
+	return true;
+}
+
+bool JSONReader::onStop() {
+	return true;
+}
+
+bool JSONReader::onStart() {
+	return true;
+}
+
+void JSONReader::read() {
+	cout<<"JSONReader::read()"<<endl;
+	ptree ptree_file;
+	try{
+		read_json(filename, ptree_file);
+	}
+	catch(std::exception const& e){
+		LOG(LERROR) << "JSONReader: file "<< filename<<" not found\n";
+		return;	
+	}
+
+	
+	BOOST_FOREACH(boost::property_tree::ptree::value_type &v0, ptree_file){//clouds
+		pcl::PointCloud<PointXYZRGBSIFT>::Ptr cloud (new pcl::PointCloud<PointXYZRGBSIFT>());
+		pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_xyz (new pcl::PointCloud<pcl::PointXYZ>());
+		pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_xyzrgb (new pcl::PointCloud<pcl::PointXYZRGB>());
+		BOOST_FOREACH(boost::property_tree::ptree::value_type &v, v0.second)//points
+			{
+				PointXYZRGBSIFT point;
+				pcl::PointXYZ point_xyz;
+				pcl::PointXYZRGB point_xyzrgb;
+				point_xyz.x = point_xyzrgb.x = point.x = boost::lexical_cast<float>(v.second.get_child("x").data());
+				point_xyz.y = point_xyzrgb.y = point.y = boost::lexical_cast<float>(v.second.get_child("y").data());
+				point_xyz.z = point_xyzrgb.z = point.z = boost::lexical_cast<float>(v.second.get_child("z").data());
+				try{//color
+					point_xyzrgb.r = point.r = boost::lexical_cast<float>(v.second.get_child("R").data());
+					point_xyzrgb.g = point.g = boost::lexical_cast<float>(v.second.get_child("G").data());
+					point_xyzrgb.b = point.b = boost::lexical_cast<float>(v.second.get_child("B").data());				
+				}
+				catch (std::exception const& e){
+				}
+				try{
+					//SIFT
+					float descriptor[128];
+					int i=0;
+					BOOST_FOREACH(boost::property_tree::ptree::value_type &v2, v.second.get_child("SIFT")){
+						//std::cout << v2.second.data() << " ";
+						descriptor[i++] = boost::lexical_cast<float>(v2.second.data());
+					}		
+					cv::Mat d(1, 128, CV_32F, &descriptor);
+					point.descriptor=d;						
+									
+				}
+				catch (std::exception const& e){
+					//std::cout<<"Brak deskryptora"<<std::endl;
+				}
+				cloud->push_back(point);
+				cloud_xyz->push_back(point_xyz);
+				cloud_xyzrgb->push_back(point_xyzrgb);
+					//std::cout << v.second.data() << std::endl;
+					// etc
+				}
+		out_cloud_xyzrgbsift.write(cloud);
+		out_cloud_xyz.write(cloud_xyz);
+		out_cloud_xyzrgb.write(cloud_xyzrgb);
+		//break;
+	}	
+		
+	
+	
+
+}
+
+
+
+} //: namespace JSONReader
+} //: namespace Processors

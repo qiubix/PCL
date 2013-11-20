@@ -15,7 +15,6 @@
 #include <pcl/io/pcd_io.h>
 
 
-
 namespace Processors {
 namespace DepthConverter {
 
@@ -189,7 +188,7 @@ void DepthConverter::process_depth_mask_color_descriptor() {
 	cv::Mat mask = in_mask.read();
 	mask.convertTo(mask, CV_32F);
 	cv::Mat color = in_color.read();
-	color.convertTo(color, CV_32F);
+	//color.convertTo(color, CV_8UC3);
 	Types::Features features = in_features.read();
 	cv::Mat descriptors = in_descriptors.read();
 	
@@ -229,19 +228,16 @@ void DepthConverter::process_depth_mask_color_descriptor() {
 			pt.y = (v - cy_d) * depth * fy_d;
 			pt.z = depth * 0.001;
 			
-//TODO		// Fill in RGB
-			//uint32_t rgb = color.at<float>(v, u);
-			//uint8_t r = (rgb >> 16) & 0x0000ff;
-			//uint8_t g = (rgb >> 8)  & 0x0000ff;
-			//uint8_t b = (rgb)       & 0x0000ff;
-			//pt.r = r;
-			//pt.g = g;
-			//pt.b = b;
-			//cout<<pt.rgba<<" ";
-			//pt.rgba = color.at<float>(v, u);
-			//pt.data_c[0]=255;
-			//pt.data_c[1]=255;
-			//pt.data_c[2]=0;
+			// Fill in RGB
+			cv::Vec3b bgr = color.at<cv::Vec3b>(v, u);
+			int b = bgr[0];
+			int g = bgr[1];
+			int r = bgr[2];
+			//cout<< b << " " << g << " " << r << endl;// << " " << bgr[1] << " " << bgr[2]<<endl;			
+			pt.r = r;
+			pt.g = g;
+			pt.b = b;
+
 			
 			// Fill descriptor
 			for(int i=0; i < features.features.size(); i++){
@@ -300,10 +296,14 @@ void DepthConverter::process_all() {
 			pt.z = depth * 0.001;
 			
 			// Fill in RGB
-			pt.rgba = color.at<float>(v, u);
-			//pt.data_c[0]=255;
-			//pt.data_c[1]=255;
-			//pt.data_c[2]=0;
+			//pt.rgba = color.at<float>(v, u);
+			cv::Vec3b bgr = color.at<cv::Vec3b>(v, u);
+			int b = bgr[0];
+			int g = bgr[1];
+			int r = bgr[2];		
+			pt.r = r;
+			pt.g = g;
+			pt.b = b;
 		}
 	}
 

@@ -17,16 +17,16 @@
 		<Subtask name="Main">
 			<Executor name="Processing"  period="1">
 				<Component name="SequenceRGB" type="CvBasic:Sequence" priority="1" bump="0">
-					<param name="sequence.directory">/home/mlaszkow/obiekty/apple_2</param>
+					<param name="sequence.directory">/home/mlaszkow/obiekty/apple</param>
 					<param name="sequence.pattern">.*\_color.png</param>
 					
 				</Component>
 				<Component name="SequenceDepth" type="CvBasic:Sequence" priority="2" bump="0">
-					<param name="sequence.directory">/home/mlaszkow/obiekty/apple_2</param>
+					<param name="sequence.directory">/home/mlaszkow/obiekty/apple</param>
 					<param name="sequence.pattern">.*\_depth.png</param>	
 				</Component>
 				<Component name="SequenceMask" type="CvBasic:Sequence" priority="3" bump="0">
-					<param name="sequence.directory">/home/mlaszkow/obiekty/apple_2</param>
+					<param name="sequence.directory">/home/mlaszkow/obiekty/apple</param>
 					<param name="sequence.pattern">.*\_mask.png</param>
 				</Component>
 				<Component name="CameraInfo" type="CvCoreTypes:CameraInfoProvider" priority="4" bump="0">
@@ -36,11 +36,16 @@
 				</Component>
 				<Component name="Converter" type="PCL:DepthConverter" priority="6" bump="10">
 				</Component>
+				<Component name="Writer" type="PCL:JSONWriter" priority="7" bump="5">
+					<param name="filename">/home/mlaszkow/pcd/test.json</param>
+				</Component>
 
+<!--
 				<Component name="SHOT" type="PCL:SHOT" priority="1" bump="0">
 				</Component>
 				<Component name="SIFTAdder" type="PCL:SIFTAdder" priority="1" bump="0">
 				</Component>
+-->
 			</Executor>
 
 			<Executor name="Visualization" period="0.2">
@@ -55,9 +60,7 @@
 					<param name="filename">/home/mlaszkow/pcd/testttt.pcd</param>
 				</Component>
 -->
-				<Component name="Writer" type="PCL:JSONWriter" priority="1" bump="5">
-					<param name="filename">/home/mlaszkow/pcd/test.json</param>
-				</Component>
+
 				<!--<Component name="WindowPCLKeypoints" type="PCL:CloudViewer" priority="1" bump="0">
 				</Component>-->
 			</Executor>

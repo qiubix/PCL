@@ -74,15 +74,27 @@ void JSONWriter::write_xyzrgbsift() {
 	cout<<"JSONWriter::write_xyzrgbsift()"<<endl;
 	pcl::PointCloud<PointXYZRGBSIFT>::Ptr cloud = in_cloud_xyzrgbsift.read();
 	
-	ptree ptree_file;
+	ptree ptree_file_rgb;
+	string filename_rgb = filename;
+	if(!replace(filename_rgb, ".json", "_xyzrgb.json"))
+		CLOG(LWARNING) <<"Nazwa pliku nie ma rozszerzenia .json";
 	try{
-		read_json(filename, ptree_file);
+		read_json(filename_rgb, ptree_file_rgb);
+	}
+	catch(std::exception const& e){}
+	ptree ptree_file_sift;
+	string filename_sift = filename;
+	replace(filename_sift, ".json", "_sift.json");
+	try{
+		read_json("filename_sift", ptree_file_sift);
 	}
 	catch(std::exception const& e){}
 	
 	pcl::PointCloud<PointXYZRGBSIFT>::iterator pt_iter = cloud->begin();
 	
-	ptree ptree_cloud;
+	ptree ptree_cloud;//cloud XYZRGB
+	ptree ptree_cloud_sift;//cloud XYZRGBSIFT
+	//ptree ptree_points;
 	//ptree_cloud.put("size", 400);
 	for (int v = 0; v < (int) cloud->height; ++v) {
 		for (int u = 0; u < (int) cloud->width; ++u) {
@@ -97,6 +109,8 @@ void JSONWriter::write_xyzrgbsift() {
 			ptree_point.put ("R", pt.r); 
 			ptree_point.put ("G", pt.g);
 			ptree_point.put ("B", pt.b);
+			
+			ptree_cloud.push_back(std::make_pair("", ptree_point));
 			cv::Mat descriptor = pt.descriptor;
 			
 			if(!descriptor.empty()) {
@@ -108,15 +122,30 @@ void JSONWriter::write_xyzrgbsift() {
 					descriptor.push_back(std::make_pair("", child));
 				}
 				ptree_point.add_child("SIFT", descriptor);
+				
+				ptree_cloud_sift.push_back(std::make_pair("", ptree_point));
 			}
-			ptree_cloud.push_back(std::make_pair("", ptree_point));
+			//ptree_points.push_back(std::make_pair("", ptree_point));
+			
 		}
 	}
-	ptree_file.add_child("cloud", ptree_cloud);
+	//ptree_file.add_child("points", ptree_points);
 	
-	write_json (filename, ptree_file);
+	ptree_file_rgb.add_child("cloud", ptree_cloud);
+	//TODO if(sa punkty)
+	ptree_file_sift.add_child("cloud", ptree_cloud_sift);
+	
+	write_json (filename_rgb, ptree_file_rgb);
+	write_json (filename_sift, ptree_file_sift);
 }
 
+bool JSONWriter::replace(std::string& str, const std::string& from, const std::string& to) {
+    size_t start_pos = str.find(from);
+    if(start_pos == std::string::npos)
+        return false;
+    str.replace(start_pos, from.length(), to);
+    return true;
+}
 
 
 } //: namespace JSONWriter

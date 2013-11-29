@@ -86,7 +86,7 @@ void JSONWriter::write_xyzrgbsift() {
 	string filename_sift = filename;
 	replace(filename_sift, ".json", "_sift.json");
 	try{
-		read_json("filename_sift", ptree_file_sift);
+		read_json(filename_sift, ptree_file_sift);
 	}
 	catch(std::exception const& e){}
 	

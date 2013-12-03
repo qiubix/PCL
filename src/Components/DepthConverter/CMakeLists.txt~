@@ -7,8 +7,10 @@ FILE(GLOB files *.cpp)
 # Create an executable file from sources:
 ADD_LIBRARY(DepthConverter SHARED ${files})
 
+FIND_PACKAGE( OpenCV REQUIRED )
+
 # Link external libraries
-TARGET_LINK_LIBRARIES(DepthConverter ${DisCODe_LIBRARIES} ${PCL_COMMON_LIBRARIES} ${PCL_IO_LIBRARIES})
+TARGET_LINK_LIBRARIES(DepthConverter ${OpenCV_LIBS} ${DisCODe_LIBRARIES} ${PCL_COMMON_LIBRARIES} ${PCL_IO_LIBRARIES})
 
 # Add aother libraries if necessary, for example:
 # TARGET_LINK_LIBRARIES(Example ${DisCODe_LIBRARIES} ${OpenCV_LIBS} )

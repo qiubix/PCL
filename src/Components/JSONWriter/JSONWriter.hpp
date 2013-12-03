@@ -16,7 +16,7 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <Types/PointXYZRGBSIFT.hpp> 
-
+#include <Types/PointXYZDescriptor.hpp> 
 namespace Processors {
 namespace JSONWriter {
 
@@ -73,6 +73,7 @@ protected:
 // Input data streams
 
 		Base::DataStreamIn<pcl::PointCloud<PointXYZRGBSIFT>::Ptr> in_cloud_xyzrgbsift;
+		Base::DataStreamIn<pcl::PointCloud<PointXYZDescriptor>::Ptr> in_cloud_xyzdescriptor;
 		Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZ>::Ptr> in_cloud_xyz;
 		Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> in_cloud_xyzrgb;
 
@@ -82,6 +83,7 @@ protected:
 	Base::EventHandler2 h_write_xyz;
 	Base::EventHandler2 h_write_xyzrgb;
 	Base::EventHandler2 h_write_xyzrgbsift;
+	Base::EventHandler2 h_write_xyzdescriptor;
 
 	Base::Property<std::string> filename;
 	
@@ -89,6 +91,7 @@ protected:
 	void write_xyz();
 	void write_xyzrgb();
 	void write_xyzrgbsift();
+	void write_xyzdescriptor();
 
 };
 

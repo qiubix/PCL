@@ -35,6 +35,7 @@ void JSONWriter::prepareInterface() {
 	registerStream("in_cloud_xyzrgbsift", &in_cloud_xyzrgbsift);
 	registerStream("in_cloud_xyz", &in_cloud_xyz);
 	registerStream("in_cloud_xyzrgb", &in_cloud_xyzrgb);
+	registerStream("in_cloud_xyzdescriptor", &in_cloud_xyzdescriptor);
 	// Register handlers
 	h_write_xyz.setup(boost::bind(&JSONWriter::write_xyz, this));
 	registerHandler("write_xyz", &h_write_xyz);
@@ -45,6 +46,9 @@ void JSONWriter::prepareInterface() {
 	h_write_xyzrgbsift.setup(boost::bind(&JSONWriter::write_xyzrgbsift, this));
 	registerHandler("write_xyzrgbsift", &h_write_xyzrgbsift);
 	addDependency("write_xyzrgbsift", &in_cloud_xyzrgbsift);
+	h_write_xyzdescriptor.setup(boost::bind(&JSONWriter::write_xyzdescriptor, this));
+	registerHandler("write_xyzdescriptor", &h_write_xyzdescriptor);
+	addDependency("write_xyzdescriptor", &in_cloud_xyzdescriptor);
 
 }
 
@@ -138,6 +142,56 @@ void JSONWriter::write_xyzrgbsift() {
 	write_json (filename_rgb, ptree_file_rgb);
 	write_json (filename_sift, ptree_file_sift);
 }
+
+
+void JSONWriter::write_xyzdescriptor() {
+	cout<<"JSONWriter::write_xyzdescriptor()"<<endl;
+	pcl::PointCloud<PointXYZDescriptor>::Ptr cloud = in_cloud_xyzdescriptor.read();
+
+	ptree ptree_file;
+	
+	try{
+		read_json(filename, ptree_file);
+	}
+	catch(std::exception const& e){}
+	pcl::PointCloud<PointXYZDescriptor>::iterator pt_iter = cloud->begin();
+	ptree ptree_cloud;//cloud XYZRGB
+
+	for (int v = 0; v < (int) cloud->height; ++v) {
+		for (int u = 0; u < (int) cloud->width; ++u) {
+			PointXYZDescriptor& pt = *pt_iter++;
+			if(isnan(pt.x)){
+				continue;				
+			}		
+			ptree ptree_point; 
+			ptree_point.put ("x", pt.x);
+			ptree_point.put ("y", pt.y);
+			ptree_point.put ("z", pt.z);
+			//ptree_cloud.push_back(std::make_pair("", ptree_point));
+			cv::Mat descriptor = pt.descriptor;
+			
+			if(!descriptor.empty()) {
+				//cout<<"Typ: "<<pt.descriptor.depth()<<endl;
+				ptree ptree_descriptor;
+				for(int j = 0; j<descriptor.cols;j++){
+					ptree child;
+					child.put("", pt.descriptor.at<float>(j));
+					ptree_descriptor.push_back(std::make_pair("", child));
+				}
+				ptree_point.add_child("Descriptor", ptree_descriptor);
+				
+				ptree_cloud.push_back(std::make_pair("", ptree_point));
+			}
+			
+		}
+	}
+	//ptree_file.add_child("points", ptree_points);
+	
+	ptree_file.add_child("cloud", ptree_cloud);
+	
+	write_json (filename, ptree_file);
+}
+
 
 bool JSONWriter::replace(std::string& str, const std::string& from, const std::string& to) {
     size_t start_pos = str.find(from);

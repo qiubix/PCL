@@ -16,6 +16,7 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <Types/PointXYZRGBSIFT.hpp> 
+#include <Types/PointXYZSIFT.hpp> 
 #include <opencv2/core/core.hpp>
 
 namespace Processors {
@@ -75,6 +76,7 @@ protected:
 // Output data streams
 
 		Base::DataStreamOut<pcl::PointCloud<PointXYZRGBSIFT>::Ptr> out_cloud_xyzrgbsift;
+		Base::DataStreamOut<pcl::PointCloud<PointXYZSIFT>::Ptr> out_cloud_xyzsift;
 		Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZ>::Ptr> out_cloud_xyz;
 		Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> out_cloud_xyzrgb;
 	// Handlers

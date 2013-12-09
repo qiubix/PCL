@@ -30,6 +30,7 @@ PCDReader::~PCDReader() {
 void PCDReader::prepareInterface() {
 	// Register data streams, events and event handlers HERE!
 	registerStream("out_pcl", &out_pcl);
+	registerStream("out_pcl_xyzsift", &out_pcl_xyzsift);
 	// Register handlers
 	h_Read.setup(boost::bind(&PCDReader::Read, this));
 	registerHandler("Read", &h_Read);
@@ -55,14 +56,19 @@ bool PCDReader::onStart() {
 }
 
 void PCDReader::Read() {
-		pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
-	//"/home/mlaszkow/pcd/table_scene_lms400.pcd"
+	  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
 	  if (pcl::io::loadPCDFile<pcl::PointXYZ> (filename, *cloud) == -1) //* load the file
 	  {
 		cout <<"Błąd"<<endl;
 	  }
-	out_pcl.write(cloud);
-	
+	  out_pcl.write(cloud);
+	  
+	  pcl::PointCloud<PointXYZSIFT>::Ptr cloud_xyzsift (new pcl::PointCloud<PointXYZSIFT>);
+	  if (pcl::io::loadPCDFile<PointXYZSIFT> (filename, *cloud_xyzsift) == -1) //* load the file
+	  {
+		cout <<"Błąd"<<endl;
+	  }
+	  out_pcl_xyzsift.write(cloud_xyzsift);	
 }
 
 

@@ -73,7 +73,7 @@ void FeatureCloudConverter::process() {
 	Types::Features features = in_features.read();
 	Types::CameraInfo camera_info = in_camera_info.read();
 
-	pcl::PointCloud<PointXYZDescriptor>::Ptr cloud (new pcl::PointCloud<PointXYZDescriptor>());
+	pcl::PointCloud<PointXYZSIFT>::Ptr cloud (new pcl::PointCloud<PointXYZSIFT>());
 	
 	double fx_d = 0.001 / camera_info.fx();
 	double fy_d = 0.001 / camera_info.fy();
@@ -82,7 +82,7 @@ void FeatureCloudConverter::process() {
 	
 	for(int i=0; i < features.features.size(); i++){
 		
-		PointXYZDescriptor point;
+		PointXYZSIFT point;
 		int u = round(features.features[i].pt.x);
 		int v = round(features.features[i].pt.y);
 		//cout<<features.features[i].pt.x<<" -> "<<u<<endl;
@@ -99,7 +99,11 @@ void FeatureCloudConverter::process() {
 		point.y = (v - cy_d) * d * fy_d;
 		point.z = d * 0.001;
 
-		point.descriptor = descriptors.row(i);
+		
+		for(int j=0; j<descriptors.cols;j++){
+			point.descriptor[j] = descriptors.row(i).at<float>(j);	
+		}
+		
 		
 		cloud->push_back(point);
 	}
@@ -118,7 +122,7 @@ void FeatureCloudConverter::process_mask() {
 	Types::Features features = in_features.read();
 	Types::CameraInfo camera_info = in_camera_info.read();
 
-	pcl::PointCloud<PointXYZDescriptor>::Ptr cloud (new pcl::PointCloud<PointXYZDescriptor>());
+	pcl::PointCloud<PointXYZSIFT>::Ptr cloud (new pcl::PointCloud<PointXYZSIFT>());
 	
 	double fx_d = 0.001 / camera_info.fx();
 	double fy_d = 0.001 / camera_info.fy();
@@ -127,7 +131,7 @@ void FeatureCloudConverter::process_mask() {
 	
 	for(int i=0; i < features.features.size(); i++){
 		
-		PointXYZDescriptor point;
+		PointXYZSIFT point;
 		int u = round(features.features[i].pt.x);
 		int v = round(features.features[i].pt.y);
 		//cout<<features.features[i].pt.x<<" -> "<<u<<endl;
@@ -144,7 +148,9 @@ void FeatureCloudConverter::process_mask() {
 		point.y = (v - cy_d) * d * fy_d;
 		point.z = d * 0.001;
 
-		point.descriptor = descriptors.row(i);
+		for(int j=0; j<descriptors.cols;j++){
+			point.descriptor[j] = descriptors.row(i).at<float>(j);	
+		}
 		
 		cloud->push_back(point);
 	}

@@ -15,7 +15,7 @@
 
 #include <Types/CameraInfo.hpp>
 #include <Types/Features.hpp> 
-#include <Types/PointXYZDescriptor.hpp> 
+#include <Types/PointXYZSIFT.hpp> 
 
 #include <opencv2/core/core.hpp>
 
@@ -83,7 +83,7 @@ protected:
 
 // Output data streams
 
-		Base::DataStreamOut<pcl::PointCloud<PointXYZDescriptor>::Ptr> out_cloud;
+		Base::DataStreamOut<pcl::PointCloud<PointXYZSIFT>::Ptr> out_cloud;
 	// Handlers
 	Base::EventHandler2 h_process;
 	Base::EventHandler2 h_process_mask;

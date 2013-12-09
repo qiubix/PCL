@@ -1,0 +1,117 @@
+<Task>
+	<!-- reference task information -->
+	<Reference>
+		<Author>
+			<name>Tomasz Kornuta</name>
+			<link></link>
+		</Author>
+		
+		<Description>
+			<brief>ecovi:t1/SequenceViewer</brief>
+			<full>Loads and displays a sequence of images</full>	
+		</Description>
+	</Reference>
+	
+	<!-- task definition -->
+	<Subtasks>
+		<Subtask name="Main">
+			<Executor name="Processing"  period="1">
+				<Component name="SequenceRGB" type="CvBasic:Sequence" priority="1" bump="0">
+					<param name="sequence.directory">/home/mlaszkow/obiekty/apple_2</param>
+					<param name="sequence.pattern">.*\_color.png</param>				
+				</Component>
+				<Component name="SequenceDepth" type="CvBasic:Sequence" priority="2" bump="0">
+					<param name="sequence.directory">/home/mlaszkow/obiekty/apple_2</param>
+					<param name="sequence.pattern">.*\_depth.png</param>	
+				</Component>
+				<Component name="SequenceMask" type="CvBasic:Sequence" priority="3" bump="0">
+					<param name="sequence.directory">/home/mlaszkow/obiekty/apple_2</param>
+					<param name="sequence.pattern">.*\_mask.png</param>
+				</Component>
+				<Component name="CameraInfo" type="CvCoreTypes:CameraInfoProvider" priority="4" bump="0">
+					<param name="camera_matrix">525 0 319.5; 0 525 239.5; 0 0 1</param>
+				</Component>
+				<Component name="SIFT" type="CvBasic:CvSIFT" priority="5" bump="0">
+				</Component>
+				<Component name="Converter" type="PCL:DepthConverter" priority="6" bump="10">
+				</Component>
+				<Component name="FeatureCloudConverter" type="PCL:FeatureCloudConverter" priority="7" bump="10">
+				</Component>
+				<Component name="Writer" type="PCL:JSONWriter" priority="8" bump="5">
+					<param name="filename">/home/mlaszkow/pcd/test.json</param>
+				</Component>
+                                <Component name="PCDWriter" type="PCL:PCDWriter" priority="9" bump="5">
+                                        <param name="filename">/home/mlaszkow/pcd/test_xyzsift.pcd</param>
+                                </Component>
+			</Executor>
+
+			<Executor name="Visualization" period="0.2">
+				<Component name="Window" type="CvBasic:CvWindow" priority="1" bump="0">
+					<param name="count">3</param>
+					<param name="title">Window,Depth,Mask</param>
+				</Component>
+				<Component name="WindowPCL" type="PCL:CloudViewer" priority="1" bump="10">
+				</Component>
+				<Component name="WindowPCL2" type="PCL:CloudViewer" priority="1" bump="10">
+				</Component>
+<!--
+				<Component name="Writer" type="PCL:PCDWriter" priority="1" bump="5">
+					<param name="filename">/home/mlaszkow/pcd/testttt.pcd</param>
+				</Component>
+-->
+			</Executor>
+		</Subtask>	
+	
+	</Subtasks>
+	
+	<!-- pipes connecting datastreams -->
+	<DataStreams>
+		<Source name="SequenceRGB.out_img">
+			<sink>Window.in_img</sink>	
+			<sink>SIFT.in_img</sink>
+			<sink>Converter.in_color</sink>
+			<!--<sink>Converter.in_color</sink>-->
+		</Source>
+		<Source name="SequenceDepth.out_img">
+			<sink>Window.in_img1</sink>	
+			<sink>Converter.in_depth</sink>	
+			<sink>FeatureCloudConverter.in_depth</sink>	
+		</Source>
+		<Source name="SequenceMask.out_img">
+			<sink>Window.in_img2</sink>
+			<sink>Converter.in_mask</sink>	
+			<sink>FeatureCloudConverter.in_mask</sink>		
+		</Source>
+		<Source name="CameraInfo.out_camerainfo">
+			<sink>Converter.in_camera_info</sink>	
+			<sink>FeatureCloudConverter.in_camera_info</sink>
+		</Source>
+		<Source name="Converter.out_cloud_xyzrgbsift">
+<!--
+			<sink>WindowPCL.in_cloud_xyz</sink>	
+-->
+<!--
+			<sink>Writer.in_cloud_xyzrgbsift</sink>		
+-->
+		</Source>
+		<Source name="SIFT.out_descriptors">
+			<sink>Converter.in_descriptors</sink>		
+			<sink>FeatureCloudConverter.in_descriptors</sink>	
+		</Source>
+		<Source name="SIFT.out_features">
+			<sink>Converter.in_features</sink>	
+			<sink>FeatureCloudConverter.in_features</sink>	
+		</Source>
+		<Source name="FeatureCloudConverter.out_cloud">
+			<sink>WindowPCL2.in_cloud_xyz</sink>	
+
+			<sink>Writer.in_cloud_xyzsift</sink>
+
+            <sink>PCDWriter.in_pcl_xyzsift</sink>
+		</Source>
+	</DataStreams>
+</Task>
+
+
+
+

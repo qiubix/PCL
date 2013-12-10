@@ -32,3 +32,5 @@ ADD_COMPONENT(FeatureCloudConverter)
 ADD_COMPONENT(FLANN)
 
 ADD_COMPONENT(CloudCutter)
+
+ADD_COMPONENT(SIFTObjectModelFactory)

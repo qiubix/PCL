@@ -12,6 +12,8 @@
 
 #include <boost/bind.hpp>
 
+#include <pcl/filters/extract_indices.h>
+
 namespace Processors {
 namespace RANSACPlane {
 

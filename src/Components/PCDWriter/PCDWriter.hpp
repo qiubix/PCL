@@ -73,18 +73,20 @@ protected:
 
 		Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZ>::Ptr > in_pcl;
         Base::DataStreamIn<pcl::PointCloud<PointXYZSIFT>::Ptr > in_pcl_xyzsift;
-
+		Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZRGB>::Ptr > in_pcl_xyzrgb;
 // Output data streams
 
 	// Handlers
 	Base::EventHandler2 h_Write;
     Base::EventHandler2 h_Write_xyzsift;
+    Base::EventHandler2 h_Write_xyzrgb;
 	
 	Base::Property<std::string> filename;
 	
 	// Handlers
 	void Write();
     void Write_xyzsift();
+    void Write_xyzrgb();
 
 };
 

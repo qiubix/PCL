@@ -2,7 +2,7 @@
 #define ABSTRACTOBJECT_HPP_
 
 
-namespace Types {
+//namespace Types {
 
 class AbstractObject
 {
@@ -11,6 +11,6 @@ class AbstractObject
 };
 
 
-} //: namespace Types
+//} //: namespace Types
 
 #endif /* ABSTRACTOBJECT_HPP_ */

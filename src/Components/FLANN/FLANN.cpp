@@ -63,7 +63,7 @@ void FLANN::readModel() {
 void FLANN::match() {
 	cout<<"match"<<endl;
 	pcl::PointCloud<PointXYZSIFT>::Ptr cloud = in_pcl.read();
-	Types::SIFTObjectModel SOM;
+	SIFTObjectModel SOM;
 }
 
 

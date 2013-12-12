@@ -5,15 +5,15 @@
 #include <pcl/point_cloud.h>
 #include <Types/PointCloudObject.hpp> 
 #include <Types/PointXYZSIFT.hpp> 
-namespace Types {
+//namespace Types {
 
-class SIFTObjectModel : public Types::PointCloudObject
+class SIFTObjectModel : public PointCloudObject
 {
 	public:
 	pcl::PointCloud<PointXYZSIFT>::Ptr SIFTcloud;
 };
 
 
-} //: namespace Types
+//} //: namespace Types
 
 #endif /* SIFTOBJECTMODEL_HPP_ */

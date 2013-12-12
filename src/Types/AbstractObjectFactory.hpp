@@ -1,16 +1,16 @@
 #ifndef ABSTRACTOBJECTFACTORY_HPP_
 #define ABSTRACTOBJECTFACTORY_HPP_
+#include <Types/AbstractObject.hpp> 
 
-
-namespace Types {
+//namespace Types {
 
 class AbstractObjectFactory
 {
 	public:
-	void produce();
+	virtual AbstractObject produce()=0;
 };
 
 
-} //: namespace Types
+//} //: namespace Types
 
 #endif /* ABSTRACTOBJECTFACTORY_HPP_ */

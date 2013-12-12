@@ -37,12 +37,14 @@
 				</Component>
 				<Component name="FeatureCloudConverter" type="PCL:FeatureCloudConverter" priority="7" bump="10">
 				</Component>
-				<Component name="Writer" type="PCL:JSONWriter" priority="8" bump="5">
+				<Component name="Update" type="PCL:Update" priority="8" bump="10">
+				</Component>
+				<Component name="Writer" type="PCL:JSONWriter" priority="9" bump="5">
 					<param name="filename">/home/mlaszkow/pcd/test.json</param>
 				</Component>
-                                <Component name="PCDWriter" type="PCL:PCDWriter" priority="9" bump="5">
-                                        <param name="filename">/home/mlaszkow/pcd/test_xyzsift.pcd</param>
-                                </Component>
+                <Component name="PCDWriter" type="PCL:PCDWriter" priority="10" bump="5">
+					<param name="filename">/home/mlaszkow/pcd/test_xyzsift.pcd</param>
+                </Component>
 			</Executor>
 
 			<Executor name="Visualization" period="0.2">
@@ -86,7 +88,8 @@
 			<sink>Converter.in_camera_info</sink>	
 			<sink>FeatureCloudConverter.in_camera_info</sink>
 		</Source>
-		<Source name="Converter.out_cloud_xyzrgbsift">
+		<Source name="Converter.out_cloud_xyzrgb">
+			<sink>Update.in_cloud_xyzrgb</sink>
 <!--
 			<sink>WindowPCL.in_cloud_xyz</sink>	
 -->
@@ -95,19 +98,29 @@
 -->
 		</Source>
 		<Source name="SIFT.out_descriptors">
+<!--
 			<sink>Converter.in_descriptors</sink>		
+-->
 			<sink>FeatureCloudConverter.in_descriptors</sink>	
 		</Source>
 		<Source name="SIFT.out_features">
+<!--
 			<sink>Converter.in_features</sink>	
+-->
 			<sink>FeatureCloudConverter.in_features</sink>	
 		</Source>
 		<Source name="FeatureCloudConverter.out_cloud">
+			<sink>Update.in_cloud_xyzsift</sink>
 			<sink>WindowPCL2.in_cloud_xyz</sink>	
 
 			<sink>Writer.in_cloud_xyzsift</sink>
 
             <sink>PCDWriter.in_pcl_xyzsift</sink>
+		</Source>
+		
+		<Source name="Update.out_cloud">
+			<sink>WindowPCL.in_cloud_xyz</sink>
+			<sink>PCDWriter.in_pcl_xyzrgb</sink>
 		</Source>
 	</DataStreams>
 </Task>

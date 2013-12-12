@@ -5,7 +5,7 @@
 #include <pcl/point_cloud.h>
 #include <Types/AbstractObject.hpp> 
 
-namespace Types {
+//namespace Types {
 
 class PointCloudObject : public AbstractObject
 {
@@ -14,6 +14,6 @@ class PointCloudObject : public AbstractObject
 };
 
 
-} //: namespace Types
+//} //: namespace Types
 
 #endif /* POINTCLOUDOBJECT_HPP_ */

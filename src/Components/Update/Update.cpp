@@ -134,8 +134,10 @@ void Update::update() {
 	
 	//first clouds
 	if (counter == 0 ){
-		cloud_prev = cloud_merged = cloud;
-		cloud_sift_prev = cloud_sift_merged = cloud_sift;
+		cloud_merged = cloud;
+		cloud_prev = cloud;
+		cloud_sift_merged = cloud_sift;
+		cloud_sift_prev = cloud_sift;
 		counter++;
 		out_cloud.write(cloud_merged);
 		return;
@@ -184,7 +186,7 @@ void Update::update() {
 	
 	
 		out_cloud.write(cloud_merged);
-	
+	cout<< "Counter: " << counter <<endl;
 }
 
 

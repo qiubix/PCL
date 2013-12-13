@@ -1,0 +1,122 @@
+<Task>
+	<!-- reference task information -->
+	<Reference>
+		<Author>
+			<name>Tomasz Kornuta</name>
+			<link></link>
+		</Author>
+		
+		<Description>
+			<brief>ecovi:t1/SequenceViewer</brief>
+			<full>Loads and displays a sequence of images</full>	
+		</Description>
+	</Reference>
+	
+	<!-- task definition -->
+	<Subtasks>
+		<Subtask name="Main">
+			<Executor name="Models"  period="1">
+				<Component name="SOMPCDReader" type="PCL:SOMPCDReader" priority="1" bump="0">
+					<param name="names">/home/mlaszkow/pcd/testmodel;/home/mlaszkow/pcd/food_box_7</param>
+				</Component>
+				<Component name="SIFTObjectMatcher" type="PCL:SIFTObjectMatcher" priority="2" bump="0">
+				</Component>
+			</Executor>
+			<Executor name="Processing"  period="1">
+				<Component name="SequenceRGB" type="CvBasic:Sequence" priority="1" bump="0">
+					<param name="sequence.directory">/home/mlaszkow/obiekty/food_box_6</param>
+					<param name="sequence.pattern">.*\_color.png</param>				
+				</Component>
+				<Component name="SequenceDepth" type="CvBasic:Sequence" priority="2" bump="0">
+					<param name="sequence.directory">/home/mlaszkow/obiekty/food_box_6</param>
+					<param name="sequence.pattern">.*\_depth.png</param>	
+				</Component>
+				<Component name="SequenceMask" type="CvBasic:Sequence" priority="3" bump="0">
+					<param name="sequence.directory">/home/mlaszkow/obiekty/food_box_6</param>
+					<param name="sequence.pattern">.*\_mask.png</param>
+				</Component>
+				<Component name="CameraInfo" type="CvCoreTypes:CameraInfoProvider" priority="4" bump="0">
+					<param name="camera_matrix">525 0 319.5; 0 525 239.5; 0 0 1</param>
+				</Component>
+				<Component name="SIFT" type="CvBasic:CvSIFT" priority="5" bump="0">
+				</Component>
+				<Component name="Converter" type="PCL:DepthConverter" priority="6" bump="10">
+				</Component>
+				<Component name="FeatureCloudConverter" type="PCL:FeatureCloudConverter" priority="7" bump="10">
+				</Component>
+				<Component name="RANSAC" type="PCL:RANSACPlane" priority="8" bump="0">
+				</Component>				
+				<Component name="CloudCutter" type="PCL:CloudCutter" priority="9" bump="0">
+				</Component>
+				<Component name="Update" type="PCL:Update" priority="10" bump="10">
+				</Component>
+			</Executor>
+
+			<Executor name="Visualization" period="1">
+				<Component name="WindowPCL" type="PCL:CloudViewer" priority="1" bump="10">
+				</Component>
+			</Executor>
+		</Subtask>	
+	
+	</Subtasks>
+	
+	<!-- pipes connecting datastreams -->
+	<DataStreams>
+		<Source name="SequenceRGB.out_img">
+			<sink>SIFT.in_img</sink>
+			<sink>Converter.in_color</sink>
+		</Source>
+		<Source name="SequenceDepth.out_img">	
+			<sink>Converter.in_depth</sink>	
+			<sink>FeatureCloudConverter.in_depth</sink>	
+		</Source>
+		<Source name="SequenceMask.out_img">
+			<sink>Converter.in_mask</sink>	
+			<sink>FeatureCloudConverter.in_mask</sink>		
+		</Source>
+		<Source name="CameraInfo.out_camerainfo">
+			<sink>Converter.in_camera_info</sink>	
+			<sink>FeatureCloudConverter.in_camera_info</sink>
+		</Source>
+		<Source name="SIFT.out_descriptors">
+			<sink>FeatureCloudConverter.in_descriptors</sink>	
+		</Source>
+		<Source name="SIFT.out_features">
+			<sink>FeatureCloudConverter.in_features</sink>	
+		</Source>		
+		<Source name="Converter.out_cloud_xyzrgb">
+			<sink>RANSAC.in_pcl</sink>
+		</Source>
+		<Source name="RANSAC.out_outliers">
+			<sink>Update.in_cloud_xyzrgb</sink>	
+		</Source>
+		<Source name="RANSAC.out_inliers">
+			<sink>CloudCutter.in_indices</sink>
+		</Source>
+		<Source name="FeatureCloudConverter.out_cloud">
+			<sink>CloudCutter.in_cloud</sink>	
+		</Source>
+		<Source name="CloudCutter.out_cloud">
+			<sink>Update.in_cloud_xyzsift</sink>	
+		</Source>
+		<Source name="Update.out_cloud">
+			<sink>WindowPCL.in_cloud_xyz</sink>
+		</Source>
+
+
+<!--
+		<Source name="SOMPCDReader.out_models">
+			<sink>SIFTObjectMatcher.in_models</sink>
+		</Source>
+-->
+
+
+
+
+			
+	</DataStreams>
+</Task>
+
+
+
+

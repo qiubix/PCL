@@ -4,15 +4,14 @@
  * \author Micha Laszkowski
  */
 
-#ifndef FLANN_HPP_
-#define FLANN_HPP_
+#ifndef SIFTOBJECTMATCHER_HPP_
+#define SIFTOBJECTMATCHER_HPP_
 
 #include "Component_Aux.hpp"
 #include "Component.hpp"
 #include "DataStream.hpp"
 #include "Property.hpp"
 #include "EventHandler2.hpp"
-
 #include <Types/PointXYZSIFT.hpp> 
 #include <Types/SIFTObjectModel.hpp> 
 
@@ -21,27 +20,26 @@
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 
-
 namespace Processors {
-namespace FLANN {
+namespace SIFTObjectMatcher {
 
 /*!
- * \class FLANN
- * \brief FLANN processor class.
+ * \class SIFTObjectMatcher
+ * \brief SIFTObjectMatcher processor class.
  *
- * FLANN processor.
+ * SIFTObjectMatcher processor.
  */
-class FLANN: public Base::Component {
+class SIFTObjectMatcher: public Base::Component {
 public:
 	/*!
 	 * Constructor.
 	 */
-	FLANN(const std::string & name = "FLANN");
+	SIFTObjectMatcher(const std::string & name = "SIFTObjectMatcher");
 
 	/*!
 	 * Destructor
 	 */
-	virtual ~FLANN();
+	virtual ~SIFTObjectMatcher();
 
 	/*!
 	 * Prepare components interface (register streams and handlers).
@@ -75,31 +73,31 @@ protected:
 
 // Input data streams
 
-		Base::DataStreamIn<SIFTObjectModel> in_model;
-		Base::DataStreamIn<pcl::PointCloud<PointXYZSIFT>::Ptr> in_pcl_model;
-		Base::DataStreamIn<pcl::PointCloud<PointXYZSIFT>::Ptr> in_pcl;
+		Base::DataStreamIn<std::vector<AbstractObject> > in_models;
+		Base::DataStreamIn<pcl::PointCloud<PointXYZSIFT>::Ptr> in_cloud_xyzsift;
+		Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> in_cloud_xyzrgb;
 
 // Output data streams
 
 	// Handlers
-	Base::EventHandler2 h_readModel;
+	Base::EventHandler2 h_readModels;
 	Base::EventHandler2 h_match;
 
 	
 	// Handlers
-	void readModel();
+	void readModels();
 	void match();
-	
-	SIFTObjectModel model;
+
+	std::vector<AbstractObject> models;
 
 };
 
-} //: namespace FLANN
+} //: namespace SIFTObjectMatcher
 } //: namespace Processors
 
 /*
  * Register processor component.
  */
-REGISTER_COMPONENT("FLANN", Processors::FLANN::FLANN)
+REGISTER_COMPONENT("SIFTObjectMatcher", Processors::SIFTObjectMatcher::SIFTObjectMatcher)
 
-#endif /* FLANN_HPP_ */
+#endif /* SIFTOBJECTMATCHER_HPP_ */

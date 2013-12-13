@@ -80,12 +80,12 @@ protected:
 
 // Input data streams
 
-		Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZ>::Ptr > in_pcl;
+		Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZRGB>::Ptr > in_pcl;
 
 // Output data streams
 
-		Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZ>::Ptr> out_outliers;
-		Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZ>::Ptr> out_inliers;
+		Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> out_outliers;
+		Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> out_inliers;
 	// Handlers
 	Base::EventHandler2 h_ransac;
 

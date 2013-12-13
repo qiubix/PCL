@@ -30,8 +30,7 @@ registerStream("in_pcl", &in_pcl);
 	// Register handlers
 	h_readModel.setup(boost::bind(&FLANN::readModel, this));
 	registerHandler("readModel", &h_readModel);
-	addDependency("readModel", &in_pcl_model);
-	addDependency("readModel", &in_pcl);
+	addDependency("readModel", &in_model);
 	h_match.setup(boost::bind(&FLANN::match, this));
 	registerHandler("match", &h_match);
 	addDependency("match", &in_pcl);
@@ -57,7 +56,7 @@ bool FLANN::onStart() {
 
 void FLANN::readModel() {
 	cout<<"readModel"<<endl;
-	model = in_pcl_model.read();
+	model = in_model.read();
 }
 
 void FLANN::match() {

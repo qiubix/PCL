@@ -76,11 +76,13 @@ void SOMPCDReader::loadModels() {
 		if (pcl::io::loadPCDFile<pcl::PointXYZRGB> (name_xyz, *cloud_xyzrgb) == -1) //* load the file
 	    {
 			cout <<"Błąd"<<endl;
+			continue;
 	    }
 		string name_xyzsift = namesList[i] + "/" +  name[name.size()-1] + "_xyzsift.pcd";
 		if (pcl::io::loadPCDFile<PointXYZSIFT> (name_xyzsift, *cloud_xyzsift) == -1) //* load the file
 	    {
 			cout <<"Błąd"<<endl;
+			continue;
 	    }
 	    
 		//dodanie do wektora modeli	    

@@ -16,7 +16,6 @@
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 #include <Types/PointXYZSIFT.hpp> 
-#include <Types/PointXYZRGBSIFT.hpp> 
 #include <Types/SIFTObjectModel.hpp> 
 
 #include <opencv2/core/core.hpp>

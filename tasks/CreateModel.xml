@@ -17,16 +17,19 @@
 		<Subtask name="Main">
 			<Executor name="Processing"  period="1">
 				<Component name="SequenceRGB" type="CvBasic:Sequence" priority="1" bump="0">
-					<param name="sequence.directory">/home/mlaszkow/obiekty/food_box_6</param>
-					<param name="sequence.pattern">.*\_color.png</param>				
+					<param name="sequence.directory">/home/mlaszkow/obiekty/cereal_box_1_co5</param>
+					<param name="sequence.pattern">.*\_color.png</param>
+					<param name="mode.loop">0</param>					
 				</Component>
 				<Component name="SequenceDepth" type="CvBasic:Sequence" priority="2" bump="0">
-					<param name="sequence.directory">/home/mlaszkow/obiekty/food_box_6</param>
+					<param name="sequence.directory">/home/mlaszkow/obiekty/cereal_box_1_co5</param>
 					<param name="sequence.pattern">.*\_depth.png</param>	
+					<param name="mode.loop">0</param>	
 				</Component>
 				<Component name="SequenceMask" type="CvBasic:Sequence" priority="3" bump="0">
-					<param name="sequence.directory">/home/mlaszkow/obiekty/food_box_6</param>
+					<param name="sequence.directory">/home/mlaszkow/obiekty/cereal_box_1_co5</param>
 					<param name="sequence.pattern">.*\_mask.png</param>
+					<param name="mode.loop">0</param>	
 				</Component>
 				<Component name="CameraInfo" type="CvCoreTypes:CameraInfoProvider" priority="4" bump="0">
 					<param name="camera_matrix">525 0 319.5; 0 525 239.5; 0 0 1</param>
@@ -39,6 +42,9 @@
 				</Component>
 				<Component name="Update" type="PCL:Update" priority="8" bump="10">
 				</Component>
+				<Component name="PCDWriter" type="PCL:PCDWriter" priority="10" bump="5">
+					<param name="filename">/home/mlaszkow/pcd/cereal_box_1_co5.pcd</param>
+                </Component>
 			</Executor>
 
 			<Executor name="Visualization" period="1">
@@ -77,10 +83,12 @@
 			<sink>Update.in_cloud_xyzrgb</sink>
 		</Source>
 		<Source name="FeatureCloudConverter.out_cloud">
-			<sink>Update.in_cloud_xyzsift</sink>	
+			<sink>Update.in_cloud_xyzsift</sink>
+			<sink>PCDWriter.in_pcl_xyzsift</sink>	
 		</Source>
 		<Source name="Update.out_cloud">
 			<sink>WindowPCL.in_cloud_xyz</sink>
+			<sink>PCDWriter.in_pcl_xyzrgb</sink>
 		</Source>
 
 			

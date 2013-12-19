@@ -34,6 +34,9 @@
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/visualization/point_cloud_color_handlers.h>
 ////////////////////////////////////////////////////////////////////////
+#include <pcl/filters/filter.h>
+
+
 namespace Processors {
 namespace Update {
 
@@ -104,7 +107,8 @@ bool Update::onInit() {
 	counter = 0;
 	global_trans = Eigen::Matrix4f::Identity();
 
-
+	cloud_merged = pcl::PointCloud<pcl::PointXYZRGB>::Ptr (new pcl::PointCloud<pcl::PointXYZRGB>());
+	cloud_sift_merged = pcl::PointCloud<PointXYZSIFT>::Ptr (new pcl::PointCloud<PointXYZSIFT>());
 	cloud_prev = pcl::PointCloud<pcl::PointXYZRGB>::Ptr (new pcl::PointCloud<pcl::PointXYZRGB>());
 	cloud_next = pcl::PointCloud<pcl::PointXYZRGB>::Ptr (new pcl::PointCloud<pcl::PointXYZRGB>());
 	cloud_to_merge = pcl::PointCloud<pcl::PointXYZRGB>::Ptr (new pcl::PointCloud<pcl::PointXYZRGB>());
@@ -132,20 +136,30 @@ void Update::update() {
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud = in_cloud_xyzrgb.read();
 	pcl::PointCloud<PointXYZSIFT>::Ptr cloud_sift = in_cloud_xyzsift.read();
 	
+	//cout<< "cloud->size(): "<<cloud->size()<<endl;
 	//first clouds
 	if (counter == 0 ){
-		cloud_merged = cloud;
-		cloud_prev = cloud;
-		cloud_sift_merged = cloud_sift;
-		cloud_sift_prev = cloud_sift;
+		std::vector<int> indices;
+		
+		*cloud_merged = *cloud;
+		cloud_merged->is_dense = false; 
+		pcl::removeNaNFromPointCloud(*cloud_merged,*cloud_merged,indices);
+		*cloud_prev = *cloud_merged;
+		*cloud_sift_merged = *cloud_sift;
+		*cloud_sift_prev = *cloud_sift;
 		counter++;
 		out_cloud.write(cloud_merged);
 		return;
 	}
 	
-	cloud_next = cloud;
-	cloud_sift_next = cloud_sift;
+	std::vector<int> indices;
+	
+	*cloud_next = *cloud;
+	cloud_next->is_dense = false; 
+	pcl::removeNaNFromPointCloud(*cloud_next,*cloud_next,indices);	
+	*cloud_sift_next = *cloud_sift;
 	counter++;
+	//cout<< "cloud_next->size(): "<<cloud_next->size()<<endl;
 	
 	
 	
@@ -173,6 +187,7 @@ void Update::update() {
 		Eigen::Matrix4f current_trans = computeTransformationSAC(cloud_sift_next, cloud_sift_prev, correspondences, inliers) ;
 		std::cout << "Transformation cloud_next -> cloud_prev: " << std::endl << current_trans << std::endl ;
 		global_trans = global_trans * current_trans ;
+		std::cout << "Global transformation : " << std::endl << global_trans << std::endl ;
 
 		//Merge cloud - cloud_next
 		pcl::transformPointCloud(*cloud_next, *cloud_to_merge, global_trans) ;
@@ -181,12 +196,9 @@ void Update::update() {
 
 		*cloud_prev = *cloud_next ;
 		*cloud_sift_prev = *cloud_sift_next ;
-
-
-	
+			
 	
 		out_cloud.write(cloud_merged);
-	cout<< "Counter: " << counter <<endl;
 }
 
 

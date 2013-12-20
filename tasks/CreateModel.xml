@@ -84,11 +84,17 @@
 		</Source>
 		<Source name="FeatureCloudConverter.out_cloud">
 			<sink>Update.in_cloud_xyzsift</sink>
-			<sink>PCDWriter.in_pcl_xyzsift</sink>	
+			
 		</Source>
 		<Source name="Update.out_cloud">
+<!--
 			<sink>WindowPCL.in_cloud_xyz</sink>
+-->
 			<sink>PCDWriter.in_pcl_xyzrgb</sink>
+		</Source>
+		<Source name="Update.out_cloud_sift">
+			<sink>WindowPCL.in_cloud_xyz</sink>
+			<sink>PCDWriter.in_pcl_xyzsift</sink>	
 		</Source>
 
 			

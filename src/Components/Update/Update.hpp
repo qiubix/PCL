@@ -17,6 +17,7 @@
 #include <pcl/point_cloud.h>
 #include <Types/PointXYZSIFT.hpp> 
 #include <Types/SIFTObjectModel.hpp> 
+#include <Types/SIFTObjectModelFactory.hpp> 
 
 #include <opencv2/core/core.hpp>
 
@@ -29,7 +30,7 @@ namespace Update {
  *
  * Update processor.
  */
-class Update: public Base::Component {
+class Update: public Base::Component,SIFTObjectModelFactory {
 public:
 	/*!
 	 * Constructor.
@@ -78,9 +79,10 @@ protected:
 
 // Output data streams
 
-		Base::DataStreamOut<SIFTObjectModel> out_instance;
+		Base::DataStreamOut<AbstractObject> out_instance; //SIFTObjectModel
 		
 		Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> out_cloud;
+		Base::DataStreamOut<pcl::PointCloud<PointXYZSIFT>::Ptr> out_cloud_sift;
 	// Handlers
 	Base::EventHandler2 h_update;
 
@@ -98,6 +100,7 @@ protected:
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_prev ;
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_next ;
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_to_merge;
+	pcl::PointCloud<PointXYZSIFT>::Ptr cloud_sift_to_merge;
 	pcl::PointCloud<PointXYZSIFT>::Ptr cloud_sift_prev;
 	pcl::PointCloud<PointXYZSIFT>::Ptr cloud_sift_next;
 	

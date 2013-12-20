@@ -95,6 +95,7 @@ registerStream("in_cloud_xyzrgb", &in_cloud_xyzrgb);
 registerStream("in_cloud_xyzsift", &in_cloud_xyzsift);
 registerStream("out_instance", &out_instance);
 registerStream("out_cloud", &out_cloud);
+registerStream("out_cloud_sift", &out_cloud_sift);
 	// Register handlers
 	h_update.setup(boost::bind(&Update::update, this));
 	registerHandler("update", &h_update);
@@ -112,6 +113,7 @@ bool Update::onInit() {
 	cloud_prev = pcl::PointCloud<pcl::PointXYZRGB>::Ptr (new pcl::PointCloud<pcl::PointXYZRGB>());
 	cloud_next = pcl::PointCloud<pcl::PointXYZRGB>::Ptr (new pcl::PointCloud<pcl::PointXYZRGB>());
 	cloud_to_merge = pcl::PointCloud<pcl::PointXYZRGB>::Ptr (new pcl::PointCloud<pcl::PointXYZRGB>());
+	cloud_sift_to_merge = pcl::PointCloud<PointXYZSIFT>::Ptr (new pcl::PointCloud<PointXYZSIFT>());
 	cloud_sift_prev = pcl::PointCloud<PointXYZSIFT>::Ptr (new pcl::PointCloud<PointXYZSIFT>());
 	cloud_sift_next = pcl::PointCloud<PointXYZSIFT>::Ptr (new pcl::PointCloud<PointXYZSIFT>());	
 	
@@ -191,14 +193,21 @@ void Update::update() {
 
 		//Merge cloud - cloud_next
 		pcl::transformPointCloud(*cloud_next, *cloud_to_merge, global_trans) ;
+		pcl::transformPointCloud(*cloud_sift_next, *cloud_sift_to_merge, global_trans) ;
 		//addCloudToScene(cloud_to_merge, sceneviewer, counter - 1) ; 
 		*cloud_merged = *cloud_merged + *cloud_to_merge ;
+		*cloud_sift_merged = *cloud_sift_merged + *cloud_sift_to_merge ;
 
 		*cloud_prev = *cloud_next ;
 		*cloud_sift_prev = *cloud_sift_next ;
 			
+		cloud_xyzrgb = cloud_merged;
+		cloud_xyzsift = cloud_sift_merged;
+		
+		out_instance.write(produce());	
 	
 		out_cloud.write(cloud_merged);
+		out_cloud_sift.write(cloud_sift_merged);
 }
 
 

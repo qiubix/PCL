@@ -177,6 +177,21 @@ void Update::update() {
 		correst.determineReciprocalCorrespondences(*correspondences) ;
 		std::cout << "\nNumber of reciprocal correspondences: " << correspondences->size() << " out of " << cloud_sift_next->size() << " keypoints" << std::endl ;
 	
+		for(int i = 0; i< correspondences->size();i++){	
+			if (correspondences->at(i).index_query >=cloud_sift_prev->size() ||
+				correspondences->at(i).index_match >=cloud_sift_next->size()){
+					//
+					continue;
+			}
+				
+			//cout<< correspondences->at(i).index_query << " ";
+			//cout<< correspondences->at(i).index_match << " ";
+			//cout<< correspondences->at(i).distance << " ";
+			//cout<<cloud_sift_prev->at(correspondences->at(i).index_query).times <<endl;
+			cloud_sift_prev->at(correspondences->at(i).index_query).times++;
+			cloud_sift_next->at(correspondences->at(i).index_match).times = cloud_sift_prev->at(correspondences->at(i).index_query).times;
+		}
+	
 		//for (pcl::PointCloud<PointXYZRGBSIFT>::iterator pt_iter = cloud_sift_next->begin(); pt_iter != cloud_sift_next->end() ; pt_iter++) {
 		//	displayMatrixInfo(pt_iter->descriptor) ;			
 		//	std::cout << "Matrix value " << pt_iter->descriptor << std::endl ;

@@ -85,6 +85,7 @@ protected:
 	void on_cloud_normals();
 	void on_spin();
 
+  Base::Property<std::string> prop_window_name;
 
 	pcl::visualization::PCLVisualizer * viewer;
 };

@@ -16,8 +16,10 @@ namespace Processors {
 namespace CloudViewer {
 
 CloudViewer::CloudViewer(const std::string & name) :
-		Base::Component(name)  {
-
+		Base::Component(name),
+    prop_window_name("window_name", std::string("3D PC Viewer"))
+{
+  registerProperty(prop_window_name);
 }
 
 CloudViewer::~CloudViewer() {
@@ -47,7 +49,7 @@ void CloudViewer::prepareInterface() {
 
 bool CloudViewer::onInit() {
 
-	viewer = new pcl::visualization::PCLVisualizer ("3D Viewer");
+	viewer = new pcl::visualization::PCLVisualizer (prop_window_name);
 	viewer->setBackgroundColor (0, 0, 0);
 	viewer->addPointCloud<pcl::PointXYZ> (pcl::PointCloud<pcl::PointXYZ>::Ptr(new pcl::PointCloud<pcl::PointXYZ>), "sample cloud");
 	viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 0.5, "sample cloud");

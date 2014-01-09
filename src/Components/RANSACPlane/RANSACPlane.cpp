@@ -12,6 +12,8 @@
 
 #include <boost/bind.hpp>
 
+#include <pcl/filters/extract_indices.h>
+
 namespace Processors {
 namespace RANSACPlane {
 
@@ -53,12 +55,12 @@ bool RANSACPlane::onStart() {
 }
 
 void RANSACPlane::ransac() {
-	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud = in_pcl.read();
+	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud = in_pcl.read();
 	
   pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients);
   pcl::PointIndices::Ptr inliers (new pcl::PointIndices);
   // Create the segmentation object
-  pcl::SACSegmentation<pcl::PointXYZ> seg;
+  pcl::SACSegmentation<pcl::PointXYZRGB> seg;
   // Optional
   seg.setOptimizeCoefficients (true);
   // Mandatory
@@ -87,10 +89,10 @@ void RANSACPlane::ransac() {
 //                                               << cloud->points[inliers->indices[i]].z << std::endl;	
 //////////////////////////
 
-	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_inliers (new pcl::PointCloud<pcl::PointXYZ> ());
-	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_outliers (new pcl::PointCloud<pcl::PointXYZ> ());
+	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_inliers (new pcl::PointCloud<pcl::PointXYZRGB> ());
+	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_outliers (new pcl::PointCloud<pcl::PointXYZRGB> ());
 
-    pcl::ExtractIndices<pcl::PointXYZ> extract;
+    pcl::ExtractIndices<pcl::PointXYZRGB> extract;
     extract.setInputCloud (cloud);
     extract.setIndices (inliers);
     extract.setNegative (false);

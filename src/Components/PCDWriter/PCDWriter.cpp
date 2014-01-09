@@ -34,11 +34,14 @@ void PCDWriter::prepareInterface() {
 	// Register data streams, events and event handlers HERE!
 	registerStream("in_pcl", &in_pcl);
     registerStream("in_pcl_xyzsift", &in_pcl_xyzsift);
+    registerStream("in_pcl_xyzrgb", &in_pcl_xyzrgb);
 	// Register handlers
 	h_Write.setup(boost::bind(&PCDWriter::Write, this));
 	registerHandler("Write", &h_Write);
     h_Write_xyzsift.setup(boost::bind(&PCDWriter::Write_xyzsift, this));
     registerHandler("Write_xyzsift", &h_Write_xyzsift);
+    h_Write_xyzrgb.setup(boost::bind(&PCDWriter::Write_xyzrgb, this));
+    registerHandler("Write_xyzrgb", &h_Write_xyzrgb);
 	//addDependency("Write", &in_pcl);
 
 }
@@ -74,7 +77,13 @@ void PCDWriter::Write_xyzsift() {
 
 }
 
+void PCDWriter::Write_xyzrgb() {
+	cout<<"Write_xyzrgb()"<<endl;
+    pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud = in_pcl_xyzrgb.read();
+    pcl::io::savePCDFileASCII (filename, *cloud);
+    std::cerr << "Saved " << cloud->points.size () << " data points to "<< filename << std::endl;
 
+}
 
 
 } //: namespace PCDWrite

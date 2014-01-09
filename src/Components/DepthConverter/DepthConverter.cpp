@@ -32,12 +32,9 @@ void DepthConverter::prepareInterface() {
 	registerStream("in_depth", &in_depth);
 	registerStream("in_color", &in_color);
 	registerStream("in_mask", &in_mask);
-	registerStream("in_features", &in_features);
-	registerStream("in_descriptors", &in_descriptors);
 	registerStream("in_camera_info", &in_camera_info);
 	registerStream("out_cloud_xyz", &out_cloud_xyz);
 	registerStream("out_cloud_xyzrgb", &out_cloud_xyzrgb);
-	registerStream("out_cloud_xyzrgbsift", &out_cloud_xyzrgbsift);
 	
 
 	// Register handlers
@@ -52,14 +49,13 @@ void DepthConverter::prepareInterface() {
 	addDependency("process_depth", &in_depth);
 	addDependency("process_depth", &in_camera_info);
 
-	h_process_depth_mask_color_descriptor.setup(boost::bind(&DepthConverter::process_depth_mask_color_descriptor, this));
-	registerHandler("process_depth_mask_color_descriptor", &h_process_depth_mask_color_descriptor);
-	addDependency("process_depth_mask_color_descriptor", &in_depth);
-	addDependency("process_depth_mask_color_descriptor", &in_camera_info);	
-	addDependency("process_depth_mask_color_descriptor", &in_mask);
-	addDependency("process_depth_mask_color_descriptor", &in_color);
-	addDependency("process_depth_mask_color_descriptor", &in_descriptors);
-	addDependency("process_depth_mask_color_descriptor", &in_features);
+	h_process_depth_mask_color.setup(boost::bind(&DepthConverter::process_depth_mask_color, this));
+	registerHandler("process_depth_mask_color", &h_process_depth_mask_color);
+	addDependency("process_depth_mask_color", &in_depth);
+	addDependency("process_depth_mask_color", &in_camera_info);	
+	addDependency("process_depth_mask_color", &in_mask);
+	addDependency("process_depth_mask_color", &in_color);
+
 	
 	h_process_all.setup(boost::bind(&DepthConverter::process_all, this));
 	registerHandler("process_all", &h_process_all);
@@ -180,8 +176,8 @@ void DepthConverter::process_depth_mask() {
 	CLOG(LNOTICE) << "Saved " << cloud->points.size () << " data points to test_pcd.pcd.";*/
 }
 
-void DepthConverter::process_depth_mask_color_descriptor() {
-	cout<<"process_depth_mask_color_descriptor()"<<endl;
+void DepthConverter::process_depth_mask_color() {
+	cout<<"process_depth_mask_color()"<<endl;
 	
 	Types::CameraInfo camera_info = in_camera_info.read();
 	cv::Mat depth = in_depth.read();
@@ -189,8 +185,7 @@ void DepthConverter::process_depth_mask_color_descriptor() {
 	mask.convertTo(mask, CV_32F);
 	cv::Mat color = in_color.read();
 	//color.convertTo(color, CV_8UC3);
-	Types::Features features = in_features.read();
-	cv::Mat descriptors = in_descriptors.read();
+
 	
 	
 	//for(int i=0; i < features.features.size(); i++){
@@ -198,7 +193,7 @@ void DepthConverter::process_depth_mask_color_descriptor() {
 	//}
 	
 	
-	pcl::PointCloud<PointXYZRGBSIFT>::Ptr cloud (new pcl::PointCloud<PointXYZRGBSIFT>(camera_info.width(), camera_info.height()));
+	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGB>(camera_info.width(), camera_info.height()));
 
 	double fx_d = 0.001 / camera_info.fx();
 	double fy_d = 0.001 / camera_info.fy();
@@ -207,14 +202,14 @@ void DepthConverter::process_depth_mask_color_descriptor() {
 
 	float bad_point = std::numeric_limits<float>::quiet_NaN();
 
-	pcl::PointCloud<PointXYZRGBSIFT>::iterator pt_iter = cloud->begin();
+	pcl::PointCloud<pcl::PointXYZRGB>::iterator pt_iter = cloud->begin();
 	const uint16_t* depth_row = reinterpret_cast<const uint16_t*>(&depth.data[0]);
 
 	int row_step = depth.step1();
 	for (int v = 0; v < (int) cloud->height; ++v, depth_row += row_step) {
 		for (int u = 0; u < (int) cloud->width; ++u) {
 			//pcl::PointXYZ& pt = *pt_iter++;
-			PointXYZRGBSIFT& pt = *pt_iter++;
+			pcl::PointXYZRGB& pt = *pt_iter++;
 			uint16_t depth = depth_row[u];
 
 			// Missing points denoted by NaNs
@@ -237,26 +232,10 @@ void DepthConverter::process_depth_mask_color_descriptor() {
 			pt.r = r;
 			pt.g = g;
 			pt.b = b;
-
-			
-			// Fill descriptor
-			for(int i=0; i < features.features.size(); i++){
-				if (fabs(features.features[i].pt.x - u) <= 0.5 && fabs(features.features[i].pt.y - v) <= 0.5){
-					//cout<<"Przypisuje deskryptor :)" <<endl;
-					pt.descriptor = descriptors.row(i);
-					//pt.data_c[0]=255;
-					//pt.data_c[1]=255;
-					//pt.data_c[2]=0;
-					//cout<<descriptors.row(i)<<endl;
-					//cout<<pt.descriptor<<endl;					
-					break;
-				}
-			}
 		}
 	}
 
-	//out_cloud_xyz.write(cloud);
-	out_cloud_xyzrgbsift.write(cloud);
+	out_cloud_xyzrgb.write(cloud);
 }
 
 void DepthConverter::process_all() {

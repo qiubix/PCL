@@ -75,30 +75,35 @@ void Downsampling::downsample_xyzsift() {
 	  searchPoint = *pt_iter++;
 	  if(searchPoint.times!=0)
 		continue;
+		
 	  t = kdtree.radiusSearch (searchPoint, radius, pointIdxRadiusSearch, pointRadiusSquaredDistance);
 
 
 	  if ( t > 0 )
 	  {
-		int wrongPoints = 0;
-		for (size_t i = 0; i < t; ++i){
-			if(cloud->points[ pointIdxRadiusSearch[i] ].times ==0)
+		int times = 1;
+		for (size_t i = 1; i < t; ++i){
+			if(cloud->points[ pointIdxRadiusSearch[i] ].times ==0){
 				cloud->points[ pointIdxRadiusSearch[i] ].times = -1;
-			else //punkt zostal juz usuniety/zliczony wczesniej
-				wrongPoints++;
+				times++;
+			}
+
 				//cloud->erase(cloud->begin() + pointIdxRadiusSearch[i]);//-1??
 		  //std::cout << "    "  <<   cloud->points[ pointIdxRadiusSearch[i] ].x 
 					//<< " " << cloud->points[ pointIdxRadiusSearch[i] ].y 
 					//<< " " << cloud->points[ pointIdxRadiusSearch[i] ].z 
 					//<< " (squared distance: " << pointRadiusSquaredDistance[i] << ")" << std::endl;
 		}
-		cloud->points[ pointIdxRadiusSearch[0] ].times = t-wrongPoints;
+		cloud->points[ pointIdxRadiusSearch[0] ].times = times;// t-wrongPoints;
 		//cout<< "t: " <<t;
 		//if(wrongPoints>0)
 			//cout<<" Wrong points: "<<wrongPoints;
 		//cout<<endl;
 	  }
  }
+
+
+	
 
 	//usuniecie nadmiarowych punktow
 	pt_iter = cloud->begin();
@@ -111,7 +116,9 @@ void Downsampling::downsample_xyzsift() {
 		}
 		
 	}
+	
 	cout<<"cloud size: "<<cloud->size()<<endl;
+
 	
 	out_cloud_xyzsift.write(cloud);
 }

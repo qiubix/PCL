@@ -173,13 +173,16 @@ void Update::update() {
 		SIFTFeatureRepresentation::Ptr point_representation(new SIFTFeatureRepresentation()) ;
 		correst.setPointRepresentation(point_representation) ;
 		correst.setInputSource(cloud_sift_next) ;
-		correst.setInputTarget(cloud_sift_prev) ;
+		correst.setInputTarget(cloud_sift_merged) ;//cloud_sift_prev
 		correst.determineReciprocalCorrespondences(*correspondences) ;
 		std::cout << "\nNumber of reciprocal correspondences: " << correspondences->size() << " out of " << cloud_sift_next->size() << " keypoints" << std::endl ;
-	
+
+
+//zliczanie krotnosci 	
+
 		for(int i = 0; i< correspondences->size();i++){	
-			if (correspondences->at(i).index_query >=cloud_sift_prev->size() ||
-				correspondences->at(i).index_match >=cloud_sift_next->size()){
+			if (correspondences->at(i).index_query >=cloud_sift_next->size() ||
+				correspondences->at(i).index_match >=cloud_sift_merged->size()){
 					//
 					continue;
 			}
@@ -188,9 +191,19 @@ void Update::update() {
 			//cout<< correspondences->at(i).index_match << " ";
 			//cout<< correspondences->at(i).distance << " ";
 			//cout<<cloud_sift_prev->at(correspondences->at(i).index_query).times <<endl;
-			cloud_sift_prev->at(correspondences->at(i).index_query).times++;
-			cloud_sift_next->at(correspondences->at(i).index_match).times = cloud_sift_prev->at(correspondences->at(i).index_query).times;
+			//for(int j=0;j<128;j++){
+				//cout<<cloud_sift_prev->at(correspondences->at(i).index_query).descriptor[j]<<" ";
+				//cout<<cloud_sift_next->at(correspondences->at(i).index_match).descriptor[j]<<", ";
+				////cout<<correspondences->at(i).distance<<" ";
+			//}
+			//cout<<endl;
+			//if(cloud_sift_merged->at(correspondences->at(i).index_query).times==0)
+				//cloud_sift_merged->at(correspondences->at(i).index_query).times++;
+			//cloud_sift_merged->at(correspondences->at(i).index_query).times++;
+			cloud_sift_next->at(correspondences->at(i).index_query).times = cloud_sift_merged->at(correspondences->at(i).index_match).times + 1;
+			cloud_sift_merged->at(correspondences->at(i).index_match).times=-1; //poprzedni punkt do usuniecia			
 		}
+///////////	
 	
 		//for (pcl::PointCloud<PointXYZRGBSIFT>::iterator pt_iter = cloud_sift_next->begin(); pt_iter != cloud_sift_next->end() ; pt_iter++) {
 		//	displayMatrixInfo(pt_iter->descriptor) ;			
@@ -201,14 +214,27 @@ void Update::update() {
 
 		//Compute transformation between clouds and update global transformation of cloud_next	
 		pcl::Correspondences inliers ;
-		Eigen::Matrix4f current_trans = computeTransformationSAC(cloud_sift_next, cloud_sift_prev, correspondences, inliers) ;
+		Eigen::Matrix4f current_trans = computeTransformationSAC(cloud_sift_next, cloud_sift_merged, correspondences, inliers) ; //_prev
 		std::cout << "Transformation cloud_next -> cloud_prev: " << std::endl << current_trans << std::endl ;
 		global_trans = global_trans * current_trans ;
 		std::cout << "Global transformation : " << std::endl << global_trans << std::endl ;
 
+
+		//Delete points
+		pcl::PointCloud<PointXYZSIFT>::iterator pt_iter = cloud_sift_merged->begin();
+		while(pt_iter!=cloud_sift_merged->end()){
+			if(pt_iter->times==-1){
+				pt_iter = cloud_sift_merged->erase(pt_iter);
+				usunieto++;
+			}
+			else{
+				++pt_iter;	
+			}
+		}
+
 		//Merge cloud - cloud_next
-		pcl::transformPointCloud(*cloud_next, *cloud_to_merge, global_trans) ;
-		pcl::transformPointCloud(*cloud_sift_next, *cloud_sift_to_merge, global_trans) ;
+		pcl::transformPointCloud(*cloud_next, *cloud_to_merge, current_trans) ; //global_trans
+		pcl::transformPointCloud(*cloud_sift_next, *cloud_sift_to_merge, current_trans) ; //global_trans
 		//addCloudToScene(cloud_to_merge, sceneviewer, counter - 1) ; 
 		*cloud_merged = *cloud_merged + *cloud_to_merge ;
 		*cloud_sift_merged = *cloud_sift_merged + *cloud_sift_to_merge ;

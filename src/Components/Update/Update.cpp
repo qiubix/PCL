@@ -225,7 +225,6 @@ void Update::update() {
 		while(pt_iter!=cloud_sift_merged->end()){
 			if(pt_iter->times==-1){
 				pt_iter = cloud_sift_merged->erase(pt_iter);
-				usunieto++;
 			}
 			else{
 				++pt_iter;	

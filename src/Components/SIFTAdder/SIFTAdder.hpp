@@ -15,6 +15,7 @@
 
 #include <opencv2/opencv.hpp>
 #include <vector>
+#include <Types/PointXYZSIFT.hpp> 
 //#include "Types/Features.hpp"
 
 namespace Processors {
@@ -72,11 +73,12 @@ protected:
 
 // Input data streams
 
-		Base::DataStreamIn<cv::Mat> in_descriptors;
+		Base::DataStreamIn<pcl::PointCloud<PointXYZSIFT>::Ptr> in_cloud;
 
 // Output data streams
-
-		Base::DataStreamOut<vector<cv::Mat> > out_descriptors;
+		Base::DataStreamOut<pcl::PointCloud<PointXYZSIFT>::Ptr> out_cloud;
+		//Base::DataStreamOut<vector<vector<int> > > out_descriptors;
+		//Base::DataStreamOut<vector<int> > out_times;
 	// Handlers
 	Base::EventHandler2 h_add;
 
@@ -84,7 +86,10 @@ protected:
 	// Handlers
 	void add();
 	
-	vector<cv::Mat> descriptors;
+	pcl::PointCloud<PointXYZSIFT>::Ptr cloud;
+	
+	//vector<vector<int> > descriptors;
+	//vector<int> times;
 
 };
 

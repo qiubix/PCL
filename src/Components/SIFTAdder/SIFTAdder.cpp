@@ -12,10 +12,38 @@
 
 #include <boost/bind.hpp>
 
-#include <fstream>
+//#include <fstream>
+#include <pcl/point_representation.h>
+
+#include "pcl/impl/instantiate.hpp"
+#include "pcl/search/kdtree.h" 
+#include "pcl/search/impl/kdtree.hpp"
+#include <pcl/registration/correspondence_estimation.h>
+#include "pcl/registration/correspondence_rejection_sample_consensus.h"
 
 namespace Processors {
 namespace SIFTAdder {
+
+class SIFTFeatureRepresentation: public pcl::DefaultFeatureRepresentation <PointXYZSIFT> //could possibly be pcl::PointRepresentation<...> ??
+{
+	using pcl::PointRepresentation<PointXYZSIFT>::nr_dimensions_;
+	public:
+	SIFTFeatureRepresentation ()
+	{
+		// Define the number of dimensions
+		nr_dimensions_ = 128 ;
+		trivial_ = false ;
+	}
+
+	// Override the copyToFloatArray method to define our feature vector
+	virtual void copyToFloatArray (const PointXYZSIFT &p, float * out) const
+	{
+		//This representation is only for determining correspondences (not for use in Kd-tree for example - so use only SIFT part of the point	
+		for (register int i = 0; i < 128 ; i++)
+			out[i] = p.descriptor[i];//p.descriptor.at<float>(0, i) ;
+		//std::cout << "SIFTFeatureRepresentation:copyToFloatArray()" << std::endl ;
+	}
+};
 
 SIFTAdder::SIFTAdder(const std::string & name) :
 		Base::Component(name)  {
@@ -27,17 +55,19 @@ SIFTAdder::~SIFTAdder() {
 
 void SIFTAdder::prepareInterface() {
 	// Register data streams, events and event handlers HERE!
-registerStream("in_descriptors", &in_descriptors);
-registerStream("out_descriptors", &out_descriptors);
+//registerStream("in_descriptors", &in_descriptors);
+//registerStream("out_descriptors", &out_descriptors);
+registerStream("in_cloud", &in_cloud);
+registerStream("out_cloud", &out_cloud);
 	// Register handlers
 	h_add.setup(boost::bind(&SIFTAdder::add, this));
 	registerHandler("add", &h_add);
-	addDependency("add", &in_descriptors);
+	addDependency("add", &in_cloud);
 
 }
 
 bool SIFTAdder::onInit() {
-	
+	cloud = pcl::PointCloud<PointXYZSIFT>::Ptr (new pcl::PointCloud<PointXYZSIFT>());
 	return true;
 }
 
@@ -46,12 +76,12 @@ bool SIFTAdder::onFinish() {
 }
 
 bool SIFTAdder::onStop() {
-	std::fstream plik;
-	plik.open( "/home/mlaszkow/test.txt", std::ios::out );
-	plik<<"Deskryptory:"<<endl;
-	for (int i = 0; i< descriptors.size(); i++)
-		plik<<descriptors[i]<<endl;
-	plik.close();
+	//std::fstream plik;
+	//plik.open( "/home/mlaszkow/test.txt", std::ios::out );
+	//plik<<"Deskryptory:"<<endl;
+	//for (int i = 0; i< descriptors.size(); i++)
+		//plik<<descriptors[i]<<endl;
+	//plik.close();
 	return true;
 }
 
@@ -60,37 +90,50 @@ bool SIFTAdder::onStart() {
 }
 
 void SIFTAdder::add() {
-	cv::Mat new_descriptors = in_descriptors.read();
+	pcl::PointCloud<PointXYZSIFT>::Ptr cloud_next = in_cloud.read();
 
-	for(int i = 0; i<new_descriptors.rows; i++){
-		bool unique = true;
-		for(int j = 0; j<descriptors.size(); j++){
-			if(matIsEqual(descriptors[j],new_descriptors.row(i))){
-				unique = false;
-				break;
+	if (cloud->empty()){
+		cloud = cloud_next;
+		out_cloud.write(cloud);
+		return;
+	}
+	
+		pcl::CorrespondencesPtr correspondences(new pcl::Correspondences()) ;
+		pcl::registration::CorrespondenceEstimation<PointXYZSIFT, PointXYZSIFT> correst ;
+	
+		//SIFTFeatureRepresentation point_representation ;
+		//correst.setPointRepresentation (point_representation.makeShared()); //NEVER do like this, makeShared will return DefaultFeatureRepresentation<PointDefault>!
+		SIFTFeatureRepresentation::Ptr point_representation(new SIFTFeatureRepresentation()) ;
+		correst.setPointRepresentation(point_representation) ;
+		correst.setInputSource(cloud_next) ;
+		correst.setInputTarget(cloud) ;
+		correst.determineReciprocalCorrespondences(*correspondences) ;
+		std::cout << "\nNumber of reciprocal correspondences: " << correspondences->size() << " out of " << cloud_next->size() << " keypoints" << std::endl ;
+		
+		//zliczanie krotnosci
+		for(int i = 0; i< correspondences->size();i++){	
+			if (correspondences->at(i).index_query >=cloud_next->size() ||
+				correspondences->at(i).index_match >=cloud->size()){
+					continue;
 			}
+			cloud_next->at(correspondences->at(i).index_query).times = cloud->at(correspondences->at(i).index_match).times + 1;
+			cloud->at(correspondences->at(i).index_match).times=-1; //poprzedni punkt do usuniecia			
 		}
-		if (unique)
-			descriptors.push_back(new_descriptors.row(i));
-			
-		}
-}
-
-
-
- bool SIFTAdder::matIsEqual(const cv::Mat mat1, const cv::Mat mat2){
-    // treat two empty mat as identical as well
-    if (mat1.empty() && mat2.empty()) {
-        return true;
-    }
-    // if dimensionality of two mat is not identical, these two mat is not identical
-    if (mat1.cols != mat2.cols || mat1.rows != mat2.rows || mat1.dims != mat2.dims) {
-        return false;
-    }
-    cv::Mat diff;
-    cv::compare(mat1, mat2, diff, cv::CMP_NE);
-    int nz = cv::countNonZero(diff);
-    return nz==0;
+		
+		//usuniecie punktow
+		pcl::PointCloud<PointXYZSIFT>::iterator pt_iter = cloud->begin();
+		while(pt_iter!=cloud->end()){
+			if(pt_iter->times==-1){
+				pt_iter = cloud->erase(pt_iter);
+			}
+			else{
+				++pt_iter;	
+			}
+		} 
+		
+		*cloud = *cloud + *cloud_next;
+		
+		out_cloud.write(cloud);
 }
 
 } //: namespace SIFTAdder

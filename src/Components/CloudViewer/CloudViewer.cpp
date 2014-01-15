@@ -27,7 +27,6 @@ CloudViewer::~CloudViewer() {
 
 void CloudViewer::prepareInterface() {
 	// Register data streams, events and event handlers HERE!
-	// Register data streams
 	registerStream("in_cloud_xyz", &in_cloud_xyz);
 	registerStream("in_cloud_xyzrgb", &in_cloud_xyzrgb);
 	registerStream("in_cloud_normals", &in_cloud_normals);

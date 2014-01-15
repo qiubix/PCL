@@ -116,7 +116,7 @@ void SIFTAdder::add() {
 				correspondences->at(i).index_match >=cloud->size()){
 					continue;
 			}
-			cloud_next->at(correspondences->at(i).index_query).times = cloud->at(correspondences->at(i).index_match).times + 1;
+			cloud_next->at(correspondences->at(i).index_query).times += cloud->at(correspondences->at(i).index_match).times;
 			cloud->at(correspondences->at(i).index_match).times=-1; //poprzedni punkt do usuniecia			
 		}
 		

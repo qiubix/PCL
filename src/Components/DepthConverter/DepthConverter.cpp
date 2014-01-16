@@ -90,10 +90,6 @@ void DepthConverter::process_depth() {
 
 	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>(camera_info.width(), camera_info.height()));
 
-//	cloud.width = camera_info.width();
-//	cloud.height = camera_info.height();
-//	cloud.points.resize(cloud.width * cloud.height);
-
 	double fx_d = 0.001 / camera_info.fx();
 	double fy_d = 0.001 / camera_info.fy();
 	double cx_d = camera_info.cx();
@@ -124,8 +120,8 @@ void DepthConverter::process_depth() {
 	}
 
 	out_cloud_xyz.write(cloud);
-	pcl::io::savePCDFileASCII ("test_pcd.pcd", *cloud);
-	CLOG(LNOTICE) << "Saved " << cloud->points.size () << " data points to test_pcd.pcd.";
+/*	pcl::io::savePCDFileASCII ("test_pcd.pcd", *cloud);
+	CLOG(LNOTICE) << "Saved " << cloud->points.size () << " data points to test_pcd.pcd.";*/
 }
 
 void DepthConverter::process_depth_mask() {

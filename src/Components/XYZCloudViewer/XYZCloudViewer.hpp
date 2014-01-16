@@ -66,25 +66,39 @@ protected:
 	bool onStop();
 
 	// Data streams
-	Base::DataStreamIn< pcl::PointCloud<pcl::PointXYZ>::Ptr > in_cloud_xyz;
+//	Base::DataStreamIn< pcl::PointCloud<pcl::PointXYZ>::Ptr > in_cloud_xyz;
 
 	// Data streams
-	Base::DataStreamIn< pcl::PointCloud<pcl::PointXYZ>::Ptr > in_cloud_xyz1;
+//	Base::DataStreamIn< pcl::PointCloud<pcl::PointXYZ>::Ptr > in_cloud_xyz1;
 
 	// Handlers
-	Base::EventHandler2 h_on_cloud_xyz;
+//	Base::EventHandler2 h_on_cloud_xyz;
+//	Base::EventHandler2 h_on_cloud_xyz1;
 	Base::EventHandler2 h_on_spin;
 
 	
 	// Handlers
-	void on_cloud_xyz();
+	void on_cloud_xyzN(int n);
+//	void on_cloud_xyz1();
 	void on_spin();
+
+	/// Event handlers for refresing of individual clouds.
+	std::vector<Base::EventHandler2*> handlers;
+
+	/// Clouds to be displayed.
+	std::vector<Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZ>::Ptr, Base::DataStreamBuffer::Newest,
+			Base::Synchronization::Mutex> *> in_clouds;
+
+
 
 	// Property enabling to change the name of displayed window.
 	Base::Property<std::string> prop_title;
 
 	/// Point cloud viewer.
 	pcl::visualization::PCLVisualizer * viewer;
+
+	/// Number of clouds to display.
+	Base::Property<int> count;
 	
 };
 

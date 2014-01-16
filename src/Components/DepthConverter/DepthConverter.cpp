@@ -124,8 +124,8 @@ void DepthConverter::process_depth() {
 	}
 
 	out_cloud_xyz.write(cloud);
-	/*pcl::io::savePCDFileASCII ("test_pcd.pcd", *cloud);
-	CLOG(LNOTICE) << "Saved " << cloud->points.size () << " data points to test_pcd.pcd.";*/
+	pcl::io::savePCDFileASCII ("test_pcd.pcd", *cloud);
+	CLOG(LNOTICE) << "Saved " << cloud->points.size () << " data points to test_pcd.pcd.";
 }
 
 void DepthConverter::process_depth_mask() {

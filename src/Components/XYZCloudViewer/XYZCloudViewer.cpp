@@ -22,21 +22,29 @@ XYZCloudViewer::XYZCloudViewer(const std::string & name) :
 		clouds_colours("clouds_colours", cv::Mat(cv::Mat::zeros(1, 3, CV_8UC1)))
 
 {
+  LOG(LTRACE) << "XYZCloudViewer::constructor";
   registerProperty(title);
   registerProperty(count);
   registerProperty(clouds_colours);
 
-  // Check colours.
-
-
-//  count.setToolTip("Total number of displayed clouds");
+  // Set white as default.
+  ((cv::Mat)clouds_colours).at<int>(0,0) = 255;
+  ((cv::Mat)clouds_colours).at<int>(0,1) = 255;
+  ((cv::Mat)clouds_colours).at<int>(0,2) = 255;
 }
 
 
 XYZCloudViewer::~XYZCloudViewer() {
+  LOG(LTRACE) << "XYZCloudViewer::destructor";
 }
 
 void XYZCloudViewer::prepareInterface() {
+	LOG(LTRACE) << "XYZCloudViewer::prepareInterface";
+
+	// Check colours.
+	assert(((cv::Mat)clouds_colours).size[0] ==  count);
+	assert(((cv::Mat)clouds_colours).size[1] ==  3);
+
 	// Register data streams and event handlers depending on the number of clouds.
 	Base::EventHandler2 * hand;
 	for (int i = 0; i < count; ++i) {
@@ -73,6 +81,7 @@ void XYZCloudViewer::prepareInterface() {
 }
 
 bool XYZCloudViewer::onInit() {
+	LOG(LTRACE) << "XYZCloudViewer::onInit";
 	// Create visualizer.
 	viewer = new pcl::visualization::PCLVisualizer (title);
 	viewer->initCameraParameters ();
@@ -98,18 +107,22 @@ bool XYZCloudViewer::onInit() {
 }
 
 bool XYZCloudViewer::onFinish() {
+	LOG(LTRACE) << "XYZCloudViewer::onFinish";
 	return true;
 }
 
 bool XYZCloudViewer::onStop() {
+	LOG(LTRACE) << "XYZCloudViewer::onStop";
 	return true;
 }
 
 bool XYZCloudViewer::onStart() {
+	LOG(LTRACE) << "XYZCloudViewer::onStart";
 	return true;
 }
 
 void XYZCloudViewer::on_cloud_xyzN(int n) {
+	LOG(LTRACE) << "XYZCloudViewer::on_cloud_xyz"<<n;
 	// Read input cloud from n-th dataport.
 	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud = in_clouds[n]->read();
 	char id = '0' + n;
@@ -117,16 +130,9 @@ void XYZCloudViewer::on_cloud_xyzN(int n) {
 	viewer->updatePointCloud<pcl::PointXYZ> (cloud, std::string("in_cloud_xyz") + id);
 }
 
-/*void XYZCloudViewer::on_cloud_xyz1() {
-	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud1 = in_cloud_xyz1.read();
-	viewer->updatePointCloud<pcl::PointXYZ> (cloud1, "sample cloud1");
-}*/
-
-
 void XYZCloudViewer::on_spin() {
 	viewer->spinOnce (100);
 }
-
 
 
 } //: namespace XYZCloudViewer

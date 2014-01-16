@@ -68,6 +68,9 @@ protected:
 	// Data streams
 	Base::DataStreamIn< pcl::PointCloud<pcl::PointXYZ>::Ptr > in_cloud_xyz;
 
+	// Data streams
+	Base::DataStreamIn< pcl::PointCloud<pcl::PointXYZ>::Ptr > in_cloud_xyz1;
+
 	// Handlers
 	Base::EventHandler2 h_on_cloud_xyz;
 	Base::EventHandler2 h_on_spin;
@@ -78,7 +81,7 @@ protected:
 	void on_spin();
 
 	// Property enabling to change the name of displayed window.
-	Base::Property<std::string> prop_window_name;
+	Base::Property<std::string> prop_title;
 
 	/// Point cloud viewer.
 	pcl::visualization::PCLVisualizer * viewer;

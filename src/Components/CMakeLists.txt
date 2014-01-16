@@ -39,4 +39,6 @@ ADD_COMPONENT(Update)
 
 ADD_COMPONENT(SIFTObjectMatcher)
 
+ADD_COMPONENT(XYZCloudViewer)
+
 ADD_COMPONENT(Downsampling)

@@ -1,41 +1,40 @@
 /*!
  * \file
- * \brief 
- * \author Maciej Stefańczyk [maciek.slon@gmail.com]
+ * \brief Contains body of  the class (component) able to display may XYZ point clouds in one window.
+ * \author Tomasz Kornuta [tkornuta@gmail.com]
  */
 
-#ifndef CLOUDVIEWER_HPP_
-#define CLOUDVIEWER_HPP_
+#ifndef XYZCLOUDVIEWER_HPP_
+#define XYZCLOUDVIEWER_HPP_
 
 #include "Component_Aux.hpp"
 #include "Component.hpp"
 #include "DataStream.hpp"
 #include "Property.hpp"
 #include "EventHandler2.hpp"
-
-
 #include <pcl/visualization/pcl_visualizer.h>
 
+
 namespace Processors {
-namespace CloudViewer {
+namespace XYZCloudViewer {
 
 /*!
- * \class CloudViewer
- * \brief CloudViewer processor class.
+ * \class XYZCloudViewer
+ * \brief XYZCloudViewer processor class - component able to display may XYZ point clouds in one window.
  *
- * Pointcloud viewer with normals visualization
+ * XYZCloudViewer processor.
  */
-class CloudViewer: public Base::Component {
+class XYZCloudViewer: public Base::Component {
 public:
 	/*!
 	 * Constructor.
 	 */
-	CloudViewer(const std::string & name = "CloudViewer");
+	XYZCloudViewer(const std::string & name = "XYZCloudViewer");
 
 	/*!
 	 * Destructor
 	 */
-	virtual ~CloudViewer();
+	virtual ~XYZCloudViewer();
 
 	/*!
 	 * Prepare components interface (register streams and handlers).
@@ -68,33 +67,30 @@ protected:
 
 	// Data streams
 	Base::DataStreamIn< pcl::PointCloud<pcl::PointXYZ>::Ptr > in_cloud_xyz;
-	Base::DataStreamIn< pcl::PointCloud<pcl::PointXYZRGB>::Ptr > in_cloud_xyzrgb;
-	Base::DataStreamIn< pcl::PointCloud<pcl::Normal>::Ptr > in_cloud_normals;
 
 	// Handlers
 	Base::EventHandler2 h_on_cloud_xyz;
-	Base::EventHandler2 h_on_cloud_xyzrgb;
-	Base::EventHandler2 h_on_cloud_normals;
 	Base::EventHandler2 h_on_spin;
 
 	
 	// Handlers
 	void on_cloud_xyz();
-	void on_cloud_xyzrgb();
-	void on_cloud_normals();
 	void on_spin();
 
-  Base::Property<std::string> prop_window_name;
+	// Property enabling to change the name of displayed window.
+	Base::Property<std::string> prop_window_name;
 
+	/// Point cloud viewer.
 	pcl::visualization::PCLVisualizer * viewer;
+	
 };
 
-} //: namespace CloudViewer
+} //: namespace XYZCloudViewer
 } //: namespace Processors
 
 /*
  * Register processor component.
  */
-REGISTER_COMPONENT("CloudViewer", Processors::CloudViewer::CloudViewer)
+REGISTER_COMPONENT("XYZCloudViewer", Processors::XYZCloudViewer::XYZCloudViewer)
 
-#endif /* CLOUDVIEWER_HPP_ */
+#endif /* XYZCLOUDVIEWER_HPP_ */

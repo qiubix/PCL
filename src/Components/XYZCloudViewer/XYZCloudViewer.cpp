@@ -17,12 +17,19 @@ namespace XYZCloudViewer {
 
 XYZCloudViewer::XYZCloudViewer(const std::string & name) :
 		Base::Component(name),
-		prop_title("title", std::string("XYZ Cloud Viewer")),
-		count("count", 1)
+		title("title", std::string("XYZ Cloud Viewer")),
+		count("count", 1),
+		clouds_colours("clouds_colours", cv::Mat(cv::Mat::zeros(1, 3, CV_8UC1)))
+
 {
-  registerProperty(prop_title);
-  count.setToolTip("Total number of displayed clouds");
+  registerProperty(title);
   registerProperty(count);
+  registerProperty(clouds_colours);
+
+  // Check colours.
+
+
+//  count.setToolTip("Total number of displayed clouds");
 }
 
 
@@ -30,16 +37,7 @@ XYZCloudViewer::~XYZCloudViewer() {
 }
 
 void XYZCloudViewer::prepareInterface() {
-	// Register data streams, events and event handlers HERE!
-//	registerStream("in_cloud_xyz", &in_cloud_xyz);
-//	registerStream("in_cloud_xyz1", &in_cloud_xyz1);
-
-	// Register handlers
-/*	h_on_cloud_xyz.setup(boost::bind(&XYZCloudViewer::on_cloud_xyz, this));
-	registerHandler("on_cloud_xyz", &h_on_cloud_xyz);
-	addDependency("on_cloud_xyz", &in_cloud_xyz);*/
-
-
+	// Register data streams and event handlers depending on the number of clouds.
 	Base::EventHandler2 * hand;
 	for (int i = 0; i < count; ++i) {
 		char id = '0' + i;
@@ -61,20 +59,14 @@ void XYZCloudViewer::prepareInterface() {
 		registerHandler(std::string("on_cloud_xyz") + id, hand);
 		// Add dependency for i-th stream.
 		addDependency(std::string("on_cloud_xyz") + id, stream);
-
-
 	}
 
-	// register aliases for first handler and streams
+	// Register aliases for first handler and streams.
 	registerStream("in_cloud_xyz", in_clouds[0]);
 	registerHandler("on_cloud_xyz", handlers[0]);
 
 
-	// Register handlers
-/*	h_on_cloud_xyz1.setup(boost::bind(&XYZCloudViewer::on_cloud_xyz1, this));
-	registerHandler("on_cloud_xyz1", &h_on_cloud_xyz1);
-	addDependency("on_cloud_xyz1", &in_cloud_xyz1);*/
-
+	// Register spin handler.
 	h_on_spin.setup(boost::bind(&XYZCloudViewer::on_spin, this));
 	registerHandler("on_spin", &h_on_spin);
 	addDependency("on_spin", NULL);
@@ -82,7 +74,7 @@ void XYZCloudViewer::prepareInterface() {
 
 bool XYZCloudViewer::onInit() {
 	// Create visualizer.
-	viewer = new pcl::visualization::PCLVisualizer (prop_title);
+	viewer = new pcl::visualization::PCLVisualizer (title);
 	viewer->initCameraParameters ();
 	// Add visible coortinate system.
 	viewer->addCoordinateSystem (1.0);
@@ -94,15 +86,14 @@ bool XYZCloudViewer::onInit() {
 		// Create i-th cloud.
 		viewer->addPointCloud<pcl::PointXYZ> (pcl::PointCloud<pcl::PointXYZ>::Ptr(new pcl::PointCloud<pcl::PointXYZ>), std::string("in_cloud_xyz") + id);
 		viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, std::string("in_cloud_xyz") + id);
-//		viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_COLOR, 255,0,0, std::string("in_cloud_xyz") + id); 
+		// Set cloud colour depending on the property.
+		viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_COLOR, 
+			((cv::Mat)clouds_colours).at<int>(i, 0),
+			((cv::Mat)clouds_colours).at<int>(i, 1),
+			((cv::Mat)clouds_colours).at<int>(i, 2),
+			std::string("in_cloud_xyz") + id); 
 	}
 
-
-/*
-	viewer->addPointCloud<pcl::PointXYZ> (pcl::PointCloud<pcl::PointXYZ>::Ptr(new pcl::PointCloud<pcl::PointXYZ>), "sample cloud1");
-	viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "sample cloud1");
-	viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_COLOR, 255,255,255, "sample cloud1"); 
-*/
 	return true;
 }
 

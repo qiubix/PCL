@@ -5,12 +5,12 @@ SET(CMAKE_INCLUDE_CURRENT_DIR ON)
 FILE(GLOB files *.cpp)
 
 # Find required packages
-
+FIND_PACKAGE( OpenCV REQUIRED )
 
 # Create an executable file from sources:
 ADD_LIBRARY(XYZCloudViewer SHARED ${files})
 
 # Link external libraries
-TARGET_LINK_LIBRARIES(XYZCloudViewer ${DisCODe_LIBRARIES}  ${PCL_LIBRARIES})
+TARGET_LINK_LIBRARIES(XYZCloudViewer ${OpenCV_LIBS} ${DisCODe_LIBRARIES} ${PCL_LIBRARIES})
 
 INSTALL_COMPONENT(XYZCloudViewer)

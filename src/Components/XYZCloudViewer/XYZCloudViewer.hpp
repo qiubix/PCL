@@ -14,13 +14,14 @@
 #include "EventHandler2.hpp"
 #include <pcl/visualization/pcl_visualizer.h>
 
+#include <Types/MatrixTranslator.hpp>
 
 namespace Processors {
 namespace XYZCloudViewer {
 
 /*!
  * \class XYZCloudViewer
- * \brief XYZCloudViewer processor class - component able to display may XYZ point clouds in one window.
+ * \brief XYZCloudViewer processor class - component able to display many XYZ point clouds in one viewer window.
  *
  * XYZCloudViewer processor.
  */
@@ -66,23 +67,33 @@ protected:
 	bool onStop();
 
 	// Data streams
-	Base::DataStreamIn< pcl::PointCloud<pcl::PointXYZ>::Ptr > in_cloud_xyz;
+	/// Vector of data streams containing clouds to be displayed.
+	std::vector<Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZ>::Ptr, Base::DataStreamBuffer::Newest,
+			Base::Synchronization::Mutex> *> in_clouds;
 
 	// Handlers
-	Base::EventHandler2 h_on_cloud_xyz;
 	Base::EventHandler2 h_on_spin;
 
+	/// Vector of event handlers for refresing of individual clouds.
+	std::vector<Base::EventHandler2*> handlers;
 	
-	// Handlers
-	void on_cloud_xyz();
+	// Handler functions.
+	/// Refreshes n-th point cloud.
+	void on_cloud_xyzN(int n);
 	void on_spin();
-
-	// Property enabling to change the name of displayed window.
-	Base::Property<std::string> prop_window_name;
 
 	/// Point cloud viewer.
 	pcl::visualization::PCLVisualizer * viewer;
-	
+
+	// Property enabling to change the name of displayed window.
+	Base::Property<std::string> title;
+
+	/// Number of clouds to display.
+	Base::Property<int> count;
+
+	/// Property for setting the colours of clouds. From default it will be set to 1 row with 255, 255, 255 (white cloud).
+	Base::Property<cv::Mat, Types::MatrixTranslator> clouds_colours;
+
 };
 
 } //: namespace XYZCloudViewer

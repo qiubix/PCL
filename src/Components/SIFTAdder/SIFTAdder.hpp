@@ -77,6 +77,7 @@ protected:
 
 // Output data streams
 		Base::DataStreamOut<pcl::PointCloud<PointXYZSIFT>::Ptr> out_cloud;
+        Base::DataStreamOut< std::map<int,int> > out_modelMultiplicity;
 		//Base::DataStreamOut<vector<vector<int> > > out_descriptors;
 		//Base::DataStreamOut<vector<int> > out_times;
 	// Handlers

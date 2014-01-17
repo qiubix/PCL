@@ -59,6 +59,7 @@ void SIFTAdder::prepareInterface() {
 //registerStream("out_descriptors", &out_descriptors);
 registerStream("in_cloud", &in_cloud);
 registerStream("out_cloud", &out_cloud);
+registerStream("out_modelMultiplicity", &out_modelMultiplicity);
 	// Register handlers
 	h_add.setup(boost::bind(&SIFTAdder::add, this));
 	registerHandler("add", &h_add);
@@ -98,6 +99,7 @@ void SIFTAdder::add() {
 		return;
 	}
 	
+    std::map<int,int> modelMultiplicity;
 		pcl::CorrespondencesPtr correspondences(new pcl::Correspondences()) ;
 		pcl::registration::CorrespondenceEstimation<PointXYZSIFT, PointXYZSIFT> correst ;
 	
@@ -140,8 +142,9 @@ void SIFTAdder::add() {
 				correspondences->at(i).index_match >=cloud->size()){
 					continue;
 			}
-			cloud_next->at(correspondences->at(i).index_query).times += cloud->at(correspondences->at(i).index_match).times;
-			cloud->at(correspondences->at(i).index_match).times=-1; //poprzedni punkt do usuniecia			
+            cloud->at(correspondences->at(i).index_match).times += cloud_next->at(correspondences->at(i).index_query).times;
+            modelMultiplicity.insert(std::make_pair<int,int>(correspondences->at(i).index_match, cloud_next->at(correspondences->at(i).index_query).times));
+            cloud_next->at(correspondences->at(i).index_query).times=-1; //do usuniecia punkt w nowej chmurze, ktory juz jest zarejestrowany w polaczonej chmurze
 		}
 		
 		//usuniecie punktow
@@ -154,10 +157,17 @@ void SIFTAdder::add() {
 				++pt_iter;	
 			}
 		} 
+        
+        for (unsigned k=0; k<cloud_next->size(); ++k) {
+            std::pair<int,int> nextMultiplicity = std::make_pair<int,int>(cloud->size()+k, cloud_next->at(k).times);
+            modelMultiplicity.insert(nextMultiplicity);
+        }
 		
 		*cloud = *cloud + *cloud_next;
 		
+        out_modelMultiplicity.write(modelMultiplicity);
 		out_cloud.write(cloud);
+        modelMultiplicity.clear();
 }
 
 } //: namespace SIFTAdder

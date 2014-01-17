@@ -8,6 +8,7 @@ class AbstractObject
 {
 	public:
 	string name;
+	virtual ~AbstractObject() {}
 };
 
 

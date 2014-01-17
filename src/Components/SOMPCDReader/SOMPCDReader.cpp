@@ -63,33 +63,39 @@ bool SOMPCDReader::onStart() {
 
 void SOMPCDReader::loadModels() {
 	
-	std::vector<AbstractObject> models;
+    //std::vector<AbstractObject> models;
+    std::vector<AbstractObject*> models;
 	
 	std::vector<std::string> namesList;
 	string s= names;
 	boost::split(namesList, s, boost::is_any_of(";"));
 	
 	for (size_t i = 0; i < namesList.size(); i++){
-		std::vector<std::string> name;
-		boost::split(name, namesList[i], boost::is_any_of("/"));
-		string name_xyz = namesList[i] + "/" + name[name.size()-1] + "_xyzrgb.pcd";
+		std::vector<std::string> name_split;
+		boost::split(name_split, namesList[i], boost::is_any_of("/"));
+		model_name = name_split[name_split.size()-1];
+		string name_xyz = namesList[i] + "/" + name_split[name_split.size()-1] + "_xyzrgb.pcd";
 		if (pcl::io::loadPCDFile<pcl::PointXYZRGB> (name_xyz, *cloud_xyzrgb) == -1) //* load the file
 	    {
-			cout <<"Błąd"<<endl;
+            cout <<"Niepoprawny model"<<endl;
 			continue;
 	    }
-		string name_xyzsift = namesList[i] + "/" +  name[name.size()-1] + "_xyzsift.pcd";
+		string name_xyzsift = namesList[i] + "/" +  name_split[name_split.size()-1] + "_xyzsift.pcd";
 		if (pcl::io::loadPCDFile<PointXYZSIFT> (name_xyzsift, *cloud_xyzsift) == -1) //* load the file
 	    {
-			cout <<"Błąd"<<endl;
+            cout <<"Niepoprawny model"<<endl;
 			continue;
 	    }
-	    
+
 		//dodanie do wektora modeli	    
-		models.push_back(produce());	
-	}
-	
-	out_models.write(models);
+		SIFTObjectModel* model = new SIFTObjectModel();
+		*model = dynamic_cast<SIFTObjectModel>(produce());
+		models.push_back(model);
+        //models.push_back(produce());
+    }
+
+    out_models.write(models); /////////terminate called after throwing an instance of 'std::bad_alloc' what():  std::bad_alloc Przerwane (core dumped)
+
 }
 
 

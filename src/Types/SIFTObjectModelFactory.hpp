@@ -8,10 +8,11 @@
 class SIFTObjectModelFactory : public AbstractObjectFactory
 {
 public:
-	AbstractObject produce(){ /* ziamplementowana - na podstawie tych dwóch chmur (pól) i nazwy zwraca obiekt*/
+    AbstractObject produce(){ /* ziamplementowana - na podstawie tych dwóch chmur (pól) i nazwy zwraca obiekt*/
 		SIFTObjectModel som;
 		som.cloud = cloud_xyzrgb;
 		som.SIFTcloud = cloud_xyzsift;
+		som.name = model_name;
 		return som;
 }
 	//add_to_vector(SOM);
@@ -19,7 +20,7 @@ public:
 protected:
 	pcl::PointCloud<PointXYZSIFT>::Ptr cloud_xyzsift;// (new pcl::PointCloud<PointXYZSIFT>());
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_xyzrgb;// (new pcl::PointCloud<pcl::PointXYZ>());
-
+	string model_name;
 	//vector<SOM>
 	
 };

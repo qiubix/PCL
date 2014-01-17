@@ -14,7 +14,7 @@
 #include "EventHandler2.hpp"
 #include <Types/PointXYZSIFT.hpp> 
 #include <Types/SIFTObjectModel.hpp> 
-
+#include <pcl/point_representation.h>
 #include <opencv2/core/core.hpp>
 
 #include <pcl/point_types.h>
@@ -73,7 +73,7 @@ protected:
 
 // Input data streams
 
-		Base::DataStreamIn<std::vector<AbstractObject> > in_models;
+		Base::DataStreamIn<std::vector<AbstractObject*> > in_models;
 		Base::DataStreamIn<pcl::PointCloud<PointXYZSIFT>::Ptr> in_cloud_xyzsift;
 		Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> in_cloud_xyzrgb;
 
@@ -88,7 +88,7 @@ protected:
 	void readModels();
 	void match();
 
-	std::vector<AbstractObject> models;
+	std::vector<SIFTObjectModel*> models;
 
 };
 

@@ -21,9 +21,9 @@ SET(CMAKE_INCLUDE_CURRENT_DIR ON)
 # # Get list of header files
 # FILE(GLOB headers *.hpp)
 #
-# # Install them to include subdirectory
-# install(
-#     FILES ${headers}
-#     DESTINATION include/Types
-#     COMPONENT sdk
-# )
+ # Install them to include subdirectory
+ install(
+     FILES ${headers}
+     DESTINATION include/Types
+     COMPONENT sdk
+ )

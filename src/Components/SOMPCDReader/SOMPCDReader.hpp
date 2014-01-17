@@ -75,7 +75,7 @@ protected:
 
 // Output data streams
 
-	Base::DataStreamOut<std::vector<AbstractObject> > out_models;
+    Base::DataStreamOut<std::vector<AbstractObject*> > out_models;
 	// Handlers
 //	Base::EventHandler2 h_produce;
 	Base::EventHandler2 h_loadModels;

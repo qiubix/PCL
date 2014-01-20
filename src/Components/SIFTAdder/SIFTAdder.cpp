@@ -57,13 +57,15 @@ void SIFTAdder::prepareInterface() {
 	// Register data streams, events and event handlers HERE!
 //registerStream("in_descriptors", &in_descriptors);
 //registerStream("out_descriptors", &out_descriptors);
-registerStream("in_cloud", &in_cloud);
+//registerStream("in_cloud", &in_cloud);
+    registerStream("in_models", &in_models);
 registerStream("out_cloud", &out_cloud);
 registerStream("out_modelMultiplicity", &out_modelMultiplicity);
 	// Register handlers
 	h_add.setup(boost::bind(&SIFTAdder::add, this));
 	registerHandler("add", &h_add);
-	addDependency("add", &in_cloud);
+//	addDependency("add", &in_cloud);
+    addDependency("add", &in_models);
 
 }
 
@@ -92,7 +94,11 @@ bool SIFTAdder::onStart() {
 
 void SIFTAdder::add() {
     LOG(LDEBUG) << "SIFTAdder::add\n";
-	pcl::PointCloud<PointXYZSIFT>::Ptr cloud_next = in_cloud.read();
+    
+    models = in_models.read();
+    for (unsigned n=0; n<models.size(); ++n) {
+    
+	pcl::PointCloud<PointXYZSIFT>::Ptr cloud_next = dynamic_cast<SIFTObjectModel*>(models.at(n))->SIFTcloud;
 
 	if (cloud->empty()){
 		cloud = cloud_next;
@@ -169,6 +175,7 @@ void SIFTAdder::add() {
         out_modelMultiplicity.write(modelMultiplicity);
 		out_cloud.write(cloud);
         modelMultiplicity.clear();
+    }
 }
 
 } //: namespace SIFTAdder

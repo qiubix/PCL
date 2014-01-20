@@ -79,7 +79,7 @@ protected:
 
 // Output data streams
 
-		Base::DataStreamOut<AbstractObject> out_instance; //SIFTObjectModel
+		Base::DataStreamOut<AbstractObject*> out_instance; //SIFTObjectModel
 		
 		Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> out_cloud;
 		Base::DataStreamOut<pcl::PointCloud<PointXYZSIFT>::Ptr> out_cloud_sift;

@@ -91,6 +91,7 @@ bool SIFTAdder::onStart() {
 }
 
 void SIFTAdder::add() {
+    LOG(LDEBUG) << "SIFTAdder::add\n";
 	pcl::PointCloud<PointXYZSIFT>::Ptr cloud_next = in_cloud.read();
 
 	if (cloud->empty()){

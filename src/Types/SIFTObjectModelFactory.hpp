@@ -8,11 +8,12 @@
 class SIFTObjectModelFactory : public AbstractObjectFactory
 {
 public:
-    AbstractObject produce(){ /* ziamplementowana - na podstawie tych dwóch chmur (pól) i nazwy zwraca obiekt*/
-		SIFTObjectModel som;
-		som.cloud = cloud_xyzrgb;
-		som.SIFTcloud = cloud_xyzsift;
-		som.name = model_name;
+	SIFTObjectModelFactory(){}
+    AbstractObject* produce(){ /* ziamplementowana - na podstawie tych dwóch chmur (pól) i nazwy zwraca obiekt*/
+		SIFTObjectModel *som = new SIFTObjectModel;
+		som->cloud = cloud_xyzrgb;
+		som->SIFTcloud = cloud_xyzsift;
+		som->name = model_name;
 		return som;
 }
 	//add_to_vector(SOM);

@@ -40,19 +40,19 @@ void JSONWriter::prepareInterface() {
 	// Register handlers
 	h_write_xyz.setup(boost::bind(&JSONWriter::write_xyz, this));
 	registerHandler("write_xyz", &h_write_xyz);
-	addDependency("write_xyz", &in_cloud_xyz);
+	//addDependency("write_xyz", &in_cloud_xyz);
 	h_write_xyzrgb.setup(boost::bind(&JSONWriter::write_xyzrgb, this));
 	registerHandler("write_xyzrgb", &h_write_xyzrgb);
-	addDependency("write_xyzrgb", &in_cloud_xyzrgb);
+	//addDependency("write_xyzrgb", &in_cloud_xyzrgb);
 	h_write_xyzrgbsift.setup(boost::bind(&JSONWriter::write_xyzrgbsift, this));
 	registerHandler("write_xyzrgbsift", &h_write_xyzrgbsift);
-	addDependency("write_xyzrgbsift", &in_cloud_xyzrgbsift);
+	//addDependency("write_xyzrgbsift", &in_cloud_xyzrgbsift);
 	h_write_xyzdescriptor.setup(boost::bind(&JSONWriter::write_xyzdescriptor, this));
 	registerHandler("write_xyzdescriptor", &h_write_xyzdescriptor);
-	addDependency("write_xyzdescriptor", &in_cloud_xyzdescriptor);
+	//addDependency("write_xyzdescriptor", &in_cloud_xyzdescriptor);
 	h_write_xyzsift.setup(boost::bind(&JSONWriter::write_xyzsift, this));
 	registerHandler("write_xyzsift", &h_write_xyzsift);
-	addDependency("write_xyzsift", &in_cloud_xyzsift);
+	//addDependency("write_xyzsift", &in_cloud_xyzsift);
 	
 }
 

@@ -10,7 +10,10 @@
 #include "SIFTObjectMatcher.hpp"
 #include "Common/Logger.hpp"
 #include <pcl/registration/correspondence_estimation.h>
-#include "pcl/registration/correspondence_rejection_sample_consensus.h"
+#include <pcl/registration/correspondence_rejection_sample_consensus.h>
+#include <pcl/impl/instantiate.hpp>
+#include <pcl/search/kdtree.h> 
+#include <pcl/search/impl/kdtree.hpp>
 #include <boost/bind.hpp>
 
 namespace Processors {
@@ -80,6 +83,7 @@ bool SIFTObjectMatcher::onStart() {
 
 void SIFTObjectMatcher::readModels() {
 	cout<<"readModels()"<<endl;
+	models.clear();
 	std::vector<AbstractObject*> abstractObjects = in_models.read();
 	for( int i = 0 ; i<abstractObjects.size(); i++){
 		cout<<"Name: "<<abstractObjects[i]->name<<endl;
@@ -90,7 +94,6 @@ void SIFTObjectMatcher::readModels() {
 			cout<<"niepoprawny model"<<endl;
 	}
 	cout<<models.size()<<" modeli"<<endl;
-	//SIFTObjectModel* model = dynamic_cast<SIFTObjectModel*>(models[i]);
 }
 
 void SIFTObjectMatcher::match() {
@@ -129,7 +132,7 @@ void SIFTObjectMatcher::match() {
             correst.determineReciprocalCorrespondences(*correspondences) ;
             std::cout << "\nNumber of reciprocal correspondences: " << correspondences->size() << " out of " << cloud_xyzsift->size() << " keypoints of instance, " << std::endl ;
             std::cout <<  models[i]->SIFTcloud->size() << " keypoints of model "<< models[i]->name << std::endl ;
-        }
+        } 
 }
 
 

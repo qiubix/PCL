@@ -88,8 +88,8 @@ void SOMPCDReader::loadModels() {
 	    }
 
 		//dodanie do wektora modeli	    
-		SIFTObjectModel* model = new SIFTObjectModel();
-		*model = dynamic_cast<SIFTObjectModel>(produce());
+		SIFTObjectModel* model;// = new SIFTObjectModel();
+		model = dynamic_cast<SIFTObjectModel*>(produce());
 		models.push_back(model);
         //models.push_back(produce());
     }

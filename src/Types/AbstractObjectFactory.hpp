@@ -7,7 +7,9 @@
 class AbstractObjectFactory
 {
 	public:
-	virtual AbstractObject produce()=0;
+	virtual AbstractObject* produce()=0;
+	virtual ~AbstractObjectFactory(){}
+	AbstractObjectFactory(){}
 };
 
 

@@ -1,5 +1,5 @@
 <Task>
-	<!-- reference task information -->
+	 reference task information 
 	<Reference>
 		<Author>
 			<name>Tomasz Kornuta</name>
@@ -12,20 +12,20 @@
 		</Description>
 	</Reference>
 	
-	<!-- task definition -->
+	 task definition 
 	<Subtasks>
 		<Subtask name="Main">
 			<Executor name="Processing"  period="1">
 				<Component name="SequenceRGB" type="CvBasic:Sequence" priority="1" bump="0">
-					<param name="sequence.directory">/home/mlaszkow/obiekty/apple_2</param>
+					<param name="sequence.directory">/home/mlaszkow/obiekty/cereal_box_1_co5</param>
 					<param name="sequence.pattern">.*\_color.png</param>				
 				</Component>
 				<Component name="SequenceDepth" type="CvBasic:Sequence" priority="2" bump="0">
-					<param name="sequence.directory">/home/mlaszkow/obiekty/apple_2</param>
+					<param name="sequence.directory">/home/mlaszkow/obiekty/cereal_box_1_co5</param>
 					<param name="sequence.pattern">.*\_depth.png</param>	
 				</Component>
 				<Component name="SequenceMask" type="CvBasic:Sequence" priority="3" bump="0">
-					<param name="sequence.directory">/home/mlaszkow/obiekty/apple_2</param>
+					<param name="sequence.directory">/home/mlaszkow/obiekty/cereal_box_1_co5</param>
 					<param name="sequence.pattern">.*\_mask.png</param>
 				</Component>
 				<Component name="CameraInfo" type="CvCoreTypes:CameraInfoProvider" priority="4" bump="0">
@@ -34,6 +34,8 @@
 				<Component name="SIFT" type="CvBasic:CvSIFT" priority="5" bump="0">
 				</Component>
 				<Component name="Converter" type="PCL:DepthConverter" priority="6" bump="10">
+				</Component>
+				<Component name="VoxelGrid" type="PCL:VoxelGrid" priority="6" bump="10">
 				</Component>
 				<Component name="FeatureCloudConverter" type="PCL:FeatureCloudConverter" priority="7" bump="10">
 				</Component>
@@ -56,6 +58,7 @@
 				</Component>
 				<Component name="WindowPCL2" type="PCL:CloudViewer" priority="1" bump="10">
 				</Component>
+				
 <!--
 				<Component name="Writer" type="PCL:PCDWriter" priority="1" bump="5">
 					<param name="filename">/home/mlaszkow/pcd/testttt.pcd</param>
@@ -89,26 +92,33 @@
 			<sink>FeatureCloudConverter.in_camera_info</sink>
 		</Source>
 		<Source name="Converter.out_cloud_xyzrgb">
-			<sink>Update.in_cloud_xyzrgb</sink>
 <!--
-			<sink>WindowPCL.in_cloud_xyz</sink>	
+			<sink>Update.in_cloud_xyzrgb</sink>
 -->
+			<sink>VoxelGrid.in_pcl</sink>	
+			<sink>WindowPCL.in_cloud_xyzrgb</sink>	
 <!--
 			<sink>Writer.in_cloud_xyzrgbsift</sink>		
 -->
 		</Source>
-		<Source name="SIFT.out_descriptors">
-<!--
+		<Source name="VoxelGrid.out_pcl">
+			<sink>WindowPCL2.in_cloud_xyzrgb</sink>	
+		</Source>
+<!--		<Source name="SIFT.out_descriptors">
+
 			<sink>Converter.in_descriptors</sink>		
--->
 			<sink>FeatureCloudConverter.in_descriptors</sink>	
 		</Source>
-		<Source name="SIFT.out_features">
-<!--
-			<sink>Converter.in_features</sink>	
 -->
+<!--
+		<Source name="SIFT.out_features">
+
+			<sink>Converter.in_features</sink>	
+
 			<sink>FeatureCloudConverter.in_features</sink>	
 		</Source>
+-->
+<!--
 		<Source name="FeatureCloudConverter.out_cloud">
 			<sink>Update.in_cloud_xyzsift</sink>
 			<sink>WindowPCL2.in_cloud_xyz</sink>	
@@ -117,11 +127,14 @@
 
             <sink>PCDWriter.in_pcl_xyzsift</sink>
 		</Source>
+-->
 		
+<!--
 		<Source name="Update.out_cloud">
 			<sink>WindowPCL.in_cloud_xyz</sink>
 			<sink>PCDWriter.in_pcl_xyzrgb</sink>
 		</Source>
+-->
 	</DataStreams>
 </Task>
 

@@ -9,6 +9,7 @@ class SIFTObjectModelFactory : public AbstractObjectFactory
 {
 public:
 	SIFTObjectModelFactory(){}
+	~SIFTObjectModelFactory(){}
     AbstractObject* produce(){ /* ziamplementowana - na podstawie tych dwóch chmur (pól) i nazwy zwraca obiekt*/
 		SIFTObjectModel *som = new SIFTObjectModel;
 		som->cloud = cloud_xyzrgb;

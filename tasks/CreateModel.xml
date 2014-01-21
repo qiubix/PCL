@@ -42,18 +42,24 @@
 				</Component>
 				<Component name="Update" type="PCL:Update" priority="8" bump="10">
 				</Component>
-				<Component name="Downsampling" type="PCL:Downsampling" priority="8" bump="10">
-					<param name="radius">0.002</param>	
+				<Component name="VoxelGrid" type="PCL:VoxelGrid" priority="9" bump="10">
+					<param name="LeafSize.x">0.005</param>
+					<param name="LeafSize.y">0.005</param>
+					<param name="LeafSize.z">0.005</param>
 				</Component>
 				<Component name="PCDWriter" type="PCL:PCDWriter" priority="10" bump="5">
-					<param name="filename">/home/mlaszkow/pcd/cereal_box_sift.pcd</param>
+					<param name="filename">/home/mlaszkow/pcd/fcereal_box_1_xyzsift.pcd</param>
+                </Component>
+                <Component name="JSONWriter" type="PCL:JSONWriter" priority="11" bump="0">
+					<param name="filename">/home/mlaszkow/pcd/cereal_box_1_sift.json</param>
                 </Component>
 			</Executor>
 
 			<Executor name="Visualization" period="1">
-				<Component name="WindowPCL" type="PCL:CloudViewer" priority="1" bump="10">
-				</Component>
-				<Component name="WindowPCL2" type="PCL:CloudViewer" priority="1" bump="10">
+				<Component name="WindowPCL" type="PCL:XYZCloudViewer" priority="1" bump="10">
+					<param name="title">XYZRGB(blue), XYZSIFT(white)</param>
+					<param name="count">2</param>
+					<param name="clouds_colours"> 0 0 255; 255 255 255</param>
 				</Component>
 			</Executor>
 		</Subtask>	
@@ -88,29 +94,24 @@
 			<sink>Update.in_cloud_xyzrgb</sink>
 		</Source>
 		<Source name="FeatureCloudConverter.out_cloud">
-			<sink>Update.in_cloud_xyzsift</sink>
-			
+			<sink>Update.in_cloud_xyzsift</sink>	
 		</Source>
 		<Source name="Update.out_cloud">
-<!--
-			<sink>WindowPCL.in_cloud_xyz</sink>
--->
-			
-			<sink>PCDWriter.in_pcl_xyzrgb</sink>
+			<sink>WindowPCL.in_cloud_xyz0</sink>
+			<sink>VoxelGrid.in_pcl</sink>
 		</Source>
 		<Source name="Update.out_cloud_sift">
-			<sink>WindowPCL.in_cloud_xyz</sink>
-<!--
-			<sink>PCDWriter.in_pcl_xyzsift</sink>	
--->
-			<sink>Downsampling.in_cloud_xyzsift</sink>
+			<sink>WindowPCL.in_cloud_xyz1</sink>
+			<sink>PCDWriter.in_pcl_xyzsift</sink>
+			<sink>JSONWriter.in_cloud_xyzsift</sink>	
 		</Source>
-		
-		<Source name="Downsampling.out_cloud_xyzsift">
-				<sink>WindowPCL2.in_cloud_xyz</sink>
-				<sink>PCDWriter.in_pcl_xyzsift</sink>
+		<Source name="Update.out_cloud_sift">
+			<sink>PCDWriter.in_pcl_xyzsift</sink>
 		</Source>
-			
+		<Source name="VoxelGrid.out_pcl">
+			<sink>PCDWriter.in_pcl_xyzrgb</sink>
+		</Source>
+				
 	</DataStreams>
 </Task>
 

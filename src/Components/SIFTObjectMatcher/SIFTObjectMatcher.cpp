@@ -105,14 +105,9 @@ void SIFTObjectMatcher::match() {
 	pcl::PointCloud<PointXYZSIFT>::Ptr cloud_xyzsift = in_cloud_xyzsift.read();
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_xyzrgb = in_cloud_xyzrgb.read();	
 	
-	
-	//cloud_xyzsift->size();//liczba cech
 
 		for (int i = 0 ; i<models.size(); i++){
-			//SIFTObjectModel model = models[i];
-			//SIFTObjectModel* model = dynamic_cast<SIFTObjectModel*>(models[i]);
-			//if ( model != NULL ) ;
-			cout<<"liczba cech modelu "<<i<<": " <<
+			cout<<"liczba cech modelu "<<i<<" "<<models[i]->name<<": " <<
 				models[i]->SIFTcloud->size()<<endl; 	
 		}
 		cout<<"liczba cech instancji : " <<

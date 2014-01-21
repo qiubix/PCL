@@ -13,6 +13,7 @@
 #include "Property.hpp"
 #include "EventHandler2.hpp"
 
+#include <Types/PointXYZSIFT.hpp> 
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
@@ -71,11 +72,11 @@ protected:
 
 // Input data streams
 
-		Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZ>::Ptr> in_pcl;
+		Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> in_pcl;
 
 // Output data streams
 
-		Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZ>::Ptr> out_pcl;
+		Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> out_pcl;
 	// Handlers
 	Base::EventHandler2 h_filter;
 		Base::Property<float> x;

@@ -41,8 +41,8 @@ registerStream("out_models", &out_models);
 }
 
 bool SOMPCDReader::onInit() {
-	cloud_xyzrgb = pcl::PointCloud<pcl::PointXYZRGB>::Ptr (new pcl::PointCloud<pcl::PointXYZRGB>());
-	cloud_xyzsift = pcl::PointCloud<PointXYZSIFT>::Ptr (new pcl::PointCloud<PointXYZSIFT>());
+	//cloud_xyzrgb = pcl::PointCloud<pcl::PointXYZRGB>::Ptr (new pcl::PointCloud<pcl::PointXYZRGB>());
+	//cloud_xyzsift = pcl::PointCloud<PointXYZSIFT>::Ptr (new pcl::PointCloud<PointXYZSIFT>());
 	return true;
 }
 
@@ -75,12 +75,14 @@ void SOMPCDReader::loadModels() {
 		boost::split(name_split, namesList[i], boost::is_any_of("/"));
 		model_name = name_split[name_split.size()-1];
 		string name_xyz = namesList[i] + "/" + name_split[name_split.size()-1] + "_xyzrgb.pcd";
+		cloud_xyzrgb = pcl::PointCloud<pcl::PointXYZRGB>::Ptr (new pcl::PointCloud<pcl::PointXYZRGB>());
 		if (pcl::io::loadPCDFile<pcl::PointXYZRGB> (name_xyz, *cloud_xyzrgb) == -1) //* load the file
 	    {
             cout <<"Niepoprawny model"<<endl;
 			continue;
 	    }
 		string name_xyzsift = namesList[i] + "/" +  name_split[name_split.size()-1] + "_xyzsift.pcd";
+		cloud_xyzsift = pcl::PointCloud<PointXYZSIFT>::Ptr (new pcl::PointCloud<PointXYZSIFT>());
 		if (pcl::io::loadPCDFile<PointXYZSIFT> (name_xyzsift, *cloud_xyzsift) == -1) //* load the file
 	    {
             cout <<"Niepoprawny model"<<endl;

@@ -36,11 +36,12 @@ registerStream("out_models", &out_models);
 	//addDependency("produce", NULL);
 	h_loadModels.setup(boost::bind(&SOMPCDReader::loadModels, this));
 	registerHandler("loadModels", &h_loadModels);
-	addDependency("loadModels", NULL);
+	//addDependency("loadModels", NULL);
 
 }
 
 bool SOMPCDReader::onInit() {
+	loadModels();
 	//cloud_xyzrgb = pcl::PointCloud<pcl::PointXYZRGB>::Ptr (new pcl::PointCloud<pcl::PointXYZRGB>());
 	//cloud_xyzsift = pcl::PointCloud<PointXYZSIFT>::Ptr (new pcl::PointCloud<PointXYZSIFT>());
 	return true;
@@ -62,7 +63,7 @@ bool SOMPCDReader::onStart() {
 }*/
 
 void SOMPCDReader::loadModels() {
-	
+	cout<<"SOMPCDReader::loadModels()"<<endl;
     //std::vector<AbstractObject> models;
     std::vector<AbstractObject*> models;
 	

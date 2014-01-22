@@ -2,28 +2,25 @@
 	<!-- reference task information -->
 	<Reference>
 		<Author>
-			<name>Tomasz Kornuta</name>
+			<name>Michal Laszkowski</name>
 			<link></link>
 		</Author>
 		
 		<Description>
-			<brief>ecovi:t1/SequenceViewer</brief>
-			<full>Loads and displays a sequence of images</full>	
+			<brief>PCL:Match</brief>
+			<full></full>	
 		</Description>
 	</Reference>
 	
 	<!-- task definition -->
 	<Subtasks>
 		<Subtask name="Main">
-			<Executor name="Models"  period="1">
+
+			<Executor name="Processing"  period="1">
 				<Component name="SOMPCDReader" type="PCL:SOMPCDReader" priority="1" bump="0">
 					<param name="names">/home/mlaszkow/pcd/testmodel</param>
 				</Component>
-				<Component name="SIFTObjectMatcher" type="PCL:SIFTObjectMatcher" priority="2" bump="0">
-				</Component>
-			</Executor>
-			<Executor name="Processing"  period="1">
-				<Component name="Source" type="CameraNUI:CameraNUI" priority="1" bump="0">
+				<Component name="Source" type="CameraNUI:CameraNUI" priority="2" bump="0">
 					<param name="sync">1</param>
                 </Component>
 				<Component name="SIFT" type="CvBasic:CvSIFT" priority="5" bump="0">
@@ -36,7 +33,7 @@
 				</Component>				
 				<Component name="CloudCutter" type="PCL:CloudCutter" priority="9" bump="0">
 				</Component>
-				<Component name="Update" type="PCL:Update" priority="10" bump="10">
+				<Component name="SIFTObjectMatcher" type="PCL:SIFTObjectMatcher" priority="10" bump="0">
 				</Component>
             </Executor>
 

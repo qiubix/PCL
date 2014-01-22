@@ -2,55 +2,51 @@
 	<!-- reference task information -->
 	<Reference>
 		<Author>
-			<name>Tomasz Kornuta</name>
+			<name>Michal Laszkowski</name>
 			<link></link>
 		</Author>
 		
 		<Description>
-			<brief>ecovi:t1/SequenceViewer</brief>
-			<full>Loads and displays a sequence of images</full>	
+			<brief>PCL:TestMatch</brief>
+			<full></full>	
 		</Description>
 	</Reference>
 	
 	<!-- task definition -->
 	<Subtasks>
 		<Subtask name="Main">
-			<Executor name="Models"  period="1">
-				<Component name="SOMPCDReader" type="PCL:SOMPCDReader" priority="1" bump="0">
-					<param name="names">/home/mlaszkow/pcd/testmodel;/home/mlaszkow/pcd/food_box_8;/home/mlaszkow/pcd/cereal_box_1</param>
-<!--
-					;/home/mlaszkow/pcd/food_box_7</param>
--->
-				</Component>
-				<Component name="SIFTObjectMatcher" type="PCL:SIFTObjectMatcher" priority="2" bump="0">
-				</Component>
-			</Executor>
 			<Executor name="Processing"  period="1">
-				<Component name="SequenceRGB" type="CvBasic:Sequence" priority="1" bump="0">
+				<Component name="SOMPCDReader" type="PCL:SOMPCDReader" priority="1" bump="0">
+					<param name="names">/home/mlaszkow/pcd/food_box_8;/home/mlaszkow/pcd/cereal_box_1</param>
+				</Component>
+				<Component name="SequenceRGB" type="CvBasic:Sequence" priority="2" bump="0">
 					<param name="sequence.directory">/home/mlaszkow/obiekty/food_box_8</param>
 					<param name="sequence.pattern">.*\_color.png</param>				
 				</Component>
-				<Component name="SequenceDepth" type="CvBasic:Sequence" priority="2" bump="0">
+				<Component name="SequenceDepth" type="CvBasic:Sequence" priority="3" bump="0">
 					<param name="sequence.directory">/home/mlaszkow/obiekty/food_box_8</param>
 					<param name="sequence.pattern">.*\_depth.png</param>	
 				</Component>
-				<Component name="SequenceMask" type="CvBasic:Sequence" priority="3" bump="0">
+				<Component name="SequenceMask" type="CvBasic:Sequence" priority="4" bump="0">
 					<param name="sequence.directory">/home/mlaszkow/obiekty/food_box_8</param>
 					<param name="sequence.pattern">.*\_mask.png</param>
 				</Component>
-				<Component name="CameraInfo" type="CvCoreTypes:CameraInfoProvider" priority="4" bump="0">
+				<Component name="CameraInfo" type="CvCoreTypes:CameraInfoProvider" priority="5" bump="0">
 					<param name="camera_matrix">525 0 319.5; 0 525 239.5; 0 0 1</param>
 				</Component>
-				<Component name="SIFT" type="CvBasic:CvSIFT" priority="5" bump="0">
+				<Component name="SIFT" type="CvBasic:CvSIFT" priority="6" bump="0">
 				</Component>
-				<Component name="Converter" type="PCL:DepthConverter" priority="6" bump="0">
+				<Component name="Converter" type="PCL:DepthConverter" priority="7" bump="0">
 				</Component>
-				<Component name="FeatureCloudConverter" type="PCL:FeatureCloudConverter" priority="7" bump="0">
+				<Component name="FeatureCloudConverter" type="PCL:FeatureCloudConverter" priority="8" bump="0">
+				</Component>
+				
+				<Component name="SIFTObjectMatcher" type="PCL:SIFTObjectMatcher" priority="9" bump="0">
 				</Component>
             </Executor>
 
 			<Executor name="Visualization" period="1">
-				<Component name="WindowPCL" type="PCL:XYZCloudViewer" priority="1" bump="10">
+				<Component name="WindowPCL" type="PCL:XYZCloudViewer" priority="1" bump="0">
 					<param name="title">RGB(white), SIFT(red)</param>
 					<param name="count">2</param>
 					<param name="clouds_colours"> 255 255 255;255 0 0</param>

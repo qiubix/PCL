@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <iomanip>
 
 #include "SIFTObjectMatcher.hpp"
 #include "Common/Logger.hpp"
@@ -83,6 +84,9 @@ bool SIFTObjectMatcher::onStart() {
 
 void SIFTObjectMatcher::readModels() {
 	cout<<"readModels()"<<endl;
+	for( int i = 0 ; i<models.size(); i++){
+		delete models[i];
+	}
 	models.clear();
 	std::vector<AbstractObject*> abstractObjects = in_models.read();
 	for( int i = 0 ; i<abstractObjects.size(); i++){
@@ -97,6 +101,7 @@ void SIFTObjectMatcher::readModels() {
 }
 
 void SIFTObjectMatcher::match() {
+	cout<<"SIFTObjectMatcher::match()"<<endl;
 	if(models.empty()){
 		cout<<"No models available" <<endl;
 		return;
@@ -125,8 +130,10 @@ void SIFTObjectMatcher::match() {
             correst.setInputSource(cloud_xyzsift) ;
             correst.setInputTarget(models[i]->SIFTcloud) ;
             correst.determineReciprocalCorrespondences(*correspondences) ;
-            std::cout << "\nNumber of reciprocal correspondences: " << correspondences->size() << " out of " << cloud_xyzsift->size() << " keypoints of instance, " << std::endl ;
-            std::cout <<  models[i]->SIFTcloud->size() << " keypoints of model "<< models[i]->name << std::endl ;
+            std::cout << setprecision(2) << fixed;
+            float procent = (float)correspondences->size()/(float)cloud_xyzsift->size();
+            std::cout << "\nNumber of reciprocal correspondences: " << correspondences->size() << " out of " << cloud_xyzsift->size() << " keypoints of instance, = " ;
+            std::cout << procent << ". "<< models[i]->SIFTcloud->size() << " keypoints of model "<< models[i]->name << std::endl ;
         } 
 }
 

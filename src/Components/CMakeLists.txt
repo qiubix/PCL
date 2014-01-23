@@ -40,3 +40,5 @@ ADD_COMPONENT(SIFTObjectMatcher)
 ADD_COMPONENT(XYZCloudViewer)
 
 ADD_COMPONENT(Downsampling)
+
+ADD_COMPONENT(PassThrough)

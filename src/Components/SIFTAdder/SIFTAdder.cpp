@@ -109,6 +109,30 @@ void SIFTAdder::add() {
 		correst.setInputTarget(cloud) ;
 		correst.determineReciprocalCorrespondences(*correspondences) ;
 		std::cout << "\nNumber of reciprocal correspondences: " << correspondences->size() << " out of " << cloud_next->size() << " keypoints" << std::endl ;
+	
+		//ransac znalezienie blednych dopasowan
+		pcl::Correspondences inliers ;
+		pcl::registration::CorrespondenceRejectorSampleConsensus<PointXYZSIFT> sac ;
+		sac.setInputSource(cloud_next) ;
+		sac.setInputTarget(cloud) ;
+		sac.setInlierThreshold(0.001f) ;
+		sac.setMaximumIterations(2000) ;
+		sac.setInputCorrespondences(correspondences) ;
+		sac.getCorrespondences(inliers) ;
+		//usuniecie blednych dopasowan
+		pcl::Correspondences::iterator iter_inliers = inliers.begin();
+		while(iter_inliers!=inliers.end()){
+			pcl::Correspondences::iterator iter_correspondences = correspondences->begin();
+			while(iter_correspondences!=correspondences->end()){
+				if(iter_correspondences->index_query == iter_inliers->index_query){
+					iter_correspondences= correspondences->erase(iter_correspondences);
+					break;
+				}
+				else 
+					++iter_correspondences;
+			}
+			++iter_inliers;	
+		}
 		
 		//zliczanie krotnosci
 		for(int i = 0; i< correspondences->size();i++){	

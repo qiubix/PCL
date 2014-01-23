@@ -78,7 +78,7 @@ protected:
 
 
 	/// Input data stream containing SIFT Object Model
-	Base::DataStreamIn<SIFTObjectModel> in_som;
+	Base::DataStreamIn<SIFTObjectModel*> in_som;
 
 	// Handlers
 	Base::EventHandler2 h_Write;

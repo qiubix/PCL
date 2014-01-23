@@ -79,22 +79,23 @@ void SOMJSONWriter::Write() {
 		CLOG(LWARNING) << "The SOM datastream is empty.";
 	}
 	// Get SOM.
-	SIFTObjectModel som = in_som.read();
+	SIFTObjectModel* som = in_som.read();
 
 	// Save point cloud.
 	std::string name_cloud = std::string(dir) + std::string("/") + std::string(SOMname) + std::string("_xyz");
-	pcl::io::savePCDFileASCII (name_cloud, *(som.cloud));
-	CLOG(LTRACE) << "Write: saved " << som.cloud->points.size () << " cloud points to "<< name_cloud;
+	pcl::io::savePCDFileASCII (name_cloud, *(som->cloud));
+	CLOG(LTRACE) << "Write: saved " << som->cloud->points.size () << " cloud points to "<< name_cloud;
 
 	// Save feature cloud.
 	std::string name_SIFTcloud = std::string(dir) + std::string("/") + std::string(SOMname) + "_xyzSIFT";
-	pcl::io::savePCDFileASCII (name_SIFTcloud, *(som.SIFTcloud));
-	CLOG(LTRACE) << "Write: saved " << som.SIFTcloud->points.size () << " feature points to "<< name_SIFTcloud;
+	pcl::io::savePCDFileASCII (name_SIFTcloud, *(som->SIFTcloud));
+	CLOG(LTRACE) << "Write: saved " << som->SIFTcloud->points.size () << " feature points to "<< name_SIFTcloud;
 
 	// Save JSON model description.
 	ptree ptree_file;
-	ptree_file.put("name", som.name);
-	ptree_file.put("mean_viewpoint_features_number", som.mean_viewpoint_features_number);
+	ptree_file.put("name", som->name);
+	ptree_file.put("type", "SIFTObjectModel");
+	ptree_file.put("mean_viewpoint_features_number", som->mean_viewpoint_features_number);
 	ptree_file.put("cloud_pcd", name_cloud);
 	ptree_file.put("SIFTcloud_pcd", name_SIFTcloud);
 	write_json (std::string(dir) + std::string("/") + std::string(SOMname), ptree_file);

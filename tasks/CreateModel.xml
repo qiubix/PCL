@@ -48,7 +48,7 @@
 					<param name="LeafSize.z">0.005</param>
 				</Component>
 				<Component name="PCDWriter" type="PCL:PCDWriter" priority="10" bump="5">
-					<param name="filename">/home/tkornuta/Objects/cereal_box_1_co5_xyzsift.pcd</param>
+					<param name="filename">cereal_box_1_co5</param>
                 </Component>
                 <Component name="JSONWriter" type="PCL:JSONWriter" priority="11" bump="0">
 					<param name="filename">/home/tkornuta/Objects/cereal_box_1_co5_xyzsift.json</param>

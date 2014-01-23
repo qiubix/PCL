@@ -22,6 +22,7 @@ public:
 		som->cloud = cloud_xyzrgb;
 		som->SIFTcloud = cloud_xyzsift;
 		som->name = model_name;
+		som->mean_viewpoint_features_number = mean_viewpoint_features_number;
 		return som;
 }
 	//add_to_vector(SOM);

@@ -17,6 +17,12 @@
 #include <pcl/search/impl/kdtree.hpp>
 #include <boost/bind.hpp>
 
+#include <opencv2/core/core.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/features2d/features2d.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include "Types/Features.hpp"
+
 namespace Processors {
 namespace SIFTObjectMatcher {
 
@@ -117,7 +123,14 @@ void SIFTObjectMatcher::match() {
 		}
 		cout<<"liczba cech instancji : " <<
 			cloud_xyzsift->size()<<endl; 
-
+    //////////////flann
+    //cv::Mat descriptors_instance(cloud_xyzsift->size(), 128, CV_32F,0.0);
+    //cout<<cloud_xyzsift->size()<<endl;
+    //for (int i=0; i< cloud_xyzsift->size(); i++)
+        //for(int j=0; j<128;j++){
+            //descriptors_instance.at<float>(i,j)=cloud_xyzsift->at(i).descriptor[j];
+        //}
+	/////////////
 
         pcl::CorrespondencesPtr correspondences(new pcl::Correspondences()) ;
         pcl::registration::CorrespondenceEstimation<PointXYZSIFT, PointXYZSIFT> correst ;
@@ -130,11 +143,57 @@ void SIFTObjectMatcher::match() {
             correst.setInputSource(cloud_xyzsift) ;
             correst.setInputTarget(models[i]->SIFTcloud) ;
             correst.determineReciprocalCorrespondences(*correspondences) ;
+			//ransac - niepoprawne dopasowania
+			pcl::Correspondences inliers ;
+        	pcl::registration::CorrespondenceRejectorSampleConsensus<PointXYZSIFT> sac ;
+			sac.setInputSource(cloud_xyzsift) ;
+			sac.setInputTarget(models[i]->SIFTcloud) ;
+			sac.setInlierThreshold(0.001f) ;
+			sac.setMaximumIterations(2000) ;
+			sac.setInputCorrespondences(correspondences) ;
+			sac.getCorrespondences(inliers) ;
+			//std::cout << "SAC inliers " << inliers.size() << std::endl ;
+
             std::cout << setprecision(2) << fixed;
-            float procent = (float)correspondences->size()/(float)cloud_xyzsift->size();
-            std::cout << "\nNumber of reciprocal correspondences: " << correspondences->size() << " out of " << cloud_xyzsift->size() << " keypoints of instance, = " ;
+            float procent = ((float)correspondences->size() - (float)inliers.size())/(float)cloud_xyzsift->size();
+            std::cout << "\nNumber of reciprocal correspondences: " << correspondences->size() <<". Bad correspondences:" << inliers.size() ;
+            std::cout << " out of " << cloud_xyzsift->size() << " keypoints of instance, = " ;
             std::cout << procent << ". "<< models[i]->SIFTcloud->size() << " keypoints of model "<< models[i]->name << std::endl ;
-        } 
+            
+        /////////////////////////////
+
+        ///////////////////////////////////
+            //flann
+            /////////////////////////////////////
+            //cv::Mat descriptors_model(models[i]->SIFTcloud->size(), 128, CV_32F,0.0);
+            //for (int j=0; j< models[i]->SIFTcloud->size(); j++)
+                //for(int k=0; k<128;k++){
+                    //descriptors_model.at<float>(j,k)=models[i]->SIFTcloud->at(j).descriptor[k];
+                //}
+
+            //cv::FlannBasedMatcher matcher;
+            //std::vector< cv::DMatch > matches;
+
+            //matcher.match( descriptors_instance, descriptors_model, matches );
+            ///////////////////////////////////
+            //double max_dist = 0; double min_dist = 100;
+
+             ////-- Quick calculation of max and min distances between keypoints
+             //for( int j = 0; j < descriptors_instance.rows; j++ )
+             //{ double dist = matches[j].distance;
+               //if( dist < min_dist ) min_dist = dist;
+               //if( dist > max_dist ) max_dist = dist;
+             //}
+             //std::vector< cv::DMatch > good_matches;
+
+             //for( int j = 0; j < descriptors_instance.rows; j++ ){
+                 //if( matches[j].distance <= max(2*min_dist, 0.02) )
+                 //{ good_matches.push_back( matches[j]); }
+             //}
+             //cout<<"Matches: "<< matches.size()<< ". Good matches: "<<good_matches.size()<<endl;
+             //procent = (float)good_matches.size()/(float)cloud_xyzsift->size();
+             //cout<<"Procent: "<<procent<<endl;
+        }
 }
 
 

@@ -76,6 +76,8 @@ Eigen::Matrix4f computeTransformationSAC(const pcl::PointCloud<PointXYZSIFT>::Co
 	sac.setInputCorrespondences(correspondences) ;
 	sac.getCorrespondences(inliers) ;
 	std::cout << "SAC inliers " << inliers.size() << std::endl ;
+	if ( ((float)inliers.size()/(float)correspondences->size()) >85)
+		return Eigen::Matrix4f::Identity();
 	return sac.getBestTransformation() ;
 }
 
@@ -215,6 +217,11 @@ void Update::update() {
 		//Compute transformation between clouds and update global transformation of cloud_next	
 		pcl::Correspondences inliers ;
 		Eigen::Matrix4f current_trans = computeTransformationSAC(cloud_sift_next, cloud_sift_merged, correspondences, inliers) ; //_prev
+		if (current_trans == Eigen::Matrix4f::Identity()){
+			out_cloud.write(cloud_merged);
+			out_cloud_sift.write(cloud_sift_merged);
+			return;
+		}
 		std::cout << "Transformation cloud_next -> cloud_prev: " << std::endl << current_trans << std::endl ;
 		global_trans = global_trans * current_trans ;
 		std::cout << "Global transformation : " << std::endl << global_trans << std::endl ;

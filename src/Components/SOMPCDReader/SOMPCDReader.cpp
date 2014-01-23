@@ -97,6 +97,7 @@ void SOMPCDReader::loadModels() {
         //models.push_back(produce());
     }
 
+    LOG(LDEBUG) << "Writing models read from PCD files. Number of models: " << models.size();
     out_models.write(models); /////////terminate called after throwing an instance of 'std::bad_alloc' what():  std::bad_alloc Przerwane (core dumped)
 
 }

@@ -60,7 +60,7 @@ void SIFTAdder::prepareInterface() {
 //registerStream("in_cloud", &in_cloud);
     registerStream("in_models", &in_models);
 registerStream("out_cloud", &out_cloud);
-registerStream("out_modelMultiplicity", &out_modelMultiplicity);
+registerStream("out_multiplicityOfModels", &out_multiplicityOfModels);
 	// Register handlers
 	h_add.setup(boost::bind(&SIFTAdder::add, this));
 	registerHandler("add", &h_add);
@@ -93,23 +93,35 @@ bool SIFTAdder::onStart() {
 }
 
 void SIFTAdder::add() {
-    LOG(LDEBUG) << "SIFTAdder::add\n";
-    
-    models = in_models.read();
-    for (unsigned n=0; n<models.size(); ++n) {
-    
-	pcl::PointCloud<PointXYZSIFT>::Ptr cloud_next = dynamic_cast<SIFTObjectModel*>(models.at(n))->SIFTcloud;
+	LOG(LDEBUG) << "\nSIFTAdder: adding models to joint cloud";
 
-	if (cloud->empty()){
-		cloud = cloud_next;
-		out_cloud.write(cloud);
-		return;
-	}
-	
-    std::map<int,int> modelMultiplicity;
+	models = in_models.read();
+    std::vector <std::map<int,int> > modelsMultiplicity;
+	LOG(LINFO) << "Number of models: " << models.size();
+	for (unsigned n=0; n<models.size(); ++n) {
+
+		std::map<int,int> modelMultiplicity;
+		pcl::PointCloud<PointXYZSIFT>::Ptr cloud_next = dynamic_cast<SIFTObjectModel*>(models.at(n))->SIFTcloud;
+        LOG(LINFO) << "Model no " << n << ": model's cloud size = " << cloud_next->size();
+
+		if (cloud->empty()){
+            LOG(LINFO) << "Writing new cloud to empty joint cloud. Size: " << cloud_next->size();
+			cloud = cloud_next;
+			out_cloud.write(cloud);
+			for (unsigned k=0; k<cloud_next->size(); ++k) {
+				std::pair<int,int> nextMultiplicity = std::make_pair<int,int>(k, cloud_next->at(k).times);
+				modelMultiplicity.insert(nextMultiplicity);
+			}
+			LOG(LINFO) << "number of model's features: " << modelMultiplicity.size();
+			modelsMultiplicity.push_back(modelMultiplicity);
+			continue;
+		}
+        
+        LOG(LINFO) << "Joint cloud size before merge: " << cloud->size();
+
 		pcl::CorrespondencesPtr correspondences(new pcl::Correspondences()) ;
 		pcl::registration::CorrespondenceEstimation<PointXYZSIFT, PointXYZSIFT> correst ;
-	
+
 		//SIFTFeatureRepresentation point_representation ;
 		//correst.setPointRepresentation (point_representation.makeShared()); //NEVER do like this, makeShared will return DefaultFeatureRepresentation<PointDefault>!
 		SIFTFeatureRepresentation::Ptr point_representation(new SIFTFeatureRepresentation()) ;
@@ -117,7 +129,6 @@ void SIFTAdder::add() {
 		correst.setInputSource(cloud_next) ;
 		correst.setInputTarget(cloud) ;
 		correst.determineReciprocalCorrespondences(*correspondences) ;
-		std::cout << "\nNumber of reciprocal correspondences: " << correspondences->size() << " out of " << cloud_next->size() << " keypoints" << std::endl ;
 	
 		//ransac znalezienie blednych dopasowan
 		pcl::Correspondences inliers ;
@@ -143,17 +154,19 @@ void SIFTAdder::add() {
 			++iter_inliers;	
 		}
 		
+		LOG(LINFO) << "Number of reciprocal correspondences: " << correspondences->size() << " out of " << cloud_next->size() << " keypoints";// << std::endl ;
+
 		//zliczanie krotnosci
 		for(int i = 0; i< correspondences->size();i++){	
 			if (correspondences->at(i).index_query >=cloud_next->size() ||
-				correspondences->at(i).index_match >=cloud->size()){
-					continue;
+			        correspondences->at(i).index_match >=cloud->size()){
+				continue;
 			}
-            cloud->at(correspondences->at(i).index_match).times += cloud_next->at(correspondences->at(i).index_query).times;
-            modelMultiplicity.insert(std::make_pair<int,int>(correspondences->at(i).index_match, cloud_next->at(correspondences->at(i).index_query).times));
-            cloud_next->at(correspondences->at(i).index_query).times=-1; //do usuniecia punkt w nowej chmurze, ktory juz jest zarejestrowany w polaczonej chmurze
+			cloud->at(correspondences->at(i).index_match).times += cloud_next->at(correspondences->at(i).index_query).times;
+			modelMultiplicity.insert(std::make_pair<int,int>(correspondences->at(i).index_match, cloud_next->at(correspondences->at(i).index_query).times));
+			cloud_next->at(correspondences->at(i).index_query).times=-1; //do usuniecia punkt w nowej chmurze, ktory juz jest zarejestrowany w polaczonej chmurze
 		}
-		
+
 		//usuniecie punktow
 		pcl::PointCloud<PointXYZSIFT>::iterator pt_iter = cloud->begin();
 		while(pt_iter!=cloud->end()){
@@ -164,18 +177,27 @@ void SIFTAdder::add() {
 				++pt_iter;	
 			}
 		} 
-        
-        for (unsigned k=0; k<cloud_next->size(); ++k) {
-            std::pair<int,int> nextMultiplicity = std::make_pair<int,int>(cloud->size()+k, cloud_next->at(k).times);
-            modelMultiplicity.insert(nextMultiplicity);
+
+		LOG(LINFO) << "Reduced next cloud size: " << cloud_next->size();
+        if (cloud_next->empty()) {
+            continue;
         }
-		
+		for (unsigned k=0; k<cloud_next->size(); ++k) {
+			std::pair<int,int> nextMultiplicity = std::make_pair<int,int>(cloud->size()+k, cloud_next->at(k).times);
+			modelMultiplicity.insert(nextMultiplicity);
+		}
+
 		*cloud = *cloud + *cloud_next;
-		
-        out_modelMultiplicity.write(modelMultiplicity);
-		out_cloud.write(cloud);
-        modelMultiplicity.clear();
-    }
+        LOG(LINFO) << "New joint cloud size: " << cloud->size();
+
+		LOG(LINFO) << "number of model's features: " << modelMultiplicity.size();
+        modelsMultiplicity.push_back(modelMultiplicity);
+//		modelMultiplicity.clear();
+	}
+    LOG(LINFO) << "Added all models to joint cloud. Joint cloud size: " << cloud->size();
+	out_cloud.write(cloud);
+    LOG(LINFO) << "Writing multiplicity vectors of models merged to cloud. Number of vectors: " << modelsMultiplicity.size();
+	out_multiplicityOfModels.write(modelsMultiplicity);
 }
 
 } //: namespace SIFTAdder

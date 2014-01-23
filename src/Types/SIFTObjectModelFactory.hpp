@@ -5,12 +5,19 @@
 #include <Types/SIFTObjectModel.hpp> 
 
 
+/*!
+ * \class SIFTObjectModelFactory
+ * \brief Factory responsible for production of SIFT Object Models.
+ */
 class SIFTObjectModelFactory : public AbstractObjectFactory
 {
+
 public:
 	SIFTObjectModelFactory(){}
 	~SIFTObjectModelFactory(){}
-    AbstractObject* produce(){ /* ziamplementowana - na podstawie tych dwóch chmur (pól) i nazwy zwraca obiekt*/
+
+	/// Produces and returns a SOM object.
+	AbstractObject* produce(){
 		SIFTObjectModel *som = new SIFTObjectModel;
 		som->cloud = cloud_xyzrgb;
 		som->SIFTcloud = cloud_xyzsift;

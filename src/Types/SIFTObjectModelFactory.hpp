@@ -13,7 +13,10 @@ class SIFTObjectModelFactory : public AbstractObjectFactory
 {
 
 public:
-	SIFTObjectModelFactory(){}
+	SIFTObjectModelFactory(){
+		mean_viewpoint_features_number = 0;
+	}
+
 	~SIFTObjectModelFactory(){}
 
 	/// Produces and returns a SOM object.
@@ -30,7 +33,12 @@ public:
 protected:
 	pcl::PointCloud<PointXYZSIFT>::Ptr cloud_xyzsift;// (new pcl::PointCloud<PointXYZSIFT>());
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_xyzrgb;// (new pcl::PointCloud<pcl::PointXYZ>());
-	string model_name;
+
+	/// Name of the model.
+	std::string model_name;
+
+	/// Mean number of viewpoint features.
+	int mean_viewpoint_features_number;
 	//vector<SOM>
 	
 };

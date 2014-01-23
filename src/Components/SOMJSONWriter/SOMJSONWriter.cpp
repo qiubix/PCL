@@ -24,7 +24,7 @@ namespace SOMJSONWriter {
 SOMJSONWriter::SOMJSONWriter(const std::string & name) :
 		Base::Component(name),
 		dir("directory", boost::bind(&SOMJSONWriter::onDirChanged, this, _1, _2), "./"),
-		SOMname("SOM", boost::bind(&SOMJSONWriter::onSOMNameChanged, this, _1, _2), SOMname)
+		SOMname("SOM", boost::bind(&SOMJSONWriter::onSOMNameChanged, this, _1, _2), "SOM")
 {
 	CLOG(LTRACE) << "Hello SOMJSONWriter\n";
 	registerProperty(SOMname);
@@ -82,12 +82,12 @@ void SOMJSONWriter::Write() {
 	SIFTObjectModel* som = in_som.read();
 
 	// Save point cloud.
-	std::string name_cloud = std::string(dir) + std::string("/") + std::string(SOMname) + std::string("_xyz");
+	std::string name_cloud = std::string(dir) + std::string("/") + std::string(SOMname) + std::string("_xyz.pcd");
 	pcl::io::savePCDFileASCII (name_cloud, *(som->cloud));
 	CLOG(LTRACE) << "Write: saved " << som->cloud->points.size () << " cloud points to "<< name_cloud;
 
 	// Save feature cloud.
-	std::string name_SIFTcloud = std::string(dir) + std::string("/") + std::string(SOMname) + "_xyzSIFT";
+	std::string name_SIFTcloud = std::string(dir) + std::string("/") + std::string(SOMname) + std::string("_xyzSIFT.pcd");
 	pcl::io::savePCDFileASCII (name_SIFTcloud, *(som->SIFTcloud));
 	CLOG(LTRACE) << "Write: saved " << som->SIFTcloud->points.size () << " feature points to "<< name_SIFTcloud;
 
@@ -98,8 +98,8 @@ void SOMJSONWriter::Write() {
 	ptree_file.put("mean_viewpoint_features_number", som->mean_viewpoint_features_number);
 	ptree_file.put("cloud_pcd", name_cloud);
 	ptree_file.put("SIFTcloud_pcd", name_SIFTcloud);
-	write_json (std::string(dir) + std::string("/") + std::string(SOMname), ptree_file);
-}
+	write_json (std::string(dir) + std::string("/") + std::string(SOMname) + std::string(".json"), ptree_file);
+} 
 
 
 } //: namespace SOMJSONWriter

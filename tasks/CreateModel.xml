@@ -56,10 +56,10 @@
 			</Executor>
 
 			<Executor name="Visualization" period="1">
-				<Component name="WindowPCL" type="PCL:XYZCloudViewer" priority="1" bump="0">
-					<param name="title">Point cloud (blue), Feature cloud (red)</param>
+				<Component name="WindowPCL" type="PCL:CloudViewer" priority="1" bump="0">
+<!--					<param name="title">Point cloud (blue), Feature cloud (red)</param>
 					<param name="count">2</param>
-					<param name="clouds_colours"> 0 0 255; 255 0 0</param>
+					<param name="clouds_colours"> 0 0 255; 255 0 0</param>-->
 				</Component>
 			</Executor>
 		</Subtask>	
@@ -101,7 +101,7 @@
 		</Source>
 
 		<Source name="VoxelGrid.out_cloud_xyzrgb">
-			<sink>WindowPCL.in_cloud_xyz0</sink>
+			<sink>WindowPCL.in_cloud_xyzrgb</sink>
 			<sink>SOMJSONWriter.in_cloud_xyzrgb</sink>
 		</Source>
 

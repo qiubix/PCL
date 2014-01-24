@@ -69,50 +69,61 @@ void SOMJSONReader::loadModels() {
 	
 	// Names of models/JSON files.	
 	std::vector<std::string> namesList;
-	string s= filenames;
+	std::string s= filenames;
 	boost::split(namesList, s, boost::is_any_of(";"));
+
+	// Temporary variables - names.
+	std::string name_cloud_xyzrgb;
+	std::string name_cloud_xyzsift;
 	
 	// Iterate through JSON files.
 	for (size_t i = 0; i < namesList.size(); i++){
 		ptree ptree_file;
 		try{
+			// Open JSON file and load it to ptree.
 			read_json(namesList[i], ptree_file);
-			}
+			// Read JSON properties.
+			model_name = ptree_file.get<std::string>("name");
+			mean_viewpoint_features_number = ptree_file.get<int>("mean_viewpoint_features_number");
+			name_cloud_xyzrgb = ptree_file.get<std::string>("cloud_xyzrgb");
+			name_cloud_xyzsift = ptree_file.get<std::string>("cloud_xyzsift");
+		}//: try
 		catch(std::exception const& e){
-			LOG(LERROR) << "SOMJSONReader: file "<< namesList[i] <<" not found\n";
-			return;	
-		}		
+			LOG(LERROR) << "SOMJSONReader: file "<< namesList[i] <<" not found or invalid\n";
+			continue;	
+		}//: catch
 
-	}
-/*	for (size_t i = 0; i < namesList.size(); i++){
-		std::vector<std::string> name_split;
-		boost::split(name_split, namesList[i], boost::is_any_of("/"));
-		model_name = name_split[name_split.size()-1];
-		string name_xyz = namesList[i] + "/" + name_split[name_split.size()-1] + "_xyzrgb.pcd";
+		LOG(LDEBUG) << "name_cloud_xyzrgb:" << name_cloud_xyzrgb;
+		LOG(LDEBUG) << "name_cloud_xyzsift:" << name_cloud_xyzsift;
+		
+
+		// Read XYZRGB cloud.
 		cloud_xyzrgb = pcl::PointCloud<pcl::PointXYZRGB>::Ptr (new pcl::PointCloud<pcl::PointXYZRGB>());
-		if (pcl::io::loadPCDFile<pcl::PointXYZRGB> (name_xyz, *cloud_xyzrgb) == -1) //* load the file
-	    {
-            cout <<"Niepoprawny model"<<endl;
+		// Try to load the file.
+		if (pcl::io::loadPCDFile<pcl::PointXYZRGB> (name_cloud_xyzrgb, *cloud_xyzrgb) == -1) 
+		{
+			LOG(LERROR) << "SOMJSONReader: file "<< name_cloud_xyzrgb <<" not found\n";
 			continue;
-	    }
-		string name_xyzsift = namesList[i] + "/" +  name_split[name_split.size()-1] + "_xyzsift.pcd";
-		cloud_xyzsift = pcl::PointCloud<PointXYZSIFT>::Ptr (new pcl::PointCloud<PointXYZSIFT>());
-		if (pcl::io::loadPCDFile<PointXYZSIFT> (name_xyzsift, *cloud_xyzsift) == -1) //* load the file
-	    {
-            cout <<"Niepoprawny model"<<endl;
-			continue;
-	    }
+		}//: if
 
-		//dodanie do wektora modeli	    
-		SIFTObjectModel* model;// = new SIFTObjectModel();
+		// Read XYZRGB cloud.
+		cloud_xyzsift = pcl::PointCloud<PointXYZSIFT>::Ptr (new pcl::PointCloud<PointXYZSIFT>());
+		// Try to load the file.
+		if (pcl::io::loadPCDFile<PointXYZSIFT> (name_cloud_xyzsift, *cloud_xyzsift) == -1) 
+		{
+			LOG(LERROR) << "SOMJSONReader: file "<< name_cloud_xyzsift <<" not found\n";
+			continue;
+		}//: if
+
+		// Create SOModel and add it to list.
+		SIFTObjectModel* model;
 		model = dynamic_cast<SIFTObjectModel*>(produce());
 		models.push_back(model);
-        //models.push_back(produce());
-    }
 
-    out_models.write(models); /////////terminate called after throwing an instance of 'std::bad_alloc' what():  std::bad_alloc Przerwane (core dumped)
-*/
+	}//: for
 
+	// Push models to output datastream.
+	out_models.write(models);
 }
 
 

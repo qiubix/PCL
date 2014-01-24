@@ -13,7 +13,8 @@
 #include "Property.hpp"
 #include "EventHandler2.hpp"
 
-#include <Types/SIFTObjectModel.hpp> 
+//#include <Types/SIFTObjectModel.hpp> 
+#include <Types/SIFTObjectModelFactory.hpp> 
 
 namespace Processors {
 namespace SOMJSONReader {
@@ -24,7 +25,7 @@ namespace SOMJSONReader {
  *
  * SOMJSONReader processor.
  */
-class SOMJSONReader: public Base::Component {
+class SOMJSONReader: public Base::Component, SIFTObjectModelFactory {
 public:
 	/*!
 	 * Constructor.

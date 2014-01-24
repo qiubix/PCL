@@ -78,8 +78,11 @@ void SOMJSONWriter::onDirChanged(const std::string & old_dir,
 
 
 void SOMJSONWriter::Write() {
+	LOG(LTRACE) << "SOMJSONWriter::Write";
 	// Try to save the model retrieved from the SOM data stream.
 	if (!in_som.empty()) {
+		LOG(LDEBUG) << "!in_som.empty()";
+
 		// Get SOM.
 		SIFTObjectModel* som = in_som.read();
 
@@ -106,6 +109,8 @@ void SOMJSONWriter::Write() {
 
 	// Try to save the model retrieved from the three separate data streams.
 	if (!in_cloud_xyzrgb.empty() && !in_cloud_xyzsift.empty() && !in_mean_viewpoint_features_number.empty()) {
+		LOG(LDEBUG) << "!in_cloud_xyzrgb.empty() && !in_cloud_xyzsift.empty() && !in_mean_viewpoint_features_number.empty()";
+
 		// Get model from datastreams.
 		pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_xyzrgb = in_cloud_xyzrgb.read();
 		pcl::PointCloud<PointXYZSIFT>::Ptr cloud_xyzsift = in_cloud_xyzsift.read();

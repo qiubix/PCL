@@ -16,7 +16,7 @@ class PointCloudObject : public AbstractObject
 {
 	public:
 	/// Cloud of points constituting the object model.
-	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud;
+	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_xyzrgb;
 };
 
 

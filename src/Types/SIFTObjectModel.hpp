@@ -19,7 +19,7 @@ class SIFTObjectModel : public PointCloudObject
 	int mean_viewpoint_features_number;
 
 	/// Cloud of SIFT - features extracted from RGB image and transformed from image into Cartesian space.
-	pcl::PointCloud<PointXYZSIFT>::Ptr SIFTcloud;
+	pcl::PointCloud<PointXYZSIFT>::Ptr cloud_xyzsift;
 };
 
 

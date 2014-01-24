@@ -39,6 +39,10 @@ SOMJSONWriter::~SOMJSONWriter() {
 void SOMJSONWriter::prepareInterface() {
 	// Register data streams, events and event handlers HERE!
 	registerStream("in_som", &in_som);
+	registerStream("in_cloud_xyzrgb", &in_cloud_xyzrgb);
+	registerStream("in_cloud_xyzsift", &in_cloud_xyzsift);
+	registerStream("in_mean_viewpoint_features_number", &in_mean_viewpoint_features_number);
+
 	// Register handlers
 	h_Write.setup(boost::bind(&SOMJSONWriter::Write, this));
 	registerHandler("Write", &h_Write);
@@ -74,31 +78,61 @@ void SOMJSONWriter::onDirChanged(const std::string & old_dir,
 
 
 void SOMJSONWriter::Write() {
-	// Read model from data stream.
-	if (in_som.empty()) {
-		CLOG(LWARNING) << "The SOM datastream is empty.";
+	// Try to save the model retrieved from the SOM data stream.
+	if (!in_som.empty()) {
+		// Get SOM.
+		SIFTObjectModel* som = in_som.read();
+
+		// Save point cloud.
+		std::string name_cloud_xyzrgb = std::string(dir) + std::string("/") + std::string(SOMname) + std::string("_xyzrgb.pcd");
+		pcl::io::savePCDFileASCII (name_cloud_xyzrgb, *(som->cloud_xyzrgb));
+		CLOG(LTRACE) << "Write: saved " << som->cloud_xyzrgb->points.size () << " cloud points to "<< name_cloud_xyzrgb;
+
+		// Save feature cloud.
+		std::string name_cloud_xyzsift = std::string(dir) + std::string("/") + std::string(SOMname) + std::string("_xyzsift.pcd");
+		pcl::io::savePCDFileASCII (name_cloud_xyzsift, *(som->cloud_xyzsift));
+		CLOG(LTRACE) << "Write: saved " << som->cloud_xyzsift->points.size () << " feature points to "<< name_cloud_xyzsift;
+
+		// Save JSON model description.
+		ptree ptree_file;
+		ptree_file.put("name", SOMname);
+		ptree_file.put("type", "SIFTObjectModel");
+		ptree_file.put("mean_viewpoint_features_number", som->mean_viewpoint_features_number);
+		ptree_file.put("cloud_xyzrgb", name_cloud_xyzrgb);
+		ptree_file.put("cloud_xyzsift", name_cloud_xyzsift);
+		write_json (std::string(dir) + std::string("/") + std::string(SOMname) + std::string(".json"), ptree_file);
+		return;
 	}
-	// Get SOM.
-	SIFTObjectModel* som = in_som.read();
 
-	// Save point cloud.
-	std::string name_cloud = std::string(dir) + std::string("/") + std::string(SOMname) + std::string("_xyz.pcd");
-	pcl::io::savePCDFileASCII (name_cloud, *(som->cloud));
-	CLOG(LTRACE) << "Write: saved " << som->cloud->points.size () << " cloud points to "<< name_cloud;
+	// Try to save the model retrieved from the three separate data streams.
+	if (!in_cloud_xyzrgb.empty() && !in_cloud_xyzsift.empty() && !in_mean_viewpoint_features_number.empty()) {
+		// Get model from datastreams.
+		pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_xyzrgb = in_cloud_xyzrgb.read();
+		pcl::PointCloud<PointXYZSIFT>::Ptr cloud_xyzsift = in_cloud_xyzsift.read();
+		int mean_viewpoint_features_number = in_mean_viewpoint_features_number.read();
 
-	// Save feature cloud.
-	std::string name_SIFTcloud = std::string(dir) + std::string("/") + std::string(SOMname) + std::string("_xyzSIFT.pcd");
-	pcl::io::savePCDFileASCII (name_SIFTcloud, *(som->SIFTcloud));
-	CLOG(LTRACE) << "Write: saved " << som->SIFTcloud->points.size () << " feature points to "<< name_SIFTcloud;
+		// Save point cloud.
+		std::string name_cloud_xyzrgb = std::string(dir) + std::string("/") + std::string(SOMname) + std::string("_xyzrgb.pcd");
+		pcl::io::savePCDFileASCII (name_cloud_xyzrgb, *(cloud_xyzrgb));
+		CLOG(LTRACE) << "Write: saved " << cloud_xyzrgb->points.size () << " cloud points to "<< name_cloud_xyzrgb;
 
-	// Save JSON model description.
-	ptree ptree_file;
-	ptree_file.put("name", som->name);
-	ptree_file.put("type", "SIFTObjectModel");
-	ptree_file.put("mean_viewpoint_features_number", som->mean_viewpoint_features_number);
-	ptree_file.put("cloud_pcd", name_cloud);
-	ptree_file.put("SIFTcloud_pcd", name_SIFTcloud);
-	write_json (std::string(dir) + std::string("/") + std::string(SOMname) + std::string(".json"), ptree_file);
+		// Save feature cloud.
+		std::string name_cloud_xyzsift = std::string(dir) + std::string("/") + std::string(SOMname) + std::string("_xyzsift.pcd");
+		pcl::io::savePCDFileASCII (name_cloud_xyzsift, *(cloud_xyzsift));
+		CLOG(LTRACE) << "Write: saved " << cloud_xyzsift->points.size () << " feature points to "<< name_cloud_xyzsift;
+
+		// Save JSON model description.
+		ptree ptree_file;
+		ptree_file.put("name", SOMname);
+		ptree_file.put("type", "SIFTObjectModel");
+		ptree_file.put("mean_viewpoint_features_number", mean_viewpoint_features_number);
+		ptree_file.put("cloud_xyzrgb", name_cloud_xyzrgb);
+		ptree_file.put("cloud_xyzsift", name_cloud_xyzsift);
+		write_json (std::string(dir) + std::string("/") + std::string(SOMname) + std::string(".json"), ptree_file);
+		return;
+	}
+	
+	CLOG(LWARNING) << "There are no required datastreams enabling save of the SOM to file.";
 } 
 
 

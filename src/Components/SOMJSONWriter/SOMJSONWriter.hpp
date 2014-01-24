@@ -80,6 +80,16 @@ protected:
 	/// Input data stream containing SIFT Object Model
 	Base::DataStreamIn<SIFTObjectModel*> in_som;
 
+	/// Input data stream containing object model point cloud.
+	Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> in_cloud_xyzrgb;
+
+	/// Input data stream containing object model feature cloud (SIFTs).
+	Base::DataStreamIn<pcl::PointCloud<PointXYZSIFT>::Ptr> in_cloud_xyzsift;
+
+	// Input stream containing mean number of features per view. 
+	Base::DataStreamIn<int> in_mean_viewpoint_features_number;
+
+
 	// Handlers
 	Base::EventHandler2 h_Write;
 	

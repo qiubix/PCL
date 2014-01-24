@@ -22,24 +22,25 @@ public:
 	/// Produces and returns a SOM object.
 	AbstractObject* produce(){
 		SIFTObjectModel *som = new SIFTObjectModel;
-		som->cloud = cloud_xyzrgb;
-		som->SIFTcloud = cloud_xyzsift;
+		som->cloud_xyzrgb = cloud_xyzrgb;
+		som->cloud_xyzsift = cloud_xyzsift;
 		som->name = model_name;
 		som->mean_viewpoint_features_number = mean_viewpoint_features_number;
 		return som;
-}
-	//add_to_vector(SOM);
+	}
 	
 protected:
-	pcl::PointCloud<PointXYZSIFT>::Ptr cloud_xyzsift;// (new pcl::PointCloud<PointXYZSIFT>());
-	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_xyzrgb;// (new pcl::PointCloud<pcl::PointXYZ>());
+	/// Cloud of XYZSIFT points - feature cloud.
+	pcl::PointCloud<PointXYZSIFT>::Ptr cloud_xyzsift;
+
+	/// Cloud of XYZRGB points - object model cloud.
+	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_xyzrgb;
 
 	/// Name of the model.
 	std::string model_name;
 
 	/// Mean number of viewpoint features.
 	int mean_viewpoint_features_number;
-	//vector<SOM>
 	
 };
 #endif /* SIFTOBJECTMODELFACTORY_HPP_ */

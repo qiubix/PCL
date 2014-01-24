@@ -25,12 +25,13 @@ FeatureCloudConverter::~FeatureCloudConverter() {
 
 void FeatureCloudConverter::prepareInterface() {
 	// Register data streams, events and event handlers HERE!
-registerStream("in_depth", &in_depth);
-registerStream("in_mask", &in_mask);
-registerStream("in_features", &in_features);
-registerStream("in_descriptors", &in_descriptors);
-registerStream("in_camera_info", &in_camera_info);
-registerStream("out_cloud", &out_cloud);
+	registerStream("in_depth", &in_depth);
+	registerStream("in_mask", &in_mask);
+	registerStream("in_features", &in_features);
+	registerStream("in_descriptors", &in_descriptors);
+	registerStream("in_camera_info", &in_camera_info);
+	registerStream("out_cloud_xyzsift", &out_cloud_xyzsift);
+
 	// Register handlers
 	h_process.setup(boost::bind(&FeatureCloudConverter::process, this));
 	registerHandler("process", &h_process);
@@ -109,7 +110,7 @@ void FeatureCloudConverter::process() {
 		cloud->push_back(point);
 	}
 	
-	out_cloud.write(cloud);
+	out_cloud_xyzsift.write(cloud);
 }
 
 
@@ -158,7 +159,7 @@ void FeatureCloudConverter::process_mask() {
 		cloud->push_back(point);
 	}
 	
-	out_cloud.write(cloud);
+	out_cloud_xyzsift.write(cloud);
 }
 
 

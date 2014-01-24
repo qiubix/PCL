@@ -70,19 +70,17 @@ protected:
 	bool onStop();
 
 
-// Input data streams
+	// Input data streams
+	Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> in_cloud_xyzrgb;
 
-		Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> in_pcl;
+	// Output data streams
+	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> out_cloud_xyzrgb;
 
-// Output data streams
-
-		Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> out_pcl;
 	// Handlers
 	Base::EventHandler2 h_filter;
-		Base::Property<float> x;
-		Base::Property<float> y;
-		Base::Property<float> z;
-
+	Base::Property<float> x;
+	Base::Property<float> y;
+	Base::Property<float> z;
 	
 	// Handlers
 	void filter();

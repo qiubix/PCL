@@ -89,6 +89,8 @@ protected:
 	void match();
 
 	std::vector<SIFTObjectModel*> models;
+	
+	Base::Property<float> threshold;
 
 };
 

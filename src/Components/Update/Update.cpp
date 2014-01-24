@@ -183,6 +183,8 @@ void Update::update() {
 	cloud_next->is_dense = false; 
 	pcl::removeNaNFromPointCloud(*cloud_next,*cloud_next,indices);	
 	*cloud_sift_next = *cloud_sift;
+	counter++;
+	//cout<< "cloud_next->size(): "<<cloud_next->size()<<endl;
 	
 	pcl::CorrespondencesPtr correspondences(new pcl::Correspondences()) ;
 	pcl::registration::CorrespondenceEstimation<PointXYZSIFT, PointXYZSIFT> correst ;

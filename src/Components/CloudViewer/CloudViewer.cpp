@@ -76,6 +76,10 @@ void CloudViewer::on_cloud_xyz() {
 }
 
 void CloudViewer::on_cloud_xyzrgb() {
+	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud = in_cloud_xyzrgb.read();
+	pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGB> color_distribution(cloud);
+	viewer->removePointCloud("viewcloud") ;
+	viewer->addPointCloud<pcl::PointXYZRGB>(cloud, color_distribution, "viewcloud") ;
 }
 
 void CloudViewer::on_cloud_normals() {

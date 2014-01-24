@@ -19,8 +19,12 @@ namespace StatisticalOutlierRemoval {
 
 StatisticalOutlierRemoval::StatisticalOutlierRemoval(const std::string & name) :
 		Base::Component(name) , 
-		negative("negative", false) {
+		negative("negative", false),
+		StddevMulThresh("StddevMulThresh", 1.0),
+		MeanK("MeanK", 50) {
 		registerProperty(negative);
+		registerProperty(StddevMulThresh);
+		registerProperty(MeanK);
 
 }
 
@@ -59,8 +63,8 @@ void StatisticalOutlierRemoval::filter() {
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud = in_cloud_xyzrgb.read();
 	pcl::StatisticalOutlierRemoval<pcl::PointXYZRGB> sor;
 	sor.setInputCloud (cloud);
-	sor.setMeanK (50);
-	sor.setStddevMulThresh (1.0);
+	sor.setMeanK (MeanK);
+	sor.setStddevMulThresh (StddevMulThresh);
 	sor.setNegative (negative);
 	sor.filter (*cloud);
 	out_cloud_xyzrgb.write(cloud);

@@ -77,7 +77,8 @@ protected:
 	// Handlers
 	Base::EventHandler2 h_filter;
 		Base::Property<bool> negative;
-
+		Base::Property<float> StddevMulThresh;
+		Base::Property<float> MeanK;
 	
 	// Handlers
 	void filter();

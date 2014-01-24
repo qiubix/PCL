@@ -2,13 +2,13 @@
 	<!-- reference task information -->
 	<Reference>
 		<Author>
-			<name>Tomasz Kornuta</name>
+			<name>Michał Laszkowski</name>
 			<link></link>
 		</Author>
 		
 		<Description>
-			<brief>ecovi:t1/SequenceViewer</brief>
-			<full>Loads and displays a sequence of images</full>	
+			<brief>Generates SOM and stores it in PCD file</brief>
+			<full>Loads a sequence of object views and joins them into SIFT object model (SOM)</full>	
 		</Description>
 	</Reference>
 	
@@ -17,17 +17,17 @@
 		<Subtask name="Main">
 			<Executor name="Processing"  period="1">
 				<Component name="SequenceRGB" type="CvBasic:Sequence" priority="1" bump="0">
-					<param name="sequence.directory">/home/mlaszkow/obiekty/cereal_box_1_co5</param>
+					<param name="sequence.directory">/home/tkornuta/Objects/cereal_box_1_co5/</param>
 					<param name="sequence.pattern">.*\_color.png</param>
 					<param name="mode.loop">0</param>					
 				</Component>
 				<Component name="SequenceDepth" type="CvBasic:Sequence" priority="2" bump="0">
-					<param name="sequence.directory">/home/mlaszkow/obiekty/cereal_box_1_co5</param>
+					<param name="sequence.directory">/home/tkornuta/Objects/cereal_box_1_co5/</param>
 					<param name="sequence.pattern">.*\_depth.png</param>	
 					<param name="mode.loop">0</param>	
 				</Component>
 				<Component name="SequenceMask" type="CvBasic:Sequence" priority="3" bump="0">
-					<param name="sequence.directory">/home/mlaszkow/obiekty/cereal_box_1_co5</param>
+					<param name="sequence.directory">/home/tkornuta/Objects/cereal_box_1_co5/</param>
 					<param name="sequence.pattern">.*\_mask.png</param>
 					<param name="mode.loop">0</param>	
 				</Component>
@@ -47,19 +47,19 @@
 					<param name="LeafSize.y">0.005</param>
 					<param name="LeafSize.z">0.005</param>
 				</Component>
-				<Component name="PCDWriter" type="PCL:PCDWriter" priority="10" bump="5">
-					<param name="filename">/home/mlaszkow/pcd/fcereal_box_1_xyzsift.pcd</param>
-                </Component>
-                <Component name="JSONWriter" type="PCL:JSONWriter" priority="11" bump="0">
-					<param name="filename">/home/mlaszkow/pcd/cereal_box_1_sift.json</param>
+				<!--<Component name="PCDWriter" type="PCL:PCDWriter" priority="10" bump="5">
+					<param name="filename">cereal_box_1_co5</param>
+                </Component>-->
+                <Component name="SOMJSONWriter" type="PCL:SOMJSONWriter" priority="11" bump="0">
+					<param name="SOM">cereal_box_1_co5_v2</param>
                 </Component>
 			</Executor>
 
 			<Executor name="Visualization" period="1">
 				<Component name="WindowPCL" type="PCL:XYZCloudViewer" priority="1" bump="10">
-					<param name="title">XYZRGB(blue), XYZSIFT(white)</param>
+					<param name="title">Point cloud (blue), Feature cloud (red)</param>
 					<param name="count">2</param>
-					<param name="clouds_colours"> 0 0 255; 255 255 255</param>
+					<param name="clouds_colours"> 0 0 255; 255 0 0</param>
 				</Component>
 			</Executor>
 		</Subtask>	
@@ -80,7 +80,7 @@
 			<sink>Converter.in_mask</sink>	
 			<sink>FeatureCloudConverter.in_mask</sink>		
 		</Source>
-		<Source name="CameraInfo.out_camerainfo">
+		<Source name="CameraInfo.out_camera_info">
 			<sink>Converter.in_camera_info</sink>	
 			<sink>FeatureCloudConverter.in_camera_info</sink>
 		</Source>
@@ -93,23 +93,26 @@
 		<Source name="Converter.out_cloud_xyzrgb">
 			<sink>Update.in_cloud_xyzrgb</sink>
 		</Source>
-		<Source name="FeatureCloudConverter.out_cloud">
+		<Source name="FeatureCloudConverter.out_cloud_xyzsift">
 			<sink>Update.in_cloud_xyzsift</sink>	
 		</Source>
-		<Source name="Update.out_cloud">
+		<Source name="Update.out_cloud_xyzrgb">
+			<sink>VoxelGrid.in_cloud_xyzrgb</sink>
+		</Source>
+		<Source name="Update.out_cloud_xyzsift">
+<!--			<sink>WindowPCL.in_cloud_xyz1</sink> -->
+			<sink>SOMJSONWriter.in_cloud_xyzsift</sink>
+		</Source>
+		<Source name="Update.out_mean_viewpoint_features_number">
+			<sink>SOMJSONWriter.in_mean_viewpoint_features_number</sink>
+		</Source>
+
+		<Source name="Update.out_instance">
+			<sink>SOMJSONWriter.in_som</sink>
+		</Source>
+		<Source name="VoxelGrid.out_cloud_xyzrgb">
 			<sink>WindowPCL.in_cloud_xyz0</sink>
-			<sink>VoxelGrid.in_pcl</sink>
-		</Source>
-		<Source name="Update.out_cloud_sift">
-			<sink>WindowPCL.in_cloud_xyz1</sink>
-			<sink>PCDWriter.in_pcl_xyzsift</sink>
-			<sink>JSONWriter.in_cloud_xyzsift</sink>	
-		</Source>
-		<Source name="Update.out_cloud_sift">
-			<sink>PCDWriter.in_pcl_xyzsift</sink>
-		</Source>
-		<Source name="VoxelGrid.out_pcl">
-			<sink>PCDWriter.in_pcl_xyzrgb</sink>
+			<sink>SOMJSONWriter.in_cloud_xyzrgb</sink>
 		</Source>
 				
 	</DataStreams>

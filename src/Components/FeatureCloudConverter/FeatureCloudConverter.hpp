@@ -73,17 +73,16 @@ protected:
 	bool onStop();
 
 
-// Input data streams
+	// Input data streams
+	Base::DataStreamIn<cv::Mat> in_depth;
+	Base::DataStreamIn<cv::Mat> in_mask;
+	Base::DataStreamIn<Types::Features> in_features;
+	Base::DataStreamIn<cv::Mat> in_descriptors;
+	Base::DataStreamIn<Types::CameraInfo> in_camera_info;
 
-		Base::DataStreamIn<cv::Mat> in_depth;
-		Base::DataStreamIn<cv::Mat> in_mask;
-		Base::DataStreamIn<Types::Features> in_features;
-		Base::DataStreamIn<cv::Mat> in_descriptors;
-		Base::DataStreamIn<Types::CameraInfo> in_camera_info;
+	/// Output data stream containing resulting feature cloud.
+	Base::DataStreamOut<pcl::PointCloud<PointXYZSIFT>::Ptr> out_cloud_xyzsift;
 
-// Output data streams
-
-		Base::DataStreamOut<pcl::PointCloud<PointXYZSIFT>::Ptr> out_cloud;
 	// Handlers
 	Base::EventHandler2 h_process;
 	Base::EventHandler2 h_process_mask;

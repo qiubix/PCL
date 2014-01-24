@@ -173,7 +173,7 @@ void Update::update() {
 		out_cloud_xyzsift.write(cloud_sift_merged);
 
 		// Push SOM - depricated.
-		out_instance.write(produce());	
+//		out_instance.write(produce());	
 		return;
 	}
 	
@@ -274,7 +274,7 @@ void Update::update() {
 		out_cloud_xyzsift.write(cloud_sift_merged);
 
 		// Push SOM - depricated.
-		out_instance.write(produce());	
+//		out_instance.write(produce());	
 }
 
 

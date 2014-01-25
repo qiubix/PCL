@@ -47,19 +47,15 @@
 					<param name="LeafSize.y">0.005</param>
 					<param name="LeafSize.z">0.005</param>
 				</Component>
-				<!--<Component name="PCDWriter" type="PCL:PCDWriter" priority="10" bump="5">
-					<param name="filename">cereal_box_1_co5</param>
-		                </Component>-->
-                		<Component name="SOMJSONWriter" type="PCL:SOMJSONWriter" priority="11" bump="10">
+				<Component name="StatisticalOutlierRemoval" type="PCL:StatisticalOutlierRemoval" priority="10" bump="0">
+				</Component>
+		                <Component name="SOMJSONWriter" type="PCL:SOMJSONWriter" priority="11" bump="10">
 					<param name="SOM">cereal_box_1_co5_v2</param>
-		                </Component>
+			        </Component>
 			</Executor>
 
 			<Executor name="Visualization" period="1">
 				<Component name="WindowPCL" type="PCL:CloudViewer" priority="1" bump="0">
-<!--					<param name="title">Point cloud (blue), Feature cloud (red)</param>
-					<param name="count">2</param>
-					<param name="clouds_colours"> 0 0 255; 255 0 0</param>-->
 				</Component>
 			</Executor>
 		</Subtask>	
@@ -101,21 +97,22 @@
 		</Source>
 
 		<Source name="VoxelGrid.out_cloud_xyzrgb">
+			<sink>StatisticalOutlierRemoval.in_cloud_xyzrgb</sink>
+		</Source>
+		
+		<Source name="StatisticalOutlierRemoval.out_cloud_xyzrgb">
 			<sink>WindowPCL.in_cloud_xyzrgb</sink>
-			<sink>SOMJSONWriter.in_cloud_xyzrgb</sink>
+			<sink>SOMJSONWriter.in_cloud_xyzrgb</sink>	
 		</Source>
 
 		<Source name="Update.out_cloud_xyzsift">
-<!--			<sink>WindowPCL.in_cloud_xyz1</sink> -->
 			<sink>SOMJSONWriter.in_cloud_xyzsift</sink>
 		</Source>
 		<Source name="Update.out_mean_viewpoint_features_number">
 			<sink>SOMJSONWriter.in_mean_viewpoint_features_number</sink>
 		</Source>
 
-		<Source name="Update.out_instance">
-<!--			<sink>SOMJSONWriter.in_som</sink> -->
-		</Source>-
+
 				
 	</DataStreams>
 </Task>

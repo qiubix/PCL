@@ -4,42 +4,38 @@
  * \author Micha Laszkowski
  */
 
-#ifndef SIFTOBJECTMATCHER_HPP_
-#define SIFTOBJECTMATCHER_HPP_
+#ifndef STATISTICALOUTLIERREMOVAL_HPP_
+#define STATISTICALOUTLIERREMOVAL_HPP_
 
 #include "Component_Aux.hpp"
 #include "Component.hpp"
 #include "DataStream.hpp"
 #include "Property.hpp"
 #include "EventHandler2.hpp"
-#include <Types/PointXYZSIFT.hpp> 
-#include <Types/SIFTObjectModel.hpp> 
-#include <pcl/point_representation.h>
-#include <opencv2/core/core.hpp>
 
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 
 namespace Processors {
-namespace SIFTObjectMatcher {
+namespace StatisticalOutlierRemoval {
 
 /*!
- * \class SIFTObjectMatcher
- * \brief SIFTObjectMatcher processor class.
+ * \class StatisticalOutlierRemoval
+ * \brief StatisticalOutlierRemoval processor class.
  *
- * SIFTObjectMatcher processor.
+ * StatisticalOutlierRemoval processor.
  */
-class SIFTObjectMatcher: public Base::Component {
+class StatisticalOutlierRemoval: public Base::Component {
 public:
 	/*!
 	 * Constructor.
 	 */
-	SIFTObjectMatcher(const std::string & name = "SIFTObjectMatcher");
+	StatisticalOutlierRemoval(const std::string & name = "StatisticalOutlierRemoval");
 
 	/*!
 	 * Destructor
 	 */
-	virtual ~SIFTObjectMatcher();
+	virtual ~StatisticalOutlierRemoval();
 
 	/*!
 	 * Prepare components interface (register streams and handlers).
@@ -73,33 +69,28 @@ protected:
 
 // Input data streams
 
-		Base::DataStreamIn<std::vector<AbstractObject*> > in_models;
-		Base::DataStreamIn<pcl::PointCloud<PointXYZSIFT>::Ptr> in_cloud_xyzsift;
 		Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> in_cloud_xyzrgb;
 
 // Output data streams
 
+		Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> out_cloud_xyzrgb;
 	// Handlers
-	Base::EventHandler2 h_readModels;
-	Base::EventHandler2 h_match;
-
+	Base::EventHandler2 h_filter;
+		Base::Property<bool> negative;
+		Base::Property<float> StddevMulThresh;
+		Base::Property<float> MeanK;
 	
 	// Handlers
-	void readModels();
-	void match();
-
-	std::vector<SIFTObjectModel*> models;
-	
-	Base::Property<float> threshold;
+	void filter();
 
 };
 
-} //: namespace SIFTObjectMatcher
+} //: namespace StatisticalOutlierRemoval
 } //: namespace Processors
 
 /*
  * Register processor component.
  */
-REGISTER_COMPONENT("SIFTObjectMatcher", Processors::SIFTObjectMatcher::SIFTObjectMatcher)
+REGISTER_COMPONENT("StatisticalOutlierRemoval", Processors::StatisticalOutlierRemoval::StatisticalOutlierRemoval)
 
-#endif /* SIFTOBJECTMATCHER_HPP_ */
+#endif /* STATISTICALOUTLIERREMOVAL_HPP_ */

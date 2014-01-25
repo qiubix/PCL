@@ -46,3 +46,5 @@ ADD_COMPONENT(SOMJSONReader)
 ADD_COMPONENT(SOMJSONWriter)
 
 ADD_COMPONENT(PassThrough)
+
+ADD_COMPONENT(StatisticalOutlierRemoval)

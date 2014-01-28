@@ -55,18 +55,17 @@ SIFTAdder::~SIFTAdder() {
 
 void SIFTAdder::prepareInterface() {
 	// Register data streams, events and event handlers HERE!
-//registerStream("in_descriptors", &in_descriptors);
-//registerStream("out_descriptors", &out_descriptors);
-//registerStream("in_cloud", &in_cloud);
-    registerStream("in_models", &in_models);
-registerStream("out_cloud", &out_cloud);
-registerStream("out_multiplicityOfModels", &out_multiplicityOfModels);
+	//registerStream("in_descriptors", &in_descriptors);
+	//registerStream("out_descriptors", &out_descriptors);
+	//registerStream("in_cloud", &in_cloud);
+	registerStream("in_models", &in_models);
+	registerStream("out_cloud", &out_cloud);
+	registerStream("out_multiplicityOfModels", &out_multiplicityOfModels);
 	// Register handlers
 	h_add.setup(boost::bind(&SIFTAdder::add, this));
 	registerHandler("add", &h_add);
-//	addDependency("add", &in_cloud);
-    addDependency("add", &in_models);
-
+	//	addDependency("add", &in_cloud);
+	addDependency("add", &in_models);
 }
 
 bool SIFTAdder::onInit() {
@@ -93,31 +92,31 @@ bool SIFTAdder::onStart() {
 }
 
 void SIFTAdder::add() {
-	LOG(LDEBUG) << "\nSIFTAdder: adding models to joint cloud";
+	LOG(LDEBUG) << "================= SIFTAdder: adding models to joint cloud =================";
 
 	models = in_models.read();
     std::vector <std::map<int,int> > modelsMultiplicity;
-	LOG(LINFO) << "Number of models: " << models.size();
+	LOG(LDEBUG) << "Number of models: " << models.size();
 	for (unsigned n=0; n<models.size(); ++n) {
 
 		std::map<int,int> modelMultiplicity;
 		pcl::PointCloud<PointXYZSIFT>::Ptr cloud_next = dynamic_cast<SIFTObjectModel*>(models.at(n))->SIFTcloud;
-        LOG(LINFO) << "Model no " << n << ": model's cloud size = " << cloud_next->size();
+        LOG(LDEBUG) << "Model no " << n << ": model's cloud size = " << cloud_next->size();
 
 		if (cloud->empty()){
-            LOG(LINFO) << "Writing new cloud to empty joint cloud. Size: " << cloud_next->size();
+            LOG(LDEBUG) << "Writing new cloud to empty joint cloud. Size: " << cloud_next->size();
 			cloud = cloud_next;
 			out_cloud.write(cloud);
 			for (unsigned k=0; k<cloud_next->size(); ++k) {
 				std::pair<int,int> nextMultiplicity = std::make_pair<int,int>(k, cloud_next->at(k).times);
 				modelMultiplicity.insert(nextMultiplicity);
 			}
-			LOG(LINFO) << "number of model's features: " << modelMultiplicity.size();
+			LOG(LDEBUG) << "number of model's features: " << modelMultiplicity.size();
 			modelsMultiplicity.push_back(modelMultiplicity);
 			continue;
 		}
         
-        LOG(LINFO) << "Joint cloud size before merge: " << cloud->size();
+        LOG(LDEBUG) << "Joint cloud size before merge: " << cloud->size();
 
 		pcl::CorrespondencesPtr correspondences(new pcl::Correspondences()) ;
 		pcl::registration::CorrespondenceEstimation<PointXYZSIFT, PointXYZSIFT> correst ;
@@ -129,30 +128,37 @@ void SIFTAdder::add() {
 		correst.setInputSource(cloud_next) ;
 		correst.setInputTarget(cloud) ;
 		correst.determineReciprocalCorrespondences(*correspondences) ;
+        
+        LOG(LDEBUG) << "Correspondences determined " << correspondences -> size();
 	
-		//ransac znalezienie blednych dopasowan
-		pcl::Correspondences inliers ;
-		pcl::registration::CorrespondenceRejectorSampleConsensus<PointXYZSIFT> sac ;
-		sac.setInputSource(cloud_next) ;
-		sac.setInputTarget(cloud) ;
-		sac.setInlierThreshold(0.001f) ;
-		sac.setMaximumIterations(2000) ;
-		sac.setInputCorrespondences(correspondences) ;
-		sac.getCorrespondences(inliers) ;
-		//usuniecie blednych dopasowan
-		pcl::Correspondences::iterator iter_inliers = inliers.begin();
-		while(iter_inliers!=inliers.end()){
-			pcl::Correspondences::iterator iter_correspondences = correspondences->begin();
-			while(iter_correspondences!=correspondences->end()){
-				if(iter_correspondences->index_query == iter_inliers->index_query){
-					iter_correspondences= correspondences->erase(iter_correspondences);
-					break;
+        if ( correspondences -> size() > 4 ) {
+			//ransac znalezienie blednych dopasowan
+			pcl::Correspondences inliers ;
+			pcl::registration::CorrespondenceRejectorSampleConsensus<PointXYZSIFT> sac ;
+			sac.setInputSource(cloud_next) ;
+			sac.setInputTarget(cloud) ;
+			sac.setInlierThreshold(0.001f) ;
+			sac.setMaximumIterations(2000) ;
+			sac.setInputCorrespondences(correspondences) ;
+			sac.getCorrespondences(inliers);
+
+			LOG(LDEBUG) << "Wrong matches found";
+
+			//usuniecie blednych dopasowan
+			pcl::Correspondences::iterator iter_inliers = inliers.begin();
+			while(iter_inliers!=inliers.end()){
+				pcl::Correspondences::iterator iter_correspondences = correspondences->begin();
+				while(iter_correspondences!=correspondences->end()){
+					if(iter_correspondences->index_query == iter_inliers->index_query){
+						iter_correspondences= correspondences->erase(iter_correspondences);
+						break;
+					}
+					else 
+						++iter_correspondences;
 				}
-				else 
-					++iter_correspondences;
+				++iter_inliers;	
 			}
-			++iter_inliers;	
-		}
+        }
 		
 		LOG(LINFO) << "Number of reciprocal correspondences: " << correspondences->size() << " out of " << cloud_next->size() << " keypoints";// << std::endl ;
 
@@ -178,7 +184,7 @@ void SIFTAdder::add() {
 			}
 		} 
 
-		LOG(LINFO) << "Reduced next cloud size: " << cloud_next->size();
+		LOG(LDEBUG) << "Reduced next cloud size: " << cloud_next->size();
         if (cloud_next->empty()) {
             continue;
         }
@@ -188,15 +194,14 @@ void SIFTAdder::add() {
 		}
 
 		*cloud = *cloud + *cloud_next;
-        LOG(LINFO) << "New joint cloud size: " << cloud->size();
-
-		LOG(LINFO) << "number of model's features: " << modelMultiplicity.size();
+        LOG(LDEBUG) << "New joint cloud size: " << cloud->size();
+		LOG(LDEBUG) << "number of model's features: " << modelMultiplicity.size();
         modelsMultiplicity.push_back(modelMultiplicity);
 //		modelMultiplicity.clear();
 	}
-    LOG(LINFO) << "Added all models to joint cloud. Joint cloud size: " << cloud->size();
+    LOG(LDEBUG) << "Added all models to joint cloud. Joint cloud size: " << cloud->size();
 	out_cloud.write(cloud);
-    LOG(LINFO) << "Writing multiplicity vectors of models merged to cloud. Number of vectors: " << modelsMultiplicity.size();
+    LOG(LDEBUG) << "Writing multiplicity vectors of models merged to cloud. Number of vectors: " << modelsMultiplicity.size();
 	out_multiplicityOfModels.write(modelsMultiplicity);
 }
 

@@ -174,10 +174,10 @@ void SIFTAdder::add() {
 		}
 
 		//usuniecie punktow
-		pcl::PointCloud<PointXYZSIFT>::iterator pt_iter = cloud->begin();
-		while(pt_iter!=cloud->end()){
+		pcl::PointCloud<PointXYZSIFT>::iterator pt_iter = cloud_next->begin();
+		while(pt_iter!=cloud_next->end()){
 			if(pt_iter->times==-1){
-				pt_iter = cloud->erase(pt_iter);
+				pt_iter = cloud_next->erase(pt_iter);
 			}
 			else{
 				++pt_iter;	

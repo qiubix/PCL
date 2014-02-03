@@ -33,6 +33,7 @@ JSONReader::~JSONReader() {
 }
 
 void JSONReader::prepareInterface() {
+    LOG(LTRACE) << "JSONReader::prepareInterface\n";
 	// Register data streams, events and event handlers HERE!
 	registerStream("out_cloud_xyzrgbsift", &out_cloud_xyzrgbsift);
 	registerStream("out_cloud_xyzsift", &out_cloud_xyzsift);
@@ -63,7 +64,8 @@ bool JSONReader::onStart() {
 }
 
 void JSONReader::read() {
-	cout<<"JSONReader::read()"<<endl;
+    LOG(LDEBUG) << "JSONReader::read " << filename;
+//	cout<<"JSONReader::read()"<<endl;
 	//ptree ptree_file_rgb;
 	//string filename_rgb = filename;
 	//if(replace(filename_rgb, ".json", "_xyzrgb.json"))
@@ -101,6 +103,7 @@ void JSONReader::read() {
 
 	
 	BOOST_FOREACH(boost::property_tree::ptree::value_type &v0, ptree_file){//clouds
+    	LOG(LDEBUG) << "JSONReader::read - next cloud";
 		pcl::PointCloud<PointXYZRGBSIFT>::Ptr cloud_xyzrgbsift (new pcl::PointCloud<PointXYZRGBSIFT>());
 		pcl::PointCloud<PointXYZSIFT>::Ptr cloud_xyzsift (new pcl::PointCloud<PointXYZSIFT>());
 		pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_xyz (new pcl::PointCloud<pcl::PointXYZ>());
@@ -154,6 +157,7 @@ void JSONReader::read() {
 					//std::cout << v.second.data() << std::endl;
 					// etc
 				}
+    	LOG(LDEBUG) << "JSONReader::read - writing to streams\n";
 		out_cloud_xyzrgbsift.write(cloud_xyzrgbsift);
 		out_cloud_xyzsift.write(cloud_xyzsift);
 		out_cloud_xyz.write(cloud_xyz);

@@ -71,28 +71,38 @@ protected:
 	 */
 	bool onStop();
 
+	/// Input data stream containing point cloud from a given view.
+	Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> in_cloud_xyzrgb;
 
-// Input data streams
+	/// Input data stream containing feature cloud from a given view.
+	Base::DataStreamIn<pcl::PointCloud<PointXYZSIFT>::Ptr> in_cloud_xyzsift;
 
-		Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> in_cloud_xyzrgb;
-		Base::DataStreamIn<pcl::PointCloud<PointXYZSIFT>::Ptr> in_cloud_xyzsift;
 
-// Output data streams
-
-		Base::DataStreamOut<AbstractObject*> out_instance; //SIFTObjectModel
+	/// Output data stream containing SIFTObjectModel - depricated.
+	Base::DataStreamOut<AbstractObject*> out_instance; 
 		
-		Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> out_cloud;
-		Base::DataStreamOut<pcl::PointCloud<PointXYZSIFT>::Ptr> out_cloud_sift;
+	/// Output data stream containing object model point cloud.
+	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> out_cloud_xyzrgb;
+
+	/// Output data stream containing object model feature cloud (SIFTs).
+	Base::DataStreamOut<pcl::PointCloud<PointXYZSIFT>::Ptr> out_cloud_xyzsift;
+
+	// Mean number of features per view. 
+	Base::DataStreamOut<int> out_mean_viewpoint_features_number;
+
+
 	// Handlers
 	Base::EventHandler2 h_update;
-
 	
 	// Handlers
 	void update();
-	
-	
-	
+
+	/// Number of views.	
 	int counter;
+
+	/// Total number of features (in all views).	
+	int total_viewpoint_features_number;
+
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_merged;
 	pcl::PointCloud<PointXYZSIFT>::Ptr cloud_sift_merged;
 	Eigen::Matrix4f global_trans;
@@ -104,8 +114,6 @@ protected:
 	pcl::PointCloud<PointXYZSIFT>::Ptr cloud_sift_prev;
 	pcl::PointCloud<PointXYZSIFT>::Ptr cloud_sift_next;
 	
-	
-
 };
 
 } //: namespace Update

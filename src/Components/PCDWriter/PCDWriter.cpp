@@ -43,7 +43,6 @@ void PCDWriter::prepareInterface() {
     h_Write_xyzrgb.setup(boost::bind(&PCDWriter::Write_xyzrgb, this));
     registerHandler("Write_xyzrgb", &h_Write_xyzrgb);
 	//addDependency("Write", &in_pcl);
-
 }
 
 bool PCDWriter::onInit() {

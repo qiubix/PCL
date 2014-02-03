@@ -48,8 +48,9 @@ class SIFTFeatureRepresentation: public pcl::DefaultFeatureRepresentation<PointX
 };
 
 SIFTObjectMatcher::SIFTObjectMatcher(const std::string & name) :
-		Base::Component(name)  {
-
+		Base::Component(name),
+		threshold("threshold", 0.75f)  {
+			registerProperty(threshold);
 }
 
 SIFTObjectMatcher::~SIFTObjectMatcher() {
@@ -57,9 +58,9 @@ SIFTObjectMatcher::~SIFTObjectMatcher() {
 
 void SIFTObjectMatcher::prepareInterface() {
 	// Register data streams, events and event handlers HERE!
-registerStream("in_models", &in_models);
-registerStream("in_cloud_xyzsift", &in_cloud_xyzsift);
-registerStream("in_cloud_xyzrgb", &in_cloud_xyzrgb);
+	registerStream("in_models", &in_models);
+	registerStream("in_cloud_xyzsift", &in_cloud_xyzsift);
+	registerStream("in_cloud_xyzrgb", &in_cloud_xyzrgb);
 	// Register handlers
 	h_readModels.setup(boost::bind(&SIFTObjectMatcher::readModels, this));
 	registerHandler("readModels", &h_readModels);
@@ -107,7 +108,7 @@ void SIFTObjectMatcher::readModels() {
 }
 
 void SIFTObjectMatcher::match() {
-	cout<<"SIFTObjectMatcher::match()"<<endl;
+	CLOG(LTRACE) << "SIFTObjectMatcher::match()"<<endl;
 	if(models.empty()){
 		cout<<"No models available" <<endl;
 		return;
@@ -118,10 +119,10 @@ void SIFTObjectMatcher::match() {
 	
 
 		for (int i = 0 ; i<models.size(); i++){
-			cout<<"liczba cech modelu "<<i<<" "<<models[i]->name<<": " <<
-				models[i]->SIFTcloud->size()<<endl; 	
+			CLOG(LTRACE) << "liczba cech modelu "<<i<<" "<<models[i]->name<<": " <<
+				models[i]->cloud_xyzsift->size()<<endl; 	
 		}
-		cout<<"liczba cech instancji : " <<
+		CLOG(LTRACE) << "liczba cech instancji : " <<
 			cloud_xyzsift->size()<<endl; 
     //////////////flann
     //cv::Mat descriptors_instance(cloud_xyzsift->size(), 128, CV_32F,0.0);
@@ -141,25 +142,26 @@ void SIFTObjectMatcher::match() {
         correst.setPointRepresentation(point_representation) ;
         for (int i = 0 ; i<models.size(); i++){
             correst.setInputSource(cloud_xyzsift) ;
-            correst.setInputTarget(models[i]->SIFTcloud) ;
+            correst.setInputTarget(models[i]->cloud_xyzsift) ;
             correst.determineReciprocalCorrespondences(*correspondences) ;
 			//ransac - niepoprawne dopasowania
 			pcl::Correspondences inliers ;
         	pcl::registration::CorrespondenceRejectorSampleConsensus<PointXYZSIFT> sac ;
 			sac.setInputSource(cloud_xyzsift) ;
-			sac.setInputTarget(models[i]->SIFTcloud) ;
+			sac.setInputTarget(models[i]->cloud_xyzsift) ;
 			sac.setInlierThreshold(0.001f) ;
 			sac.setMaximumIterations(2000) ;
 			sac.setInputCorrespondences(correspondences) ;
 			sac.getCorrespondences(inliers) ;
 			//std::cout << "SAC inliers " << inliers.size() << std::endl ;
 
-            std::cout << setprecision(2) << fixed;
-            float procent = ((float)correspondences->size() - (float)inliers.size())/(float)cloud_xyzsift->size();
-            std::cout << "\nNumber of reciprocal correspondences: " << correspondences->size() <<". Bad correspondences:" << inliers.size() ;
-            std::cout << " out of " << cloud_xyzsift->size() << " keypoints of instance, = " ;
-            std::cout << procent << ". "<< models[i]->SIFTcloud->size() << " keypoints of model "<< models[i]->name << std::endl ;
-            
+            CLOG(LTRACE) << setprecision(2) << fixed;
+            float percent = ((float)correspondences->size() - (float)inliers.size())/(float)models[i]->mean_viewpoint_features_number;
+            CLOG(LTRACE)  << "\nNumber of reciprocal correspondences: " << correspondences->size() <<". Bad correspondences:" << inliers.size() ;
+            CLOG(LTRACE)  << " out of " << cloud_xyzsift->size() << " keypoints of instance, = " ;
+            CLOG(LTRACE)  << percent << ". "<< models[i]->cloud_xyzsift->size() << " keypoints of model "<< models[i]->name << std::endl ;
+            if (percent > threshold)
+				std::cout <<"Rozpoznano model "<< models[i]->name<<endl;
         /////////////////////////////
 
         ///////////////////////////////////

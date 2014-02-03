@@ -33,13 +33,13 @@ VoxelGrid::~VoxelGrid() {
 
 void VoxelGrid::prepareInterface() {
 	// Register data streams, events and event handlers HERE!
-registerStream("in_pcl", &in_pcl);
-registerStream("out_pcl", &out_pcl);
+	registerStream("in_cloud_xyzrgb", &in_cloud_xyzrgb);
+	registerStream("out_cloud_xyzrgb", &out_cloud_xyzrgb);
+
 	// Register handlers
 	h_filter.setup(boost::bind(&VoxelGrid::filter, this));
 	registerHandler("filter", &h_filter);
-	addDependency("filter", &in_pcl);
-
+	addDependency("filter", &in_cloud_xyzrgb);
 }
 
 bool VoxelGrid::onInit() {
@@ -60,7 +60,7 @@ bool VoxelGrid::onStart() {
 }
 
 void VoxelGrid::filter() {
-	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud = in_pcl.read();
+	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud = in_cloud_xyzrgb.read();
 	
 	pcl::VoxelGrid<pcl::PointXYZRGB> vg;
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_filtered (new pcl::PointCloud<pcl::PointXYZRGB>);
@@ -68,7 +68,7 @@ void VoxelGrid::filter() {
 	vg.setLeafSize (x, y, z);
 	vg.filter (*cloud_filtered);
 	std::cout << "PointCloud after filtering has: " << cloud_filtered->points.size ()  << " data points." << std::endl;
-	out_pcl.write(cloud_filtered);
+	out_cloud_xyzrgb.write(cloud_filtered);
 	
 }
 

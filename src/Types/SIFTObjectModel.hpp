@@ -7,10 +7,19 @@
 #include <Types/PointXYZSIFT.hpp> 
 //namespace Types {
 
+/*!
+ * \class SIFTObjectModel
+ * \brief Model of 3D object.
+ * It consists of: object point cloud, SIFT cloud, mean number of viewpoint features.
+ */
 class SIFTObjectModel : public PointCloudObject
 {
 	public:
-	pcl::PointCloud<PointXYZSIFT>::Ptr SIFTcloud;
+	/// Mean number of viewpoint features
+	int mean_viewpoint_features_number;
+
+	/// Cloud of SIFT - features extracted from RGB image and transformed from image into Cartesian space.
+	pcl::PointCloud<PointXYZSIFT>::Ptr cloud_xyzsift;
 };
 
 

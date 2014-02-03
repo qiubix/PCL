@@ -4,8 +4,8 @@
  * \author Micha Laszkowski
  */
 
-#ifndef VOXELGRID_HPP_
-#define VOXELGRID_HPP_
+#ifndef PASSTHROUGH_HPP_
+#define PASSTHROUGH_HPP_
 
 #include "Component_Aux.hpp"
 #include "Component.hpp"
@@ -13,38 +13,35 @@
 #include "Property.hpp"
 #include "EventHandler2.hpp"
 
-#include <Types/PointXYZSIFT.hpp> 
-#include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-
+#include <pcl/filters/passthrough.h>
 
 namespace Processors {
-namespace VoxelGrid {
+namespace PassThrough {
 
 /*!
- * \class VoxelGrid
- * \brief VoxelGrid processor class.
+ * \class PassThrough
+ * \brief PassThrough processor class.
  *
- * VoxelGrid processor.
+ * PassThrough processor.
  */
-class VoxelGrid: public Base::Component {
+class PassThrough: public Base::Component {
 public:
 	/*!
 	 * Constructor.
 	 */
-	VoxelGrid(const std::string & name = "VoxelGrid");
+	PassThrough(const std::string & name = "PassThrough");
 
 	/*!
 	 * Destructor
 	 */
-	virtual ~VoxelGrid();
+	virtual ~PassThrough();
 
 	/*!
 	 * Prepare components interface (register streams and handlers).
 	 * At this point, all properties are already initialized and loaded to 
 	 * values set in config file.
 	 */
-
 	void prepareInterface();
 
 protected:
@@ -70,29 +67,35 @@ protected:
 	bool onStop();
 
 
-	// Input data streams
-	Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> in_cloud_xyzrgb;
+// Input data streams
 
-	// Output data streams
-	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> out_cloud_xyzrgb;
+		Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> in_cloud;
 
+// Output data streams
+
+		Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> out_cloud;
 	// Handlers
 	Base::EventHandler2 h_filter;
-	Base::Property<float> x;
-	Base::Property<float> y;
-	Base::Property<float> z;
+		Base::Property<float> xa;
+		Base::Property<float> xb;
+		Base::Property<float> ya;
+		Base::Property<float> yb;
+		Base::Property<float> za;
+		Base::Property<float> zb;
+		Base::Property<bool> negative;
+
 	
 	// Handlers
 	void filter();
 
 };
 
-} //: namespace VoxelGrid
+} //: namespace PassThrough
 } //: namespace Processors
 
 /*
  * Register processor component.
  */
-REGISTER_COMPONENT("VoxelGrid", Processors::VoxelGrid::VoxelGrid)
+REGISTER_COMPONENT("PassThrough", Processors::PassThrough::PassThrough)
 
-#endif /* VOXELGRID_HPP_ */
+#endif /* PASSTHROUGH_HPP_ */

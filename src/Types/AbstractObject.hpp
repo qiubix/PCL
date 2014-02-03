@@ -7,7 +7,9 @@
 class AbstractObject
 {
 	public:
+	/// Name of the object.
 	string name;
+
 	virtual ~AbstractObject() {}
 };
 

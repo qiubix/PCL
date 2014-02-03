@@ -22,8 +22,6 @@ namespace XYZCloudViewer {
 /*!
  * \class XYZCloudViewer
  * \brief XYZCloudViewer processor class - component able to display many XYZ point clouds in one viewer window.
- *
- * XYZCloudViewer processor.
  */
 class XYZCloudViewer: public Base::Component {
 public:

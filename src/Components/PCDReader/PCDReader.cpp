@@ -29,8 +29,9 @@ PCDReader::~PCDReader() {
 
 void PCDReader::prepareInterface() {
 	// Register data streams, events and event handlers HERE!
-	registerStream("out_pcl", &out_pcl);
-	registerStream("out_pcl_xyzsift", &out_pcl_xyzsift);
+	registerStream("out_cloud_xyz", &out_cloud_xyz);
+	registerStream("out_cloud_xyzrgb", &out_cloud_xyzrgb);
+	registerStream("out_cloud_xyzsift", &out_cloud_xyzsift);
 	// Register handlers
 	h_Read.setup(boost::bind(&PCDReader::Read, this));
 	registerHandler("Read", &h_Read);
@@ -56,19 +57,26 @@ bool PCDReader::onStart() {
 }
 
 void PCDReader::Read() {
-	  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
-	  if (pcl::io::loadPCDFile<pcl::PointXYZ> (filename, *cloud) == -1) //* load the file
+	  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_xyz (new pcl::PointCloud<pcl::PointXYZ>);
+	  if (pcl::io::loadPCDFile<pcl::PointXYZ> (filename, *cloud_xyz) == -1) //* load the file
 	  {
 		cout <<"Błąd"<<endl;
 	  }
-	  out_pcl.write(cloud);
+	  out_cloud_xyz.write(cloud_xyz);
+	  
+	  pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_xyzrgb (new pcl::PointCloud<pcl::PointXYZRGB>);
+	  if (pcl::io::loadPCDFile<pcl::PointXYZRGB> (filename, *cloud_xyzrgb) == -1) //* load the file
+	  {
+		cout <<"Błąd"<<endl;
+	  }
+	  out_cloud_xyzrgb.write(cloud_xyzrgb);
 	  
 	  pcl::PointCloud<PointXYZSIFT>::Ptr cloud_xyzsift (new pcl::PointCloud<PointXYZSIFT>);
 	  if (pcl::io::loadPCDFile<PointXYZSIFT> (filename, *cloud_xyzsift) == -1) //* load the file
 	  {
 		cout <<"Błąd"<<endl;
 	  }
-	  out_pcl_xyzsift.write(cloud_xyzsift);	
+	  out_cloud_xyzsift.write(cloud_xyzsift);	
 }
 
 

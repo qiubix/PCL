@@ -18,7 +18,7 @@
 		<Subtask name="Processing">
 			<Executor name="Exec1"  period="0.1">
 				<Component name="Source" type="PCL:PCDReader" priority="1" bump="0">
-					<param name="filename">/home/mlaszkow/pcd/table_scene_lms400.pcd</param>
+					<param name="filename">/home/mlaszkow/pcd/cb/cereal_box_1_co5_v4_xyzrgb.pcd</param>
 				</Component>
 			</Executor>
 		</Subtask>
@@ -38,8 +38,8 @@
 	
 	<!-- pipes connecting datastreams -->
 	<DataStreams>
-		<Source name="Source.out_pcl">
-			<sink>Window.in_cloud_xyz</sink>
+		<Source name="Source.out_cloud_xyzrgb">
+			<sink>Window.in_cloud_xyzrgb</sink>
 		</Source>
 	</DataStreams>
 </Task>

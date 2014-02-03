@@ -40,3 +40,11 @@ ADD_COMPONENT(SIFTObjectMatcher)
 ADD_COMPONENT(XYZCloudViewer)
 
 ADD_COMPONENT(Downsampling)
+
+ADD_COMPONENT(SOMJSONReader)
+
+ADD_COMPONENT(SOMJSONWriter)
+
+ADD_COMPONENT(PassThrough)
+
+ADD_COMPONENT(StatisticalOutlierRemoval)

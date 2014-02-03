@@ -76,6 +76,8 @@ Eigen::Matrix4f computeTransformationSAC(const pcl::PointCloud<PointXYZSIFT>::Co
 	sac.setInputCorrespondences(correspondences) ;
 	sac.getCorrespondences(inliers) ;
 	std::cout << "SAC inliers " << inliers.size() << std::endl ;
+	if ( ((float)inliers.size()/(float)correspondences->size()) >85)
+		return Eigen::Matrix4f::Identity();
 	return sac.getBestTransformation() ;
 }
 
@@ -91,11 +93,12 @@ Update::~Update() {
 
 void Update::prepareInterface() {
 	// Register data streams, events and event handlers HERE!
-registerStream("in_cloud_xyzrgb", &in_cloud_xyzrgb);
-registerStream("in_cloud_xyzsift", &in_cloud_xyzsift);
-registerStream("out_instance", &out_instance);
-registerStream("out_cloud", &out_cloud);
-registerStream("out_cloud_sift", &out_cloud_sift);
+	registerStream("in_cloud_xyzrgb", &in_cloud_xyzrgb);
+	registerStream("in_cloud_xyzsift", &in_cloud_xyzsift);
+	registerStream("out_instance", &out_instance);
+	registerStream("out_cloud_xyzrgb", &out_cloud_xyzrgb);
+	registerStream("out_cloud_xyzsift", &out_cloud_xyzsift);
+	registerStream("out_mean_viewpoint_features_number", &out_mean_viewpoint_features_number);
 	// Register handlers
 	h_update.setup(boost::bind(&Update::update, this));
 	registerHandler("update", &h_update);
@@ -105,7 +108,11 @@ registerStream("out_cloud_sift", &out_cloud_sift);
 }
 
 bool Update::onInit() {
+	// Number of viewpoints.
 	counter = 0;
+	// Mean number of features per view. 
+	mean_viewpoint_features_number = 0;
+	
 	global_trans = Eigen::Matrix4f::Identity();
 
 	cloud_merged = pcl::PointCloud<pcl::PointXYZRGB>::Ptr (new pcl::PointCloud<pcl::PointXYZRGB>());
@@ -133,14 +140,23 @@ bool Update::onStart() {
 }
 
 void Update::update() {
-	cout<<"Update()"<<endl;
+	CLOG(LTRACE) << "Update()"<<endl;
 	
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud = in_cloud_xyzrgb.read();
 	pcl::PointCloud<PointXYZSIFT>::Ptr cloud_sift = in_cloud_xyzsift.read();
-	
-	//cout<< "cloud->size(): "<<cloud->size()<<endl;
-	//first clouds
-	if (counter == 0 ){
+
+	// TODO if empty()
+
+	// Update view count and feature numbers.
+	counter++;
+	total_viewpoint_features_number += cloud_sift->size();
+
+	CLOG(LTRACE) << "current view number: "<<counter<<endl;
+	CLOG(LTRACE) << "cloud->size(): "<<cloud->size()<<endl;
+	CLOG(LTRACE) << "cloud_sift->size(): "<<cloud_sift->size()<<endl;
+
+	// First cloud.
+	if (counter == 1 ){
 		std::vector<int> indices;
 		
 		*cloud_merged = *cloud;
@@ -149,8 +165,15 @@ void Update::update() {
 		*cloud_prev = *cloud_merged;
 		*cloud_sift_merged = *cloud_sift;
 		*cloud_sift_prev = *cloud_sift;
-		counter++;
-		out_cloud.write(cloud_merged);
+
+		mean_viewpoint_features_number = total_viewpoint_features_number/counter;
+		// Push results to output data ports.
+		out_mean_viewpoint_features_number.write(mean_viewpoint_features_number);
+		out_cloud_xyzrgb.write(cloud_merged);
+		out_cloud_xyzsift.write(cloud_sift_merged);
+
+		// Push SOM - depricated.
+//		out_instance.write(produce());	
 		return;
 	}
 	
@@ -163,47 +186,42 @@ void Update::update() {
 	counter++;
 	//cout<< "cloud_next->size(): "<<cloud_next->size()<<endl;
 	
+	pcl::CorrespondencesPtr correspondences(new pcl::Correspondences()) ;
+	pcl::registration::CorrespondenceEstimation<PointXYZSIFT, PointXYZSIFT> correst ;
 	
-	
-		pcl::CorrespondencesPtr correspondences(new pcl::Correspondences()) ;
-		pcl::registration::CorrespondenceEstimation<PointXYZSIFT, PointXYZSIFT> correst ;
-	
-		//SIFTFeatureRepresentation point_representation ;
-		//correst.setPointRepresentation (point_representation.makeShared()); //NEVER do like this, makeShared will return DefaultFeatureRepresentation<PointDefault>!
-		SIFTFeatureRepresentation::Ptr point_representation(new SIFTFeatureRepresentation()) ;
-		correst.setPointRepresentation(point_representation) ;
-		correst.setInputSource(cloud_sift_next) ;
-		correst.setInputTarget(cloud_sift_merged) ;//cloud_sift_prev
-		correst.determineReciprocalCorrespondences(*correspondences) ;
-		std::cout << "\nNumber of reciprocal correspondences: " << correspondences->size() << " out of " << cloud_sift_next->size() << " keypoints" << std::endl ;
+	//SIFTFeatureRepresentation point_representation ;
+	//correst.setPointRepresentation (point_representation.makeShared()); //NEVER do like this, makeShared will return DefaultFeatureRepresentation<PointDefault>!
+	SIFTFeatureRepresentation::Ptr point_representation(new SIFTFeatureRepresentation()) ;
+	correst.setPointRepresentation(point_representation) ;
+	correst.setInputSource(cloud_sift_next) ;
+	correst.setInputTarget(cloud_sift_merged) ;//cloud_sift_prev
+	correst.determineReciprocalCorrespondences(*correspondences) ;
+	CLOG(LTRACE) << "\nNumber of reciprocal correspondences: " << correspondences->size() << " out of " << cloud_sift_next->size() << " keypoints" << std::endl ;
 
 
-//zliczanie krotnosci 	
-
-		for(int i = 0; i< correspondences->size();i++){	
-			if (correspondences->at(i).index_query >=cloud_sift_next->size() ||
-				correspondences->at(i).index_match >=cloud_sift_merged->size()){
-					//
-					continue;
-			}
-				
-			//cout<< correspondences->at(i).index_query << " ";
-			//cout<< correspondences->at(i).index_match << " ";
-			//cout<< correspondences->at(i).distance << " ";
-			//cout<<cloud_sift_prev->at(correspondences->at(i).index_query).times <<endl;
-			//for(int j=0;j<128;j++){
-				//cout<<cloud_sift_prev->at(correspondences->at(i).index_query).descriptor[j]<<" ";
-				//cout<<cloud_sift_next->at(correspondences->at(i).index_match).descriptor[j]<<", ";
-				////cout<<correspondences->at(i).distance<<" ";
-			//}
-			//cout<<endl;
-			//if(cloud_sift_merged->at(correspondences->at(i).index_query).times==0)
-				//cloud_sift_merged->at(correspondences->at(i).index_query).times++;
-			//cloud_sift_merged->at(correspondences->at(i).index_query).times++;
-			cloud_sift_next->at(correspondences->at(i).index_query).times = cloud_sift_merged->at(correspondences->at(i).index_match).times + 1;
-			cloud_sift_merged->at(correspondences->at(i).index_match).times=-1; //poprzedni punkt do usuniecia			
+	// Computation of features multiplicity (designating how many times given feature appears in all views).
+	for(int i = 0; i< correspondences->size();i++){	
+		if (correspondences->at(i).index_query >=cloud_sift_next->size() || correspondences->at(i).index_match >=cloud_sift_merged->size()){
+			continue;
 		}
-///////////	
+				
+		//cout<< correspondences->at(i).index_query << " ";
+		//cout<< correspondences->at(i).index_match << " ";
+		//cout<< correspondences->at(i).distance << " ";
+		//cout<<cloud_sift_prev->at(correspondences->at(i).index_query).times <<endl;
+		//for(int j=0;j<128;j++){
+			//cout<<cloud_sift_prev->at(correspondences->at(i).index_query).descriptor[j]<<" ";
+			//cout<<cloud_sift_next->at(correspondences->at(i).index_match).descriptor[j]<<", ";
+			////cout<<correspondences->at(i).distance<<" ";
+		//}
+		//cout<<endl;
+		//if(cloud_sift_merged->at(correspondences->at(i).index_query).times==0)
+			//cloud_sift_merged->at(correspondences->at(i).index_query).times++;
+		//cloud_sift_merged->at(correspondences->at(i).index_query).times++;
+		cloud_sift_next->at(correspondences->at(i).index_query).times = cloud_sift_merged->at(correspondences->at(i).index_match).times + 1;
+		cloud_sift_merged->at(correspondences->at(i).index_match).times=-1; //poprzedni punkt do usuniecia			
+	}
+
 	
 		//for (pcl::PointCloud<PointXYZRGBSIFT>::iterator pt_iter = cloud_sift_next->begin(); pt_iter != cloud_sift_next->end() ; pt_iter++) {
 		//	displayMatrixInfo(pt_iter->descriptor) ;			
@@ -215,12 +233,17 @@ void Update::update() {
 		//Compute transformation between clouds and update global transformation of cloud_next	
 		pcl::Correspondences inliers ;
 		Eigen::Matrix4f current_trans = computeTransformationSAC(cloud_sift_next, cloud_sift_merged, correspondences, inliers) ; //_prev
+		if (current_trans == Eigen::Matrix4f::Identity()){
+			out_cloud_xyzrgb.write(cloud_merged);
+			out_cloud_xyzsift.write(cloud_sift_merged);
+			return;
+		}
 		std::cout << "Transformation cloud_next -> cloud_prev: " << std::endl << current_trans << std::endl ;
 		global_trans = global_trans * current_trans ;
 		std::cout << "Global transformation : " << std::endl << global_trans << std::endl ;
 
 
-		//Delete points
+		// Delete points.
 		pcl::PointCloud<PointXYZSIFT>::iterator pt_iter = cloud_sift_merged->begin();
 		while(pt_iter!=cloud_sift_merged->end()){
 			if(pt_iter->times==-1){
@@ -231,7 +254,7 @@ void Update::update() {
 			}
 		}
 
-		//Merge cloud - cloud_next
+		// Merge cloud - cloud_next.
 		pcl::transformPointCloud(*cloud_next, *cloud_to_merge, current_trans) ; //global_trans
 		pcl::transformPointCloud(*cloud_sift_next, *cloud_sift_to_merge, current_trans) ; //global_trans
 		//addCloudToScene(cloud_to_merge, sceneviewer, counter - 1) ; 
@@ -243,11 +266,17 @@ void Update::update() {
 			
 		cloud_xyzrgb = cloud_merged;
 		cloud_xyzsift = cloud_sift_merged;
-		
-		out_instance.write(produce());	
-	
-		out_cloud.write(cloud_merged);
-		out_cloud_sift.write(cloud_sift_merged);
+
+		// Compute mean number of features.
+		mean_viewpoint_features_number = total_viewpoint_features_number/counter;
+
+		// Push results to output data ports.
+		out_mean_viewpoint_features_number.write(mean_viewpoint_features_number);
+		out_cloud_xyzrgb.write(cloud_merged);
+		out_cloud_xyzsift.write(cloud_sift_merged);
+
+		// Push SOM - depricated.
+//		out_instance.write(produce());	
 }
 
 

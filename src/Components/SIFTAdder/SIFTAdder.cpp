@@ -100,7 +100,7 @@ void SIFTAdder::add() {
 	for (unsigned n=0; n<models.size(); ++n) {
 
 		std::map<int,int> modelMultiplicity;
-		pcl::PointCloud<PointXYZSIFT>::Ptr cloud_next = dynamic_cast<SIFTObjectModel*>(models.at(n))->SIFTcloud;
+		pcl::PointCloud<PointXYZSIFT>::Ptr cloud_next = dynamic_cast<SIFTObjectModel*>(models.at(n))->cloud_xyzsift;
         LOG(LDEBUG) << "Model no " << n << ": model's cloud size = " << cloud_next->size();
 
 		if (cloud->empty()){

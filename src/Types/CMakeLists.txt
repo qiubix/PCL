@@ -2,7 +2,7 @@ SET(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 # If DCL provides any additional libraries - add them here
 
-# # Get soource files of library 
+# # Get soource files of library
 # FILE(GLOB lib_src *.cpp)
 # ADD_LIBRARY(PCLTypes SHARED ${lib_src})
 # # Link with other libraries
@@ -18,9 +18,9 @@ SET(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 # If DCL provides any additional headers to be used from outside of it, add them
 
-# # Get list of header files
-# FILE(GLOB headers *.hpp)
-#
+ # Get list of header files
+ FILE(GLOB headers *.hpp)
+
  # Install them to include subdirectory
  install(
      FILES ${headers}

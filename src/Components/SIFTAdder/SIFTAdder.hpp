@@ -16,6 +16,7 @@
 #include <opencv2/opencv.hpp>
 #include <vector>
 #include <Types/PointXYZSIFT.hpp> 
+#include <Types/SIFTObjectModel.hpp>
 //#include "Types/Features.hpp"
 
 namespace Processors {
@@ -73,10 +74,12 @@ protected:
 
 // Input data streams
 
-		Base::DataStreamIn<pcl::PointCloud<PointXYZSIFT>::Ptr> in_cloud;
+//		Base::DataStreamIn<pcl::PointCloud<PointXYZSIFT>::Ptr> in_cloud;
+    Base::DataStreamIn<std::vector<AbstractObject*> > in_models;
 
 // Output data streams
 		Base::DataStreamOut<pcl::PointCloud<PointXYZSIFT>::Ptr> out_cloud;
+        Base::DataStreamOut< std::vector<std::map<int,int> > > out_multiplicityOfModels;
 		//Base::DataStreamOut<vector<vector<int> > > out_descriptors;
 		//Base::DataStreamOut<vector<int> > out_times;
 	// Handlers
@@ -87,6 +90,8 @@ protected:
 	void add();
 	
 	pcl::PointCloud<PointXYZSIFT>::Ptr cloud;
+//    std::vector <pcl::PointCloud<PointXYZSIFT>::Ptr> models;
+    std::vector <AbstractObject*> models;
 	
 	//vector<vector<int> > descriptors;
 	//vector<int> times;

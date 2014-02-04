@@ -186,7 +186,9 @@ void SIFTAdder::add() {
 
 		LOG(LDEBUG) << "Reduced next cloud size: " << cloud_next->size();
         if (cloud_next->empty()) {
-            continue;
+			LOG(LDEBUG) << "number of model's features: " << modelMultiplicity.size();
+            modelsMultiplicity.push_back(modelMultiplicity);
+			continue;
         }
 		for (unsigned k=0; k<cloud_next->size(); ++k) {
 			std::pair<int,int> nextMultiplicity = std::make_pair<int,int>(cloud->size()+k, cloud_next->at(k).times);

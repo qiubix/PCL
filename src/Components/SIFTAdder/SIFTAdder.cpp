@@ -108,7 +108,7 @@ void SIFTAdder::add() {
 			cloud = cloud_next;
 			out_cloud.write(cloud);
 			for (unsigned k=0; k<cloud_next->size(); ++k) {
-				std::pair<int,int> nextMultiplicity = std::make_pair<int,int>(k, cloud_next->at(k).times);
+				std::pair<int,int> nextMultiplicity = std::make_pair<int,int>(k, cloud_next->at(k).multiplicity);
 				modelMultiplicity.insert(nextMultiplicity);
 			}
 			LOG(LDEBUG) << "number of model's features: " << modelMultiplicity.size();
@@ -168,15 +168,15 @@ void SIFTAdder::add() {
 			        correspondences->at(i).index_match >=cloud->size()){
 				continue;
 			}
-			cloud->at(correspondences->at(i).index_match).times += cloud_next->at(correspondences->at(i).index_query).times;
-			modelMultiplicity.insert(std::make_pair<int,int>(correspondences->at(i).index_match, cloud_next->at(correspondences->at(i).index_query).times));
-			cloud_next->at(correspondences->at(i).index_query).times=-1; //do usuniecia punkt w nowej chmurze, ktory juz jest zarejestrowany w polaczonej chmurze
+			cloud->at(correspondences->at(i).index_match).multiplicity += cloud_next->at(correspondences->at(i).index_query).multiplicity;
+			modelMultiplicity.insert(std::make_pair<int,int>(correspondences->at(i).index_match, cloud_next->at(correspondences->at(i).index_query).multiplicity));
+			cloud_next->at(correspondences->at(i).index_query).multiplicity=-1; //do usuniecia punkt w nowej chmurze, ktory juz jest zarejestrowany w polaczonej chmurze
 		}
 
 		//usuniecie punktow
 		pcl::PointCloud<PointXYZSIFT>::iterator pt_iter = cloud_next->begin();
 		while(pt_iter!=cloud_next->end()){
-			if(pt_iter->times==-1){
+			if(pt_iter->multiplicity==-1){
 				pt_iter = cloud_next->erase(pt_iter);
 			}
 			else{
@@ -191,7 +191,7 @@ void SIFTAdder::add() {
 			continue;
         }
 		for (unsigned k=0; k<cloud_next->size(); ++k) {
-			std::pair<int,int> nextMultiplicity = std::make_pair<int,int>(cloud->size()+k, cloud_next->at(k).times);
+			std::pair<int,int> nextMultiplicity = std::make_pair<int,int>(cloud->size()+k, cloud_next->at(k).multiplicity);
 			modelMultiplicity.insert(nextMultiplicity);
 		}
 

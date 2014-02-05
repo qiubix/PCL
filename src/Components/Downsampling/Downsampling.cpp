@@ -64,7 +64,7 @@ void Downsampling::downsample_xyzsift() {
   std::vector<int> pointIdxRadiusSearch;
   std::vector<float> pointRadiusSquaredDistance;
 
-	int t;//times
+	int t;//multiplicity
 	cout<<"cloud size: "<<cloud->size()<<endl;
 	//zliczenie krotnosci
 	//0 - punkt nie ma jeszcze policzonej krotnosci
@@ -73,7 +73,7 @@ void Downsampling::downsample_xyzsift() {
   while(pt_iter!=cloud->end()){
 	
 	  searchPoint = *pt_iter++;
-	  if(searchPoint.times!=0)
+	  if(searchPoint.multiplicity!=0)
 		continue;
 		
 	  t = kdtree.radiusSearch (searchPoint, radius, pointIdxRadiusSearch, pointRadiusSquaredDistance);
@@ -81,11 +81,11 @@ void Downsampling::downsample_xyzsift() {
 
 	  if ( t > 0 )
 	  {
-		int times = 1;
+		int multiplicity = 1;
 		for (size_t i = 1; i < t; ++i){
-			if(cloud->points[ pointIdxRadiusSearch[i] ].times ==0){
-				cloud->points[ pointIdxRadiusSearch[i] ].times = -1;
-				times++;
+			if(cloud->points[ pointIdxRadiusSearch[i] ].multiplicity ==0){
+				cloud->points[ pointIdxRadiusSearch[i] ].multiplicity = -1;
+				multiplicity++;
 			}
 
 				//cloud->erase(cloud->begin() + pointIdxRadiusSearch[i]);//-1??
@@ -94,7 +94,7 @@ void Downsampling::downsample_xyzsift() {
 					//<< " " << cloud->points[ pointIdxRadiusSearch[i] ].z 
 					//<< " (squared distance: " << pointRadiusSquaredDistance[i] << ")" << std::endl;
 		}
-		cloud->points[ pointIdxRadiusSearch[0] ].times = times;// t-wrongPoints;
+		cloud->points[ pointIdxRadiusSearch[0] ].multiplicity = multiplicity;// t-wrongPoints;
 		//cout<< "t: " <<t;
 		//if(wrongPoints>0)
 			//cout<<" Wrong points: "<<wrongPoints;
@@ -108,7 +108,7 @@ void Downsampling::downsample_xyzsift() {
 	//usuniecie nadmiarowych punktow
 	pt_iter = cloud->begin();
 	 while(pt_iter!=cloud->end()){
-		 if(pt_iter->times==-1 || pt_iter->times==0){
+		 if(pt_iter->multiplicity==-1 || pt_iter->multiplicity==0){
 			 pt_iter = cloud->erase(pt_iter);
 		}
 		else{

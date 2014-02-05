@@ -105,7 +105,7 @@ void FeatureCloudConverter::process() {
 			point.descriptor[j] = descriptors.row(i).at<float>(j);	
 		}
 		
-		point.times = 1;
+		point.multiplicity = 1;
 		
 		cloud->push_back(point);
 	}
@@ -154,7 +154,7 @@ void FeatureCloudConverter::process_mask() {
 			point.descriptor[j] = descriptors.row(i).at<float>(j);	
 		}
 		
-		point.times = 1;
+		point.multiplicity = 1;
 		
 		cloud->push_back(point);
 	}

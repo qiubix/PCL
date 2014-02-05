@@ -17,8 +17,8 @@
 	<Subtasks>
 		<Subtask name="Processing">
 			<Executor name="Exec1"  period="0.1">
-				<Component name="Source" type="PCL:PCDReader" priority="1" bump="0">
-					<param name="filename">/home/mlaszkow/pcd/test_xyzsift.pcd</param>
+				<Component name="Source" type="PCL:PCDReader" priority="1" bump="2">
+					<param name="filename">/home/tkornuta/Objects/cereal_box_1_co5_xyzsift.pcd</param>
 				</Component>
 			</Executor>
 		</Subtask>
@@ -34,16 +34,13 @@
 	
 	</Subtasks>
 	
-	<!-- connections between events and handelrs -->
-	<Events>
-	</Events>
 	
 	<!-- pipes connecting datastreams -->
 	<DataStreams>
-		<Source name="Source.out_pcl_xyzsift">
-			<sink>Window.in_cloud_xyz</sink>
+		<Source name="Source.out_cloud_xyzrgb">
+			<sink>Window.in_cloud_xyzrgb</sink>
 		</Source>
-		<Source name="Source.out_pcl">
+		<Source name="Source.out_cloud_xyzsift">
 			<sink>Window2.in_cloud_xyz</sink>
 		</Source>
 	</DataStreams>

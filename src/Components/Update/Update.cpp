@@ -199,7 +199,7 @@ void Update::update() {
 	CLOG(LTRACE) << "\nNumber of reciprocal correspondences: " << correspondences->size() << " out of " << cloud_sift_next->size() << " keypoints" << std::endl ;
 
 
-	// Computation of features multiplicity (designating how many times given feature appears in all views).
+	// Computation of features multiplicity (designating how many multiplicity given feature appears in all views).
 	for(int i = 0; i< correspondences->size();i++){	
 		if (correspondences->at(i).index_query >=cloud_sift_next->size() || correspondences->at(i).index_match >=cloud_sift_merged->size()){
 			continue;
@@ -208,18 +208,18 @@ void Update::update() {
 		//cout<< correspondences->at(i).index_query << " ";
 		//cout<< correspondences->at(i).index_match << " ";
 		//cout<< correspondences->at(i).distance << " ";
-		//cout<<cloud_sift_prev->at(correspondences->at(i).index_query).times <<endl;
+		//cout<<cloud_sift_prev->at(correspondences->at(i).index_query).multiplicity <<endl;
 		//for(int j=0;j<128;j++){
 			//cout<<cloud_sift_prev->at(correspondences->at(i).index_query).descriptor[j]<<" ";
 			//cout<<cloud_sift_next->at(correspondences->at(i).index_match).descriptor[j]<<", ";
 			////cout<<correspondences->at(i).distance<<" ";
 		//}
 		//cout<<endl;
-		//if(cloud_sift_merged->at(correspondences->at(i).index_query).times==0)
-			//cloud_sift_merged->at(correspondences->at(i).index_query).times++;
-		//cloud_sift_merged->at(correspondences->at(i).index_query).times++;
-		cloud_sift_next->at(correspondences->at(i).index_query).times = cloud_sift_merged->at(correspondences->at(i).index_match).times + 1;
-		cloud_sift_merged->at(correspondences->at(i).index_match).times=-1; //poprzedni punkt do usuniecia			
+		//if(cloud_sift_merged->at(correspondences->at(i).index_query).multiplicity==0)
+			//cloud_sift_merged->at(correspondences->at(i).index_query).multiplicity++;
+		//cloud_sift_merged->at(correspondences->at(i).index_query).multiplicity++;
+		cloud_sift_next->at(correspondences->at(i).index_query).multiplicity = cloud_sift_merged->at(correspondences->at(i).index_match).multiplicity + 1;
+		cloud_sift_merged->at(correspondences->at(i).index_match).multiplicity=-1; //poprzedni punkt do usuniecia			
 	}
 
 	
@@ -246,7 +246,7 @@ void Update::update() {
 		// Delete points.
 		pcl::PointCloud<PointXYZSIFT>::iterator pt_iter = cloud_sift_merged->begin();
 		while(pt_iter!=cloud_sift_merged->end()){
-			if(pt_iter->times==-1){
+			if(pt_iter->multiplicity==-1){
 				pt_iter = cloud_sift_merged->erase(pt_iter);
 			}
 			else{

@@ -81,7 +81,7 @@ protected:
 		Base::DataStreamOut<pcl::PointCloud<PointXYZSIFT>::Ptr> out_cloud;
         Base::DataStreamOut< std::vector<std::map<int,int> > > out_multiplicityOfModels;
 		//Base::DataStreamOut<vector<vector<int> > > out_descriptors;
-		//Base::DataStreamOut<vector<int> > out_times;
+		//Base::DataStreamOut<vector<int> > out_multiplicity;
 	// Handlers
 	Base::EventHandler2 h_add;
 
@@ -94,7 +94,7 @@ protected:
     std::vector <AbstractObject*> models;
 	
 	//vector<vector<int> > descriptors;
-	//vector<int> times;
+	//vector<int> multiplicity;
 
 };
 

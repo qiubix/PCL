@@ -12,7 +12,7 @@ struct PointXYZSIFT
 {
   PCL_ADD_POINT4D;                  // preferred way of adding a XYZ+padding
   float descriptor[128];
-  int times; 
+  int multiplicity; 
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 } EIGEN_ALIGN16;
  
@@ -21,7 +21,7 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (PointXYZSIFT           // here we assume a XY
                                    (float, y, y)
                                    (float, z, z)
                                    (float[128], descriptor, descriptor)
-                                   (int, times, times)
+                                   (int, multiplicity, multiplicity)
 )
 
 

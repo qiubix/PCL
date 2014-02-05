@@ -48,3 +48,5 @@ ADD_COMPONENT(SOMJSONWriter)
 ADD_COMPONENT(PassThrough)
 
 ADD_COMPONENT(StatisticalOutlierRemoval)
+
+ADD_COMPONENT(PC2Octree)

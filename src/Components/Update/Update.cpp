@@ -36,6 +36,7 @@
 ////////////////////////////////////////////////////////////////////////
 #include <pcl/filters/filter.h>
 
+#include<pcl/registration/icp.h>
 
 namespace Processors {
 namespace Update {
@@ -254,9 +255,21 @@ void Update::update() {
 			}
 		}
 
-		// Merge cloud - cloud_next.
+		// Transform .
 		pcl::transformPointCloud(*cloud_next, *cloud_to_merge, current_trans) ; //global_trans
 		pcl::transformPointCloud(*cloud_sift_next, *cloud_sift_to_merge, current_trans) ; //global_trans
+
+/*
+
+		pcl::IterativeClosestPoint<pcl::PointXYZ, pcl::PointXYZ> icp;
+		icp.setInputCloud(cloud_in);
+		icp.setInputTarget(cloud_out);
+  		pcl::PointCloud<pcl::PointXYZ> Final;
+		icp.align(Final);
+		std::cout << "has converged:" << icp.hasConverged() << " score: " <<
+		icp.getFitnessScore() << std::endl;
+		std::cout << icp.getFinalTransformation() << std::endl;
+*/
 		//addCloudToScene(cloud_to_merge, sceneviewer, counter - 1) ; 
 		*cloud_merged = *cloud_merged + *cloud_to_merge ;
 		*cloud_sift_merged = *cloud_sift_merged + *cloud_sift_to_merge ;

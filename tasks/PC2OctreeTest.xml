@@ -18,7 +18,8 @@
 		<Subtask name="Processing">
 			<Executor name="Exec1"  period="0.1">
 				<Component name="Source" type="PCL:PCDReader" priority="1" bump="2">
-					<param name="filename">%[TASK_LOCATION]%/../data/testcloud_xyzrgb_12p.pcd</param>
+					<param name="filename">%[TASK_LOCATION]%/../data/cereal_box_1_xyzrgb.pcd</param>
+<!--										<param name="filename">%[TASK_LOCATION]%/../data/testcloud_xyzrgb_12p.pcd</param>-->
 <!--					<param name="filename">/home/tkornuta/Objects/cereal_box_1_co5_xyzrgb_12p.pcd</param> -->
 				</Component>
 				<Component name="PC2Octree" type="PCL:PC2Octree" priority="1" bump="1">

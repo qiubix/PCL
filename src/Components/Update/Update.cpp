@@ -246,14 +246,14 @@ void Update::update() {
 	pcl::transformPointCloud(*cloud_sift, *cloud_sift, current_trans);
 
 	// Use ICP to get "better" transformation.
-	pcl::IterativeClosestPoint<pcl::PointXYZRGB, pcl::PointXYZRGB> icp;
-/*
+/*	pcl::IterativeClosestPoint<pcl::PointXYZRGB, pcl::PointXYZRGB> icp;
+
 //	min_sample_distance_ (0.05),
 //	max_correspondence_distance_ (1.0*1.0),
-	nr_iterations_ (500)
-	normal_radius_ (0.2),
+//	nr_iterations_ (500)
+//	normal_radius_ (0.2),
 //	feature_radius_ (0.2) 
-*/
+
 	 // Set the max correspondence distance to 5cm (e.g., correspondences with higher distances will be ignored)
 	 icp.setMaxCorrespondenceDistance (0.005);
 	 // Set the maximum number of iterations (criterion 1)
@@ -271,10 +271,10 @@ void Update::update() {
 	current_trans = icp.getFinalTransformation();
 	CLOG(LINFO) << "ICP transformation refinement: " << std::endl << current_trans;
 
-	
+	// Refine the 	
 	pcl::transformPointCloud(*cloud, *cloud, current_trans);
 	pcl::transformPointCloud(*cloud_sift, *cloud_sift, current_trans);
-
+*/
 
 	//addCloudToScene(cloud_to_merge, sceneviewer, counter - 1) ; 
 
@@ -291,7 +291,7 @@ void Update::update() {
 
 	// Push results to output data ports.
 	out_mean_viewpoint_features_number.write(mean_viewpoint_features_number);
-	out_cloud_xyzrgb.write(Final);
+	out_cloud_xyzrgb.write(cloud);
 	out_cloud_xyzsift.write(cloud_sift_merged);
 
 	// Push SOM - depricated.

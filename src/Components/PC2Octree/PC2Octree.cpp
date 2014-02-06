@@ -33,7 +33,7 @@ void PC2Octree::prepareInterface() {
 	// Register handlers
 	h_cloud_xyzrgb_to_octree.setup(boost::bind(&PC2Octree::cloud_xyzrgb_to_octree, this));
 	registerHandler("cloud_xyzrgb_to_octree", &h_cloud_xyzrgb_to_octree);
-	addDependency("cloud_xyzrgb_to_octree", &in_cloud_xyzrgb);
+	addDependency("cloud_xyzrgb_to_octree", &in_cloud_xyzsift);
 
 
 }
@@ -58,11 +58,11 @@ bool PC2Octree::onStart() {
 void PC2Octree::cloud_xyzrgb_to_octree() {
 	LOG(LTRACE) << "PC2Octree::cloud_xyzrgb_to_octree";
 	// Read from dataport.
-	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud = in_cloud_xyzrgb.read();
+	pcl::PointCloud<PointXYZSIFT>::Ptr cloud = in_cloud_xyzsift.read();
 
 	// Set voxel resolution.
 	float voxelSize = 0.01f;
-	pcl::octree::OctreePointCloud<pcl::PointXYZRGB, pcl::octree::OctreeContainerPointIndices> octree (voxelSize);
+	pcl::octree::OctreePointCloud<PointXYZSIFT, pcl::octree::OctreeContainerPointIndices> octree (voxelSize);
 	// Set input cloud.
 	octree.setInputCloud(cloud);
 	// Calculate bounding box of input cloud.
@@ -72,6 +72,7 @@ void PC2Octree::cloud_xyzrgb_to_octree() {
 	octree.addPointsFromInputCloud ();
 
 	//...?
+    LOG(LINFO) << "octree created";
 
 
   // breadth-first iterator test
@@ -83,8 +84,8 @@ void PC2Octree::cloud_xyzrgb_to_octree() {
 
   bool leafNodeVisited = false;
 
-  pcl::octree::OctreePointCloud<pcl::PointXYZRGB>::BreadthFirstIterator bfIt;
-  const pcl::octree::OctreePointCloud<pcl::PointXYZRGB>::BreadthFirstIterator bfIt_end = octree.breadth_end();
+  pcl::octree::OctreePointCloud<PointXYZSIFT>::BreadthFirstIterator bfIt;
+  const pcl::octree::OctreePointCloud<PointXYZSIFT>::BreadthFirstIterator bfIt_end = octree.breadth_end();
 
   for (bfIt = octree.breadth_begin(); bfIt != bfIt_end; ++bfIt)
   {
@@ -102,7 +103,7 @@ void PC2Octree::cloud_xyzrgb_to_octree() {
   {
 	LOG(LWARNING) << "to jest branch";
 //"  getLeafCount=" << node->getLeafCount() << " getBranchCount=" <<node->getBranchCount();
-	OctreeBranchNode<pcl::PointXYZRGB>* branch_node =   static_cast<OctreeBranchNode<pcl::PointXYZRGB>*> (node);
+	OctreeBranchNode<PointXYZSIFT>* branch_node =   static_cast<OctreeBranchNode<PointXYZSIFT>*> (node);
 	// iterate over all children
 	for (child_idx = 0; child_idx < 12 ; ++child_idx)
 	{
@@ -149,7 +150,8 @@ void PC2Octree::cloud_xyzrgb_to_octree() {
 		{
 //			LOG(LWARNING) << "iteruję " << i << " index=" << point_indices[i];
 ///			octree.getPointByIndex(point_indices[i]);
-			pcl::PointXYZRGB p = cloud->at(point_indices[i]);
+			PointXYZSIFT p = cloud->at(point_indices[i]);
+            LOG(LINFO) << "multiplicity: " << p.multiplicity;
 //			LOG(LWARNING) << "p.x = " << p.x << "p.y = " << p.y << "p.z = " << p.z;
 			
 			
@@ -194,16 +196,16 @@ LOG(LWARNING) << "ELO! maxLeafContainerSize: " << maxLeafContainerSize;
 
 
   // instantiate iterator for octree
-       pcl::octree::OctreePointCloud<pcl::PointXYZRGB>::LeafNodeIterator it;// (octree);
-	it = octree.leaf_begin();
+//       pcl::octree::OctreePointCloud<pcl::PointXYZRGB>::LeafNodeIterator it;// (octree);
+//	it = octree.leaf_begin();
 
-     std::vector<int> indexVector;
+//     std::vector<int> indexVector;
 
-     while (*++it)
-     {
+//     while (*++it)
+//     {
 //       it.getData (indexVector);
 	//pcl::octree::OctreeLeafContainer<pcl::PointXYZRGB> c = it.getLeafContainer();
-     } 
+//     } 
 
 	// Delete octree data structure (pushes allocated nodes to memory pool!)
 	// octree.deleteTree ();

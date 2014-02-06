@@ -67,7 +67,7 @@ bool FeatureCloudConverter::onStart() {
 }
 
 void FeatureCloudConverter::process() {
-	cout<<"process"<<endl;
+	CLOG(LTRACE) << "FeatureCloudConverter::process";
 	cv::Mat depth = in_depth.read();
 	depth.convertTo(depth, CV_32F);
 	cv::Mat descriptors = in_descriptors.read();
@@ -115,7 +115,7 @@ void FeatureCloudConverter::process() {
 
 
 void FeatureCloudConverter::process_mask() {
-	cout<<"process_mask"<<endl;
+	CLOG(LTRACE) << "FeatureCloudConverter::process_mask";
 	cv::Mat depth = in_depth.read();
 	depth.convertTo(depth, CV_32F);
 	cv::Mat mask = in_mask.read();

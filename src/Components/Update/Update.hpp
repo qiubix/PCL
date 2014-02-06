@@ -19,6 +19,9 @@
 #include <Types/SIFTObjectModel.hpp> 
 #include <Types/SIFTObjectModelFactory.hpp> 
 
+#include <pcl/registration/correspondence_estimation.h>
+#include "pcl/registration/correspondence_rejection_sample_consensus.h"
+
 #include <opencv2/core/core.hpp>
 
 namespace Processors {
@@ -97,6 +100,11 @@ protected:
 	// Handlers
 	void update();
 
+	/// Computes the transformation between two XYZSIFT clouds basing on the found correspondences.
+	Eigen::Matrix4f computeTransformationSAC(const pcl::PointCloud<PointXYZSIFT>::ConstPtr &cloud_src, const pcl::PointCloud<PointXYZSIFT>::ConstPtr &cloud_trg, 
+		const pcl::CorrespondencesConstPtr& correspondences, pcl::Correspondences& inliers);
+
+
 	/// Number of views.	
 	int counter;
 
@@ -107,13 +115,13 @@ protected:
 	pcl::PointCloud<PointXYZSIFT>::Ptr cloud_sift_merged;
 	Eigen::Matrix4f global_trans;
 	
-	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_prev ;
+/*	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_prev ;
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_next ;
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_to_merge;
 	pcl::PointCloud<PointXYZSIFT>::Ptr cloud_sift_to_merge;
 	pcl::PointCloud<PointXYZSIFT>::Ptr cloud_sift_prev;
 	pcl::PointCloud<PointXYZSIFT>::Ptr cloud_sift_next;
-	
+*/	
 };
 
 } //: namespace Update

@@ -184,6 +184,10 @@ void Update::update() {
 //		out_instance.write(produce());	
 		return;
 	}
+
+	// Update view count and feature numbers.
+	counter++;
+	total_viewpoint_features_number += cloud_sift->size();
 	
 	// Find corespondences between feature clouds.
 	// Initialize parameters.
@@ -217,7 +221,7 @@ void Update::update() {
 		out_cloud_xyzsift.write(cloud_sift_merged);
 		return;
 	}//: if
-	CLOG(LINFO) << "Transformation from current view cloud to cloud_merged: " << std::endl << current_trans;
+	CLOG(LINFO) << "SAC Transformation from current view cloud to cloud_merged: " << std::endl << current_trans;
 /*	global_trans = global_trans * current_trans;
 	CLOG(LINFO) << "Transformation from current view cloud to first view: " << std::endl << global_trans << std::endl ;
 */
@@ -233,34 +237,50 @@ void Update::update() {
 	}
 
 	// Transform both view clouds.
-	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_to_merge;
+/*	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_to_merge;
 	pcl::PointCloud<PointXYZSIFT>::Ptr cloud_sift_to_merge;
 	cloud_to_merge = pcl::PointCloud<pcl::PointXYZRGB>::Ptr (new pcl::PointCloud<pcl::PointXYZRGB>());
-	cloud_sift_to_merge = pcl::PointCloud<PointXYZSIFT>::Ptr (new pcl::PointCloud<PointXYZSIFT>());
+	cloud_sift_to_merge = pcl::PointCloud<PointXYZSIFT>::Ptr (new pcl::PointCloud<PointXYZSIFT>());*/
 
-	pcl::transformPointCloud(*cloud, *cloud_to_merge, current_trans);
-	pcl::transformPointCloud(*cloud_sift, *cloud_sift_to_merge, current_trans);
+	pcl::transformPointCloud(*cloud, *cloud, current_trans);
+	pcl::transformPointCloud(*cloud_sift, *cloud_sift, current_trans);
 
+	// Use ICP to get "better" transformation.
+	pcl::IterativeClosestPoint<pcl::PointXYZRGB, pcl::PointXYZRGB> icp;
 /*
-	pcl::IterativeClosestPoint<pcl::PointXYZ, pcl::PointXYZ> icp;
-	icp.setInputCloud(cloud_in);
-	icp.setInputTarget(cloud_out);
-	pcl::PointCloud<pcl::PointXYZ> Final;
-	icp.align(Final);
-	std::cout << "has converged:" << icp.hasConverged() << " score: " <<
-	icp.getFitnessScore() << std::endl;
-	std::cout << icp.getFinalTransformation() << std::endl;
+//	min_sample_distance_ (0.05),
+//	max_correspondence_distance_ (1.0*1.0),
+	nr_iterations_ (500)
+	normal_radius_ (0.2),
+//	feature_radius_ (0.2) 
 */
+	 // Set the max correspondence distance to 5cm (e.g., correspondences with higher distances will be ignored)
+	 icp.setMaxCorrespondenceDistance (0.005);
+	 // Set the maximum number of iterations (criterion 1)
+	 icp.setMaximumIterations (50);
+	 // Set the transformation epsilon (criterion 2)
+	 icp.setTransformationEpsilon (1e-8);
+	 // Set the euclidean distance difference epsilon (criterion 3)
+	 icp.setEuclideanFitnessEpsilon (1);
+
+	icp.setInputSource(cloud_merged);
+	icp.setInputTarget(cloud);
+	pcl::PointCloud<pcl::PointXYZRGB>::Ptr Final (new pcl::PointCloud<pcl::PointXYZRGB>());
+	icp.align(*Final);
+	CLOG(LINFO) << "ICP has converged:" << icp.hasConverged() << " score: " << icp.getFitnessScore();
+	current_trans = icp.getFinalTransformation();
+	CLOG(LINFO) << "ICP transformation refinement: " << std::endl << current_trans;
+
+	
+	pcl::transformPointCloud(*cloud, *cloud, current_trans);
+	pcl::transformPointCloud(*cloud_sift, *cloud_sift, current_trans);
+
+
 	//addCloudToScene(cloud_to_merge, sceneviewer, counter - 1) ; 
 
-
-	// Update view count and feature numbers.
-	counter++;
-	total_viewpoint_features_number += cloud_sift_to_merge->size();
-
 	// Add clouds.
-	*cloud_merged += *cloud_to_merge;
-	*cloud_sift_merged += *cloud_sift_to_merge;
+	*cloud_merged += *cloud;
+	*cloud_sift_merged += *cloud_sift;
 
 	CLOG(LINFO) << "model cloud->size(): "<<cloud_merged->size();
 	CLOG(LINFO) << "model cloud_sift->size(): "<<cloud_sift_merged->size();
@@ -271,7 +291,7 @@ void Update::update() {
 
 	// Push results to output data ports.
 	out_mean_viewpoint_features_number.write(mean_viewpoint_features_number);
-	out_cloud_xyzrgb.write(cloud_merged);
+	out_cloud_xyzrgb.write(Final);
 	out_cloud_xyzsift.write(cloud_sift_merged);
 
 	// Push SOM - depricated.

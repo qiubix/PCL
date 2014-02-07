@@ -201,6 +201,9 @@ void SIFTAdder::add() {
         modelsMultiplicity.push_back(modelMultiplicity);
 //		modelMultiplicity.clear();
 	}
+    for(unsigned i=0; i<cloud->size(); i++) {
+        cloud->at(i).pointId = i;
+    }
     LOG(LDEBUG) << "Added all models to joint cloud. Joint cloud size: " << cloud->size();
 	out_cloud.write(cloud);
     LOG(LDEBUG) << "Writing multiplicity vectors of models merged to cloud. Number of vectors: " << modelsMultiplicity.size();

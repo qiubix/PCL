@@ -248,20 +248,22 @@ void Update::update() {
 	// Use ICP to get "better" transformation.
 /*	pcl::IterativeClosestPoint<pcl::PointXYZRGB, pcl::PointXYZRGB> icp;
 
-//	min_sample_distance_ (0.05),
 //	max_correspondence_distance_ (1.0*1.0),
 //	nr_iterations_ (500)
 //	normal_radius_ (0.2),
 //	feature_radius_ (0.2) 
 
-	 // Set the max correspondence distance to 5cm (e.g., correspondences with higher distances will be ignored)
-	 icp.setMaxCorrespondenceDistance (0.005);
-	 // Set the maximum number of iterations (criterion 1)
-	 icp.setMaximumIterations (50);
-	 // Set the transformation epsilon (criterion 2)
-	 icp.setTransformationEpsilon (1e-8);
-	 // Set the euclidean distance difference epsilon (criterion 3)
-	 icp.setEuclideanFitnessEpsilon (1);
+	// Set the max correspondence distance to 5cm (e.g., correspondences with higher distances will be ignored)
+	icp.setMaxCorrespondenceDistance (0.005);
+	icp.min_sample_distance_ (0.05),
+
+
+	// Set the maximum number of iterations (criterion 1)
+	icp.setMaximumIterations (50);
+	// Set the transformation epsilon (criterion 2)
+	icp.setTransformationEpsilon (1e-8);
+	// Set the euclidean distance difference epsilon (criterion 3)
+	icp.setEuclideanFitnessEpsilon (1);
 
 	icp.setInputSource(cloud_merged);
 	icp.setInputTarget(cloud);
@@ -291,7 +293,7 @@ void Update::update() {
 
 	// Push results to output data ports.
 	out_mean_viewpoint_features_number.write(mean_viewpoint_features_number);
-	out_cloud_xyzrgb.write(cloud);
+	out_cloud_xyzrgb.write(cloud_merged);
 	out_cloud_xyzsift.write(cloud_sift_merged);
 
 	// Push SOM - depricated.

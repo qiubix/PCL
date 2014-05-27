@@ -14,13 +14,15 @@
 
 #include <pcl/io/pcd_io.h>
 
+#include <pcl/filters/filter.h>
 
 namespace Processors {
 namespace DepthConverter {
 
 DepthConverter::DepthConverter(const std::string & name) :
-		Base::Component(name)  {
-
+		Base::Component(name),
+		prop_remove_nan("remove_nan", true)  {
+			registerProperty(prop_remove_nan);
 }
 
 DepthConverter::~DepthConverter() {
@@ -66,7 +68,7 @@ void DepthConverter::prepareInterface() {
 }
 
 bool DepthConverter::onInit() {
-
+	LOG(LTRACE) << "DepthConverter::onInit";
 	return true;
 }
 
@@ -119,6 +121,12 @@ void DepthConverter::process_depth() {
 		}
 	}
 
+	if(prop_remove_nan){
+		std::vector<int> indices;
+		cloud->is_dense = false; 
+		pcl::removeNaNFromPointCloud(*cloud, *cloud, indices);
+	}
+	
 	out_cloud_xyz.write(cloud);
 /*	pcl::io::savePCDFileASCII ("test_pcd.pcd", *cloud);
 	CLOG(LNOTICE) << "Saved " << cloud->points.size () << " data points to test_pcd.pcd.";*/
@@ -165,6 +173,12 @@ void DepthConverter::process_depth_mask() {
 			pt.y = (v - cy_d) * depth * fy_d;
 			pt.z = depth * 0.001;
 		}
+	}
+
+	if(prop_remove_nan){
+		std::vector<int> indices;
+		cloud->is_dense = false; 
+		pcl::removeNaNFromPointCloud(*cloud, *cloud, indices);
 	}
 
 	out_cloud_xyz.write(cloud);
@@ -231,6 +245,13 @@ void DepthConverter::process_depth_mask_color() {
 		}
 	}
 
+
+	if(prop_remove_nan){
+		std::vector<int> indices;
+		cloud->is_dense = false; 
+		pcl::removeNaNFromPointCloud(*cloud, *cloud, indices);
+	}
+
 	out_cloud_xyzrgb.write(cloud);
 }
 
@@ -240,7 +261,7 @@ void DepthConverter::process_depth_color() {
 	Types::CameraInfo camera_info = in_camera_info.read();
 	cv::Mat depth = in_depth.read();
 	cv::Mat color = in_color.read();
-
+	LOG(LDEBUG) << "Width"<< camera_info.width()<<" Height: "<<camera_info.height()<<endl;
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGB>(camera_info.width(), camera_info.height()));
 
 	double fx_d = 0.001 / camera_info.fx();
@@ -280,6 +301,12 @@ void DepthConverter::process_depth_color() {
 			pt.g = g;
 			pt.b = b;
 		}
+	}
+
+	if(prop_remove_nan){
+		std::vector<int> indices;
+		cloud->is_dense = false; 
+		pcl::removeNaNFromPointCloud(*cloud, *cloud, indices);
 	}
 
 	out_cloud_xyzrgb.write(cloud);

@@ -37,7 +37,7 @@
 	
 	<!-- pipes connecting datastreams -->
 	<DataStreams>
-		<Source name="Source.out_pcl_ptr">
+		<Source name="Source.out_pcl">
 			<sink>Window.in_cloud_xyz</sink>
 		</Source>
 	</DataStreams>

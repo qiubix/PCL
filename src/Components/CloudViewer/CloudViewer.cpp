@@ -19,9 +19,11 @@ namespace CloudViewer {
 
 CloudViewer::CloudViewer(const std::string & name) :
 		Base::Component(name),
-    prop_window_name("window_name", std::string("3D PC Viewer"))
+    prop_window_name("window_name", std::string("3D PC Viewer")),
+    prop_coordinate_system("coordinate_system", true)
 {
   registerProperty(prop_window_name);
+  registerProperty(prop_coordinate_system);
 }
 
 CloudViewer::~CloudViewer() {
@@ -52,9 +54,10 @@ bool CloudViewer::onInit() {
 
 	viewer = new pcl::visualization::PCLVisualizer (prop_window_name);
 	viewer->setBackgroundColor (0, 0, 0);
+	if(prop_coordinate_system)
+		viewer->addCoordinateSystem (1.0, 0);
 	viewer->addPointCloud<pcl::PointXYZ> (pcl::PointCloud<pcl::PointXYZ>::Ptr(new pcl::PointCloud<pcl::PointXYZ>), "sample cloud");
 	viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 0.5, "sample cloud");
-	viewer->addCoordinateSystem (1.0);
 	viewer->initCameraParameters ();
 
 	return true;
@@ -83,7 +86,7 @@ void CloudViewer::on_cloud_xyzrgb() {
 	std::vector<int> indices;
 	cloud->is_dense = false; 
 	pcl::removeNaNFromPointCloud(*cloud, *cloud, indices);
-	
+
 	pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGB> color_distribution(cloud);
 	viewer->removePointCloud("viewcloud") ;
 	viewer->addPointCloud<pcl::PointXYZRGB>(cloud, color_distribution, "viewcloud") ;

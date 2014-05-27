@@ -10,8 +10,10 @@
 #include "Component_Aux.hpp"
 #include "Component.hpp"
 #include "DataStream.hpp"
-#include "Property.hpp"
+#include "Logger.hpp"
+
 #include "EventHandler2.hpp"
+#include "Property.hpp"
 
 
 #include <pcl/visualization/pcl_visualizer.h>
@@ -84,7 +86,8 @@ protected:
 	void on_cloud_normals();
 	void on_spin();
 
-  Base::Property<std::string> prop_window_name;
+    Base::Property<std::string> prop_window_name;
+    Base::Property<bool> prop_coordinate_system;
 
 	pcl::visualization::PCLVisualizer * viewer;
 };

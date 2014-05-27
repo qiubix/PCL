@@ -1,4 +1,4 @@
-/*!;
+/*!
  * \file
  * \brief
  * \author Maciej Stefańczyk [maciek.slon@gmail.com]
@@ -8,7 +8,7 @@
 #include <string>
 
 #include "CloudViewer.hpp"
-//#include "Common/Logger.hpp"
+#include "Common/Logger.hpp"
 
 #include <boost/bind.hpp>
 
@@ -23,6 +23,7 @@ CloudViewer::CloudViewer(const std::string & name) :
     prop_coordinate_system("coordinate_system", true)
 {
   registerProperty(prop_window_name);
+  registerProperty(prop_coordinate_system);
 }
 
 CloudViewer::~CloudViewer() {

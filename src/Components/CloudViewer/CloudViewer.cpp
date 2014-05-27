@@ -12,6 +12,8 @@
 
 #include <boost/bind.hpp>
 
+#include <pcl/filters/filter.h>
+
 namespace Processors {
 namespace CloudViewer {
 
@@ -77,6 +79,11 @@ void CloudViewer::on_cloud_xyz() {
 
 void CloudViewer::on_cloud_xyzrgb() {
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud = in_cloud_xyzrgb.read();
+	
+	std::vector<int> indices;
+	cloud->is_dense = false; 
+	pcl::removeNaNFromPointCloud(*cloud, *cloud, indices);
+	
 	pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGB> color_distribution(cloud);
 	viewer->removePointCloud("viewcloud") ;
 	viewer->addPointCloud<pcl::PointXYZRGB>(cloud, color_distribution, "viewcloud") ;

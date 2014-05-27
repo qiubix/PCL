@@ -52,7 +52,9 @@ bool CloudViewer::onInit() {
 	viewer->setBackgroundColor (0, 0, 0);
 	viewer->addPointCloud<pcl::PointXYZ> (pcl::PointCloud<pcl::PointXYZ>::Ptr(new pcl::PointCloud<pcl::PointXYZ>), "sample cloud");
 	viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 0.5, "sample cloud");
-	viewer->addCoordinateSystem (1.0);
+    //Eigen::Affine3f tf;
+    //string id ="Cloud1";
+    viewer->addCoordinateSystem (1.0, prop_window_name, 0);
 	viewer->initCameraParameters ();
 
 	return true;

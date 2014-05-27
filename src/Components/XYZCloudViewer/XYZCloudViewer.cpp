@@ -86,7 +86,7 @@ bool XYZCloudViewer::onInit() {
 	viewer = new pcl::visualization::PCLVisualizer (title);
 	viewer->initCameraParameters ();
 	// Add visible coortinate system.
-	viewer->addCoordinateSystem (1.0);
+    viewer->addCoordinateSystem (1.0, title);
 
 	// Add clouds.
 	for (int i = 0; i < count; ++i) {

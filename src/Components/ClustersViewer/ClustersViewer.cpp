@@ -17,8 +17,10 @@ namespace ClustersViewer {
 
 ClustersViewer::ClustersViewer(const std::string & name) :
 		Base::Component(name),
-		title("title", std::string("ClustersViewer"))  {
+		title("title", std::string("ClustersViewer")),
+		prop_coordinate_system("coordinate_system", true)  {
 			registerProperty(title);
+			registerProperty(prop_coordinate_system);
 }
 
 ClustersViewer::~ClustersViewer() {
@@ -44,9 +46,10 @@ bool ClustersViewer::onInit() {
 	// Create visualizer.
 	viewer = new pcl::visualization::PCLVisualizer (title);
 	viewer->initCameraParameters ();
-	//viewer->setBackgroundColor (0, 0, 0);
+	viewer->setBackgroundColor (0, 0, 0);
 	// Add visible coortinate system.
-	viewer->addCoordinateSystem (1.0);
+	if(prop_coordinate_system)
+		viewer->addCoordinateSystem (1.0);
 	count = 0;
  	return true;
 }

@@ -19,13 +19,15 @@ XYZCloudViewer::XYZCloudViewer(const std::string & name) :
 		Base::Component(name),
 		title("title", std::string("XYZ Cloud Viewer")),
 		count("count", 1),
-		clouds_colours("clouds_colours", cv::Mat(cv::Mat::zeros(1, 3, CV_8UC1)))
+		clouds_colours("clouds_colours", cv::Mat(cv::Mat::zeros(1, 3, CV_8UC1))),
+		prop_coordinate_system("coordinate_system", true)
 
 {
   LOG(LTRACE) << "XYZCloudViewer::constructor";
   registerProperty(title);
   registerProperty(count);
   registerProperty(clouds_colours);
+  registerProperty(prop_coordinate_system);
 
   // Set white as default.
   ((cv::Mat)clouds_colours).at<uchar>(0,0) = 255;
@@ -86,7 +88,8 @@ bool XYZCloudViewer::onInit() {
 	viewer = new pcl::visualization::PCLVisualizer (title);
 	viewer->initCameraParameters ();
 	// Add visible coortinate system.
-	viewer->addCoordinateSystem (1.0);
+	if(prop_coordinate_system)
+		viewer->addCoordinateSystem (1.0);
 
 	// Add clouds.
 	for (int i = 0; i < count; ++i) {

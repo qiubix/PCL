@@ -79,9 +79,11 @@ protected:
 	
 	// Property enabling to change the name of displayed window.
 	Base::Property<std::string> title;
+	Base::Property<bool> prop_coordinate_system;
 	
 	/// Point cloud viewer.
 	pcl::visualization::PCLVisualizer * viewer;
+	
 	
 	int count;
 

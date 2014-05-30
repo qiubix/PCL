@@ -70,26 +70,36 @@ protected:
 
 	// Data streams
 	Base::DataStreamIn< pcl::PointCloud<pcl::PointXYZ>::Ptr > in_cloud_xyz;
+	Base::DataStreamIn< pcl::PointCloud<pcl::PointXYZ>::Ptr > in_cloud_xyz2;
 	Base::DataStreamIn< pcl::PointCloud<pcl::PointXYZRGB>::Ptr > in_cloud_xyzrgb;
+	Base::DataStreamIn< pcl::PointCloud<pcl::PointXYZRGB>::Ptr > in_cloud_xyzrgb2;
 	Base::DataStreamIn< pcl::PointCloud<pcl::Normal>::Ptr > in_cloud_normals;
 
 	// Handlers
 	Base::EventHandler2 h_on_cloud_xyz;
+	Base::EventHandler2 h_on_clouds_xyz;
 	Base::EventHandler2 h_on_cloud_xyzrgb;
+	Base::EventHandler2 h_on_clouds_xyzrgb;
 	Base::EventHandler2 h_on_cloud_normals;
 	Base::EventHandler2 h_on_spin;
 
 	
 	// Handlers
 	void on_cloud_xyz();
+	void on_clouds_xyz();
 	void on_cloud_xyzrgb();
+	void on_clouds_xyzrgb();
 	void on_cloud_normals();
 	void on_spin();
 
     Base::Property<std::string> prop_window_name;
     Base::Property<bool> prop_coordinate_system;
+    Base::Property<bool> prop_two_viewports;
 
 	pcl::visualization::PCLVisualizer * viewer;
+	pcl::visualization::PCLVisualizer * viewer2;
+	int v1,v2;
+	
 };
 
 } //: namespace CloudViewer

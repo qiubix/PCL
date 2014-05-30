@@ -33,12 +33,18 @@ StatisticalOutlierRemoval::~StatisticalOutlierRemoval() {
 
 void StatisticalOutlierRemoval::prepareInterface() {
 	// Register data streams, events and event handlers HERE!
-registerStream("in_cloud_xyzrgb", &in_cloud_xyzrgb);
-registerStream("out_cloud_xyzrgb", &out_cloud_xyzrgb);
+	registerStream("in_cloud_xyzrgb", &in_cloud_xyzrgb);
+	registerStream("out_cloud_xyzrgb", &out_cloud_xyzrgb);
+	registerStream("in_cloud_xyz", &in_cloud_xyz);
+	registerStream("out_cloud_xyz", &out_cloud_xyz);
 	// Register handlers
-	h_filter.setup(boost::bind(&StatisticalOutlierRemoval::filter, this));
-	registerHandler("filter", &h_filter);
-	addDependency("filter", &in_cloud_xyzrgb);
+	h_filter_xyzrgb.setup(boost::bind(&StatisticalOutlierRemoval::filter_xyzrgb, this));
+	registerHandler("filter_xyzrgb", &h_filter_xyzrgb);
+	addDependency("filter_xyzrgb", &in_cloud_xyzrgb);
+	
+	h_filter_xyz.setup(boost::bind(&StatisticalOutlierRemoval::filter_xyz, this));
+	registerHandler("filter_xyz", &h_filter_xyz);
+	addDependency("filter_xyz", &in_cloud_xyz);
 
 }
 
@@ -59,7 +65,7 @@ bool StatisticalOutlierRemoval::onStart() {
 	return true;
 }
 
-void StatisticalOutlierRemoval::filter() {
+void StatisticalOutlierRemoval::filter_xyzrgb() {
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud = in_cloud_xyzrgb.read();
 	pcl::StatisticalOutlierRemoval<pcl::PointXYZRGB> sor;
 	sor.setInputCloud (cloud);
@@ -68,6 +74,17 @@ void StatisticalOutlierRemoval::filter() {
 	sor.setNegative (negative);
 	sor.filter (*cloud);
 	out_cloud_xyzrgb.write(cloud);
+}
+
+void StatisticalOutlierRemoval::filter_xyz() {
+	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud = in_cloud_xyz.read();
+	pcl::StatisticalOutlierRemoval<pcl::PointXYZ> sor;
+	sor.setInputCloud (cloud);
+	sor.setMeanK (MeanK);
+	sor.setStddevMulThresh (StddevMulThresh);
+	sor.setNegative (negative);
+	sor.filter (*cloud);
+	out_cloud_xyz.write(cloud);
 }
 
 

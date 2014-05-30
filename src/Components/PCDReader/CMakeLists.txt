@@ -5,6 +5,7 @@ SET(CMAKE_INCLUDE_CURRENT_DIR ON)
 FILE(GLOB files *.cpp)
 
 # Find required packages
+find_package(PCL 1.7.1 REQUIRED)
 
 
 # Create an executable file from sources:

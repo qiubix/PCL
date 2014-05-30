@@ -10,8 +10,10 @@
 #include "Component_Aux.hpp"
 #include "Component.hpp"
 #include "DataStream.hpp"
-#include "Property.hpp"
+#include "Logger.hpp"
+
 #include "EventHandler2.hpp"
+#include "Property.hpp"
 
 
 #include <pcl/visualization/pcl_visualizer.h>

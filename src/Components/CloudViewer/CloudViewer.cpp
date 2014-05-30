@@ -128,6 +128,7 @@ void CloudViewer::on_cloud_xyzrgb() {
 	LOG(LTRACE) << "CloudViewer::on_cloud_xyzrgb\n";
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud = in_cloud_xyzrgb.read();
 	
+	// Filter the NaN points.
 	std::vector<int> indices;
 	cloud->is_dense = false; 
 	pcl::removeNaNFromPointCloud(*cloud, *cloud, indices);

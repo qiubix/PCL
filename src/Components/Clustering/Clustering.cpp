@@ -38,6 +38,7 @@ void Clustering::prepareInterface() {
 	// Register data streams, events and event handlers HERE!
 	registerStream("in_cloud_xyzrgb", &in_cloud_xyzrgb);
 	registerStream("out_segments", &out_segments);
+	registerStream("out_colored", &out_colored);
 	// Register handlers
 	h_onNewData.setup(boost::bind(&Clustering::onNewData, this));
 	registerHandler("onNewData", &h_onNewData);
@@ -81,29 +82,32 @@ void Clustering::onNewData() {
 	ec.extract(cluster_indices);
 
 	int j = 0;
-
+	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_colored(new pcl::PointCloud<pcl::PointXYZRGB>);
 	for (std::vector<pcl::PointIndices>::const_iterator it = cluster_indices.begin(); it != cluster_indices.end(); ++it) {
 		pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_cluster(new pcl::PointCloud<pcl::PointXYZRGB>);
 
-/*		int r = rand()%128 + 128;
+		int r = rand()%128 + 128;
 		int g = rand()%128 + 128;
-		int b = rand()%128 + 128;*/
+		int b = rand()%128 + 128;
 		for (std::vector<int>::const_iterator pit = it->indices.begin(); pit != it->indices.end(); pit++) {
 			pcl::PointXYZRGB pt = cloud->points[*pit];
-			/*uint32_t rgb = ((uint32_t)r << 16 | (uint32_t)g << 8 | (uint32_t)b);
-			//pt.rgb = *reinterpret_cast<float*>(&rgb);
-			pt.rgba = rgb;*/
 			cloud_cluster->points.push_back(pt);
+			pt.r = r; pt.g = g; pt.b = b;
+			cloud_colored->push_back(pt);
 		}
 		cloud_cluster->width = cloud_cluster->points.size();
+		cloud_colored->width += cloud_cluster->points.size();
 		cloud_cluster->height = 1;
+		cloud_colored->height = 1;
 		cloud_cluster->is_dense = true;
+		cloud_colored->is_dense = true;
 
 		CLOG(LINFO) << "PointCloud representing the Cluster: " << cloud_cluster->points.size() << " data points.";
 		j++;
 
 		out_segments.write(cloud_cluster);
 	}
+	out_colored.write(cloud_colored);
 
 }
 

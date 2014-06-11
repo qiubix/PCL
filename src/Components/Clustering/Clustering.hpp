@@ -72,6 +72,7 @@ protected:
 
 	// Output data streams
 	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> out_segments;
+	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> out_colored;
 
 	// Handlers
 	Base::EventHandler2 h_onNewData;

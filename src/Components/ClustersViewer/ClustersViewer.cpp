@@ -50,7 +50,7 @@ bool ClustersViewer::onInit() {
 	viewer->setBackgroundColor (0, 0, 0);
 	// Add visible coortinate system.
 	if(prop_coordinate_system)
-	    viewer->addCoordinateSystem (1.0, "ClustersViewer", 0);
+	    viewer->addCoordinateSystem (1.0, 0);
 	//	viewer->addCoordinateSystem (1.0);
 	count = 0;
  	return true;

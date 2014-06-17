@@ -89,7 +89,7 @@ bool XYZCloudViewer::onInit() {
 	viewer->initCameraParameters ();
 	// Add visible coortinate system.
 	if(prop_coordinate_system)
-		viewer->addCoordinateSystem (1.0, title, 0);
+		viewer->addCoordinateSystem (1.0, 0);
 
 	// Add clouds.
 	for (int i = 0; i < count; ++i) {

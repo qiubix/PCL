@@ -1,11 +1,11 @@
 /*!
  * \file
  * \brief 
- * \author Micha Laszkowski
+ * \author Maciej
  */
 
-#ifndef CLOUDCUTTER_HPP_
-#define CLOUDCUTTER_HPP_
+#ifndef CLUSTERING_HPP_
+#define CLUSTERING_HPP_
 
 #include "Component_Aux.hpp"
 #include "Component.hpp"
@@ -13,30 +13,29 @@
 #include "Property.hpp"
 #include "EventHandler2.hpp"
 
-#include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
-#include <Types/PointXYZSIFT.hpp> 
+#include <pcl/point_types.h>
 
 namespace Processors {
-namespace CloudCutter {
+namespace Clustering {
 
 /*!
- * \class ExtractIndices
- * \brief ExtractIndices processor class.
+ * \class Clustering
+ * \brief Clustering processor class.
  *
- * ExtractIndices processor.
+ * 
  */
-class CloudCutter: public Base::Component {
+class Clustering: public Base::Component {
 public:
 	/*!
 	 * Constructor.
 	 */
-	CloudCutter(const std::string & name = "CloudCutter");
+	Clustering(const std::string & name = "Clustering");
 
 	/*!
 	 * Destructor
 	 */
-	virtual ~CloudCutter();
+	virtual ~Clustering();
 
 	/*!
 	 * Prepare components interface (register streams and handlers).
@@ -68,30 +67,30 @@ protected:
 	bool onStop();
 
 
-// Input data streams
+	// Input data streams
+	Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> in_cloud_xyzrgb;
 
-		Base::DataStreamIn<pcl::PointCloud<PointXYZSIFT>::Ptr> in_cloud;
-		Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZ>::Ptr> in_indices;
+	// Output data streams
+	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> out_segments;
+	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> out_colored;
 
-// Output data streams
-
-		Base::DataStreamOut<pcl::PointCloud<PointXYZSIFT>::Ptr> out_cloud;
 	// Handlers
-	Base::EventHandler2 h_cut;
-		Base::Property<float> radius;
+	Base::EventHandler2 h_onNewData;
+
+	// Properties
 
 	
 	// Handlers
-	void cut();
+	void onNewData();
 
 };
 
-} //: namespace CloudCutter
+} //: namespace Clustering
 } //: namespace Processors
 
 /*
  * Register processor component.
  */
-REGISTER_COMPONENT("CloudCutter", Processors::CloudCutter::CloudCutter)
+REGISTER_COMPONENT("Clustering", Processors::Clustering::Clustering)
 
-#endif /* CLOUDCUTTER_HPP_ */
+#endif /* CLUSTERING_HPP_ */

@@ -13,7 +13,7 @@
 #include "Property.hpp"
 #include "EventHandler2.hpp"
 
-#include <Types/PointXYZSIFT.hpp> 
+//#include <Types/PointXYZSIFT.hpp>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 

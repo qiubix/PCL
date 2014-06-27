@@ -34,8 +34,8 @@ void PCDReader::prepareInterface() {
 	// Register data streams, events and event handlers HERE!
 	registerStream("out_cloud_xyz", &out_cloud_xyz);
 	registerStream("out_cloud_xyzrgb", &out_cloud_xyzrgb);
-	registerStream("out_cloud_xyzsift", &out_cloud_xyzsift);
-	// Register handlers
+    //registerStream("out_cloud_xyzsift", &out_cloud_xyzsift);
+    // Register handlers
 	h_Read.setup(boost::bind(&PCDReader::Read, this));
 	registerHandler("Read", &h_Read);
 	//addDependency("Read", NULL);
@@ -78,14 +78,15 @@ void PCDReader::Read() {
 	  }
 	  else
 		  out_cloud_xyzrgb.write(cloud_xyzrgb);
-	  
-	  pcl::PointCloud<PointXYZSIFT>::Ptr cloud_xyzsift (new pcl::PointCloud<PointXYZSIFT>);
-	  if (pcl::io::loadPCDFile<PointXYZSIFT> (filename, *cloud_xyzsift) == -1)
-	  {
-		CLOG(LWARNING) <<"Cannot read PointXYZSIFT cloud from "<<filename;
-	  }
-	  else
-		  out_cloud_xyzsift.write(cloud_xyzsift);	
+
+/*	  pcl::PointCloud<PointXYZSIFT>::Ptr cloud_xyzsift (new pcl::PointCloud<PointXYZSIFT>);
+      if (pcl::io::loadPCDFile<PointXYZSIFT> (filename, *cloud_xyzsift) == -1)
+      {
+        CLOG(LWARNING) <<"Cannot read PointXYZSIFT cloud from "<<filename;
+      }
+      else
+          out_cloud_xyzsift.write(cloud_xyzsift);
+          */
 }
 
 

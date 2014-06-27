@@ -8,9 +8,9 @@ FILE(GLOB files *.cpp)
 
 
 # Create an executable file from sources:
-ADD_LIBRARY(CloudCutter SHARED ${files})
+ADD_LIBRARY(ClustersViewer SHARED ${files})
 
 # Link external libraries
-TARGET_LINK_LIBRARIES(CloudCutter ${DisCODe_LIBRARIES} ${PCL_LIBRARIES} ${PCL_COMMON_LIBRARIES} ${PCL_IO_LIBRARIES} )
+TARGET_LINK_LIBRARIES(ClustersViewer ${DisCODe_LIBRARIES} ${PCL_LIBRARIES})
 
-INSTALL_COMPONENT(CloudCutter)
+INSTALL_COMPONENT(ClustersViewer)

@@ -21,6 +21,8 @@
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 
+
+
 namespace Processors {
 namespace DepthConverter {
 
@@ -79,6 +81,7 @@ protected:
 	Base::EventHandler2 h_process_depth_mask;
 	Base::EventHandler2 h_process_depth_mask_color;
 	Base::EventHandler2 h_process_depth_color;
+	
 
 	
 	// Handlers
@@ -87,7 +90,9 @@ protected:
 	
 	void process_depth_mask_color();
 	void process_depth_color();
+	
 
+	Base::Property<bool> prop_remove_nan;
 };
 
 } //: namespace DepthConverter

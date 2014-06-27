@@ -91,6 +91,8 @@ protected:
 
 	/// Property for setting the colours of clouds. From default it will be set to 1 row with 255, 255, 255 (white cloud).
 	Base::Property<cv::Mat, Types::MatrixTranslator> clouds_colours;
+	
+	Base::Property<bool> prop_coordinate_system;
 
 };
 

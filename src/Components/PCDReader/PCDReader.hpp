@@ -16,7 +16,7 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
-#include <Types/PointXYZSIFT.hpp> 
+//#include <Types/PointXYZSIFT.hpp>
 
 namespace Processors {
 namespace PCDReader {
@@ -75,7 +75,7 @@ protected:
 // Output data streams
 		Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZ>::Ptr > out_cloud_xyz;
 		Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZRGB>::Ptr > out_cloud_xyzrgb;
-		Base::DataStreamOut<pcl::PointCloud<PointXYZSIFT>::Ptr > out_cloud_xyzsift;
+//		Base::DataStreamOut<pcl::PointCloud<PointXYZSIFT>::Ptr > out_cloud_xyzsift;
 	// Handlers
 	Base::EventHandler2 h_Read;
 	Base::Property<std::string> filename;

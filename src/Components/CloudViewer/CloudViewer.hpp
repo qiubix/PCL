@@ -18,6 +18,7 @@
 
 #include <pcl/visualization/pcl_visualizer.h>
 
+
 namespace Processors {
 namespace CloudViewer {
 
@@ -95,6 +96,9 @@ protected:
     Base::Property<std::string> prop_window_name;
     Base::Property<bool> prop_coordinate_system;
     Base::Property<bool> prop_two_viewports;
+    Base::Property<int> prop_background_r;
+    Base::Property<int> prop_background_g;
+    Base::Property<int> prop_background_b;
 
 	pcl::visualization::PCLVisualizer * viewer;
 	pcl::visualization::PCLVisualizer * viewer2;

@@ -14,6 +14,7 @@
 
 #include <pcl/filters/filter.h>
 
+
 namespace Processors {
 namespace CloudViewer {
 
@@ -21,11 +22,18 @@ CloudViewer::CloudViewer(const std::string & name) :
 		Base::Component(name),
     prop_window_name("window_name", std::string("3D PC Viewer")),
     prop_coordinate_system("coordinate_system", true),
-    prop_two_viewports("two_viewports", false)
+    prop_two_viewports("two_viewports", false),
+    prop_background_r("background_r", 0),
+    prop_background_g("background_g", 0),
+    prop_background_b("background_b", 0)
 {
   registerProperty(prop_window_name);
   registerProperty(prop_coordinate_system);
   registerProperty(prop_two_viewports);
+  registerProperty(prop_background_r);
+  registerProperty(prop_background_g);
+  registerProperty(prop_background_b);
+  
 }
 
 CloudViewer::~CloudViewer() {
@@ -78,18 +86,19 @@ bool CloudViewer::onInit() {
 	else{
 		cout<< LOG(LTRACE) << "CloudViewer::onInit, prop_two_viewports==false\n";
 		viewer = new pcl::visualization::PCLVisualizer (prop_window_name);
-		viewer->setBackgroundColor (0, 0, 0);
+		viewer->setBackgroundColor(prop_background_r,prop_background_g, prop_background_b);
+
 		if(prop_coordinate_system)
-		viewer->addCoordinateSystem (1.0, 0);
+			viewer->addCoordinateSystem (1.0, 0);
 		viewer->addPointCloud<pcl::PointXYZ> (pcl::PointCloud<pcl::PointXYZ>::Ptr(new pcl::PointCloud<pcl::PointXYZ>), "sample cloud");
 		viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 0.5, "sample cloud");
 	}
 	if(prop_coordinate_system) {
-#if PCL_VERSION_COMPARE(>=,1,7,1)
-		viewer->addCoordinateSystem (1.0, "ClustersViewer", 0);
-#else
+//#if PCL_VERSION_COMPARE(>=,1,7,1)
+//		viewer->addCoordinateSystem (1.0, "ClustersViewer", 0);
+//#else
 		viewer->addCoordinateSystem (1.0);
-#endif
+//#endif
 	}
 		
 	viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 0.5, "sample cloud");

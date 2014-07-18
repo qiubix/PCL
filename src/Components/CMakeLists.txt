@@ -30,3 +30,5 @@ ADD_COMPONENT(StatisticalOutlierRemoval)
 ADD_COMPONENT(ClustersViewer)
 
 ADD_COMPONENT(Clustering)
+
+ADD_COMPONENT(FindBoundingBox)

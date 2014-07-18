@@ -25,7 +25,11 @@ CloudViewer::CloudViewer(const std::string & name) :
     prop_two_viewports("two_viewports", false),
     prop_background_r("background_r", 0),
     prop_background_g("background_g", 0),
-    prop_background_b("background_b", 0)
+    prop_background_b("background_b", 0),
+    prop_bounding_box_r("bounding_box_r", 1.0),
+    prop_bounding_box_g("bounding_box_g", 1.0),
+    prop_bounding_box_b("bounding_box_b", 1.0)
+
 {
   registerProperty(prop_window_name);
   registerProperty(prop_coordinate_system);
@@ -33,6 +37,9 @@ CloudViewer::CloudViewer(const std::string & name) :
   registerProperty(prop_background_r);
   registerProperty(prop_background_g);
   registerProperty(prop_background_b);
+  registerProperty(prop_bounding_box_r);
+  registerProperty(prop_bounding_box_g);
+  registerProperty(prop_bounding_box_b);
   
 }
 
@@ -46,6 +53,9 @@ void CloudViewer::prepareInterface() {
 	registerStream("in_cloud_xyzrgb", &in_cloud_xyzrgb);
 	registerStream("in_cloud_xyzrgb2", &in_cloud_xyzrgb2);
 	registerStream("in_cloud_normals", &in_cloud_normals);
+
+    registerStream("in_min_pt", &in_min_pt);
+    registerStream("in_max_pt", &in_max_pt);
 
 	// Register handlers
 	h_on_cloud_xyz.setup(boost::bind(&CloudViewer::on_cloud_xyz, this));
@@ -65,6 +75,10 @@ void CloudViewer::prepareInterface() {
 	h_on_cloud_normals.setup(boost::bind(&CloudViewer::on_cloud_normals, this));
 	registerHandler("on_cloud_normals", &h_on_cloud_normals);
 	addDependency("on_cloud_normals", &in_cloud_normals);
+    h_on_bounding_box.setup(boost::bind(&CloudViewer::on_bounding_box, this));
+    registerHandler("on_bounding_box", &h_on_bounding_box);
+    addDependency("on_bounding_box", &in_min_pt);
+    addDependency("on_bounding_box", &in_max_pt);
 	h_on_spin.setup(boost::bind(&CloudViewer::on_spin, this));
 	registerHandler("on_spin", &h_on_spin);
 	addDependency("on_spin", NULL);
@@ -73,7 +87,7 @@ void CloudViewer::prepareInterface() {
 bool CloudViewer::onInit() {
 
 	if(prop_two_viewports){
-		cout<< LOG(LTRACE) << "CloudViewer::onInit, prop_two_viewports==true\n";
+        LOG(LTRACE) << "CloudViewer::onInit, prop_two_viewports==true\n";
 		viewer = new pcl::visualization::PCLVisualizer (prop_window_name);
 		v1 = 0;
 		v2 = 1;
@@ -84,7 +98,7 @@ bool CloudViewer::onInit() {
 		viewer->setBackgroundColor (0.3, 0.3, 0.3, v2);			
 	}
 	else{
-		cout<< LOG(LTRACE) << "CloudViewer::onInit, prop_two_viewports==false\n";
+        LOG(LTRACE) << "CloudViewer::onInit, prop_two_viewports==false\n";
 		viewer = new pcl::visualization::PCLVisualizer (prop_window_name);
 		viewer->setBackgroundColor(prop_background_r,prop_background_g, prop_background_b);
 
@@ -177,6 +191,14 @@ void CloudViewer::on_clouds_xyzrgb() {
 }
 
 void CloudViewer::on_cloud_normals() {
+}
+
+void CloudViewer::on_bounding_box(){
+    pcl::PointXYZRGB minPt = in_min_pt.read();
+    pcl::PointXYZRGB maxPt = in_max_pt.read();
+
+    viewer->addCube (minPt.x, maxPt.x, minPt.y, maxPt.y, minPt.z, maxPt.z, prop_bounding_box_r, prop_bounding_box_g, prop_bounding_box_b);
+
 }
 
 void CloudViewer::on_spin() {

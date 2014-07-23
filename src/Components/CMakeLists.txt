@@ -32,3 +32,5 @@ ADD_COMPONENT(ClustersViewer)
 ADD_COMPONENT(Clustering)
 
 ADD_COMPONENT(FindBoundingBox)
+
+ADD_COMPONENT(CenterOfMass)

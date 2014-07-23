@@ -79,6 +79,7 @@ protected:
     Base::DataStreamIn<pcl::PointXYZRGB> in_min_pt;
     Base::DataStreamIn<pcl::PointXYZRGB> in_max_pt;
 
+	Base::DataStreamIn<pcl::PointXYZ> in_point;
 	// Handlers
 	Base::EventHandler2 h_on_cloud_xyz;
 	Base::EventHandler2 h_on_clouds_xyz;
@@ -86,6 +87,7 @@ protected:
 	Base::EventHandler2 h_on_clouds_xyzrgb;
 	Base::EventHandler2 h_on_cloud_normals;
     Base::EventHandler2 h_on_bounding_box;
+    Base::EventHandler2 h_on_point;
 	Base::EventHandler2 h_on_spin;
 
 	
@@ -96,6 +98,7 @@ protected:
 	void on_clouds_xyzrgb();
 	void on_cloud_normals();
     void on_bounding_box();
+    void on_point();
 	void on_spin();
 
     Base::Property<std::string> prop_window_name;
@@ -107,6 +110,10 @@ protected:
     Base::Property<float> prop_bounding_box_r;
     Base::Property<float> prop_bounding_box_g;
     Base::Property<float> prop_bounding_box_b;
+    Base::Property<float> prop_point_r;
+    Base::Property<float> prop_point_g;
+    Base::Property<float> prop_point_b;
+    Base::Property<float> prop_point_size;
 
 
 	pcl::visualization::PCLVisualizer * viewer;

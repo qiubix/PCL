@@ -69,19 +69,22 @@ protected:
 
 
 	// Input data streams
+	Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZ>::Ptr > in_cloud_xyz;
 	Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZRGB>::Ptr > in_cloud_xyzrgb;
-    Base::DataStreamOut<pcl::PointXYZRGB> out_min_pt;
-    Base::DataStreamOut<pcl::PointXYZRGB> out_max_pt;
+    Base::DataStreamOut<pcl::PointXYZ> out_min_pt;
+    Base::DataStreamOut<pcl::PointXYZ> out_max_pt;
 	// Output data streams
 
 	// Handlers
 	Base::EventHandler2 h_find;
+	Base::EventHandler2 h_find_xyzrgb;
 
 	// Properties
 
 	
 	// Handlers
 	void find();
+	void find_xyzrgb();
 
 };
 

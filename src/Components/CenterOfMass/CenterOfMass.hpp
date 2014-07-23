@@ -70,20 +70,22 @@ protected:
 
 
 	// Input data streams
+	Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZ>::Ptr> in_cloud_xyz;
 	Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> in_cloud_xyzrgb;
-
 	// Output data streams
 	Base::DataStreamOut<Eigen::Vector4f> out_centroid;
 	Base::DataStreamOut<pcl::PointXYZ> out_point;
 
 	// Handlers
 	Base::EventHandler2 h_compute;
+	Base::EventHandler2 h_compute_xyzrgb;
 
 	// Properties
 
 	
 	// Handlers
 	void compute();
+	void compute_xyzrgb();
 
 };
 

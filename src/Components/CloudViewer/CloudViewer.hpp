@@ -76,8 +76,8 @@ protected:
 	Base::DataStreamIn< pcl::PointCloud<pcl::PointXYZRGB>::Ptr > in_cloud_xyzrgb2;
 	Base::DataStreamIn< pcl::PointCloud<pcl::Normal>::Ptr > in_cloud_normals;
 
-    Base::DataStreamIn<pcl::PointXYZRGB> in_min_pt;
-    Base::DataStreamIn<pcl::PointXYZRGB> in_max_pt;
+    Base::DataStreamIn<pcl::PointXYZ> in_min_pt;
+    Base::DataStreamIn<pcl::PointXYZ> in_max_pt;
 
 	Base::DataStreamIn<pcl::PointXYZ> in_point;
 	// Handlers

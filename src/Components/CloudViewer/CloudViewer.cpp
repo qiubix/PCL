@@ -205,8 +205,8 @@ void CloudViewer::on_cloud_normals() {
 }
 
 void CloudViewer::on_bounding_box(){
-    pcl::PointXYZRGB minPt = in_min_pt.read();
-    pcl::PointXYZRGB maxPt = in_max_pt.read();
+    pcl::PointXYZ minPt = in_min_pt.read();
+    pcl::PointXYZ maxPt = in_max_pt.read();
 
     viewer->addCube (minPt.x, maxPt.x, minPt.y, maxPt.y, minPt.z, maxPt.z, prop_bounding_box_r, prop_bounding_box_g, prop_bounding_box_b);
 

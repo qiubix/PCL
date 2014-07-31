@@ -29,6 +29,8 @@ void CenterOfMass::prepareInterface() {
 	registerStream("in_cloud_xyz", &in_cloud_xyz);
 	registerStream("out_centroid", &out_centroid);
 	registerStream("out_point", &out_point);
+	registerStream("out_cloud_xyz", &out_cloud_xyz);
+	registerStream("out_cloud_xyzrgb", &out_cloud_xyzrgb);
 	// Register handlers
 	h_compute.setup(boost::bind(&CenterOfMass::compute, this));
 	registerHandler("compute", &h_compute);
@@ -67,6 +69,12 @@ void CenterOfMass::compute() {
     point.z=centroid[2];
 	out_centroid.write(centroid);
 	out_point.write(point);
+	
+	//Define translation between clouds	
+	Eigen::Matrix4f trans = Eigen::Matrix4f::Identity() ;
+	trans(0, 3) = -(point.x) ; trans(1, 3) = -(point.y) ; trans(2, 3) = -(point.z) ;	
+	pcl::transformPointCloud(*cloud, *cloud, trans);
+	out_cloud_xyz.write(cloud);
 }
 
 void CenterOfMass::compute_xyzrgb() {
@@ -80,6 +88,12 @@ void CenterOfMass::compute_xyzrgb() {
     point.z=centroid[2];
 	out_centroid.write(centroid);
 	out_point.write(point);
+	
+	//Define translation between clouds	
+	Eigen::Matrix4f trans = Eigen::Matrix4f::Identity() ;
+	trans(0, 3) = -(point.x) ; trans(1, 3) = -(point.y) ; trans(2, 3) = -(point.z) ;	
+	pcl::transformPointCloud(*cloud, *cloud, trans);
+	out_cloud_xyzrgb.write(cloud);
 }
 
 

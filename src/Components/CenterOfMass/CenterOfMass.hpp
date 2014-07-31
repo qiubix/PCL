@@ -75,7 +75,8 @@ protected:
 	// Output data streams
 	Base::DataStreamOut<Eigen::Vector4f> out_centroid;
 	Base::DataStreamOut<pcl::PointXYZ> out_point;
-
+	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZ>::Ptr> out_cloud_xyz;
+	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> out_cloud_xyzrgb;
 	// Handlers
 	Base::EventHandler2 h_compute;
 	Base::EventHandler2 h_compute_xyzrgb;

@@ -28,7 +28,7 @@
 		<Subtask name="Visualisation">
 			<Executor name="Exec2" period="0.01">
 				<Component name="Window" type="PCL:CloudViewer" priority="1" bump="0">
-					<param name="coordinate_system">false</param>
+										<param name="coordinate_system">1</param>
                                         <param name="background_r">0</param>
                                         <param name="background_g">0</param>
                                         <param name="background_b">0</param>
@@ -48,11 +48,14 @@
 	<!-- pipes connecting datastreams -->
 	<DataStreams>
 		<Source name="Source.out_cloud_xyzrgb">
-                    <sink>CenterOfMass.in_cloud_xyzrgb</sink>
-                    <sink>Window.in_cloud_xyzrgb</sink>
+                <sink>CenterOfMass.in_cloud_xyzrgb</sink>
+                    
 		</Source>
 		<Source name="CenterOfMass.out_point">
 				<sink>Window.in_point</sink>
+		</Source>
+		<Source name="CenterOfMass.out_cloud_xyzrgb">
+				<sink>Window.in_cloud_xyzrgb</sink>
 		</Source>
 	</DataStreams>
 </Task>

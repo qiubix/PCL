@@ -113,17 +113,16 @@ bool CloudViewer::onInit() {
 		viewer = new pcl::visualization::PCLVisualizer (prop_window_name);
 		viewer->setBackgroundColor(prop_background_r,prop_background_g, prop_background_b);
 
-		if(prop_coordinate_system)
-			viewer->addCoordinateSystem (1.0, 0);
 		viewer->addPointCloud<pcl::PointXYZ> (pcl::PointCloud<pcl::PointXYZ>::Ptr(new pcl::PointCloud<pcl::PointXYZ>), "sample cloud");
 		viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 0.5, "sample cloud");
 	}
+	// Add coordinate system -- different function call depending on the PCL version(!)
 	if(prop_coordinate_system) {
-//#if PCL_VERSION_COMPARE(>=,1,7,1)
-//		viewer->addCoordinateSystem (1.0, "ClustersViewer", 0);
-//#else
+#if PCL_VERSION_COMPARE(>=,1,7,1)
+		viewer->addCoordinateSystem (1.0, "ClustersViewer", 0);
+#else
 		viewer->addCoordinateSystem (1.0);
-//#endif
+#endif
 	}
 		
 	viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 0.5, "sample cloud");

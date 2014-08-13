@@ -85,7 +85,7 @@ void DepthConverter::prepareInterface() {
     registerHandler("process_depth_xyz_rgb_stereo_mask", &h_process_depth_xyz_rgb_stereo_mask);
     addDependency("process_depth_xyz_rgb_stereo_mask", &in_depth_xyz);
     addDependency("process_depth_xyz_rgb_stereo_mask", &in_rgb_stereo);
-    addDependency("process_depth_xyz_mask", &in_mask);
+    addDependency("process_depth_xyz_rgb_stereo_mask", &in_mask);
 }
 
 bool DepthConverter::onInit() {
@@ -335,6 +335,7 @@ void DepthConverter::process_depth_color() {
 }
 
 void DepthConverter::process_depth_xyz() {
+    LOG(LTRACE) << "DepthConverter::process_depth_xyz"<<endl;
     cv::Mat depth_xyz = in_depth_xyz.read();
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>(depth_xyz.cols,depth_xyz.rows));
 
@@ -383,6 +384,7 @@ void DepthConverter::process_depth_xyz() {
 }
 
 void DepthConverter::process_depth_xyz_rgb_stereo() {
+    LOG(LTRACE) << "DepthConverter::process_depth_xyz_rgb_stereo()"<<endl;
     cv::Mat depth_xyz = in_depth_xyz.read();
     cv::Mat rgb_stereo = in_rgb_stereo.read();
 
@@ -432,6 +434,7 @@ void DepthConverter::process_depth_xyz_rgb_stereo() {
 }
 
 void DepthConverter::process_depth_xyz_mask() {
+    LOG(LTRACE) << "DepthConverter::process_depth_xyz_mask()"<<endl;
     cv::Mat depth_xyz = in_depth_xyz.read();
     cv::Mat mask = in_mask.read();
     mask.convertTo(mask, CV_32F);
@@ -473,6 +476,7 @@ void DepthConverter::process_depth_xyz_mask() {
 }
 
 void DepthConverter::process_depth_xyz_rgb_stereo_mask() {
+    LOG(LTRACE) << "DepthConverter::process_depth_xyz_rgb_stereo_mask()"<<endl;
     cv::Mat depth_xyz = in_depth_xyz.read();
     cv::Mat rgb_stereo = in_rgb_stereo.read();
     cv::Mat mask = in_mask.read();

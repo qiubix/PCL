@@ -85,7 +85,8 @@ protected:
 	Base::EventHandler2 h_process_depth_color;
     Base::EventHandler2 h_process_depth_xyz;
     Base::EventHandler2 h_process_depth_xyz_rgb_stereo;
-	
+    Base::EventHandler2 h_process_depth_xyz_mask;
+    Base::EventHandler2 h_process_depth_xyz_rgb_stereo_mask;
 	// Handlers
 	void process_depth_mask();
 	void process_depth();
@@ -95,6 +96,9 @@ protected:
 	
     void process_depth_xyz();
     void process_depth_xyz_rgb_stereo();
+
+    void process_depth_xyz_mask();
+    void process_depth_xyz_rgb_stereo_mask();
 
 	Base::Property<bool> prop_remove_nan;
 };

@@ -72,18 +72,22 @@ protected:
 
 	// Input data streams
 	Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> in_cloud_xyzrgb;
+	Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr> in_cloud_xyzrgb_normal;
 
 	// Output data streams
 	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> out_cloud_xyzrgb;
+	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr> out_cloud_xyzrgb_normal;
 
 	// Handlers
 	Base::EventHandler2 h_filter;
+	Base::EventHandler2 h_filter_normal;
 	Base::Property<float> x;
 	Base::Property<float> y;
 	Base::Property<float> z;
 	
 	// Handlers
 	void filter();
+	void filter_normal();
 
 };
 

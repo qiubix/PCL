@@ -15,8 +15,9 @@
 #include "EventHandler2.hpp"
 #include "Property.hpp"
 
-
 #include <pcl/visualization/pcl_visualizer.h>
+
+//#include <Types/MatrixTranslator.hpp>
 
 
 namespace Processors {
@@ -104,9 +105,6 @@ protected:
     Base::Property<std::string> prop_window_name;
     Base::Property<bool> prop_coordinate_system;
     Base::Property<bool> prop_two_viewports;
-    Base::Property<int> prop_background_r;
-    Base::Property<int> prop_background_g;
-    Base::Property<int> prop_background_b;
     Base::Property<float> prop_bounding_box_r;
     Base::Property<float> prop_bounding_box_g;
     Base::Property<float> prop_bounding_box_b;
@@ -115,11 +113,19 @@ protected:
     Base::Property<float> prop_point_b;
     Base::Property<float> prop_point_size;
 
+	/// Property for setting of the background color. As default it is set to 1 row with 0, 0, 0(black).
+	Base::Property<std::string> prop_background_color;
+
 
 	pcl::visualization::PCLVisualizer * viewer;
 	pcl::visualization::PCLVisualizer * viewer2;
 	int v1,v2;
-	
+
+	/// Handler for showing/hiding coordinate system.
+	void onCSShowClick(const bool & new_show_cs_);
+
+	/// Handler for changing background color.
+	void onBackgroundColorChange(std::string bcolor_);
 };
 
 } //: namespace CloudViewer

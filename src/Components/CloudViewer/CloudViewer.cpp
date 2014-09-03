@@ -20,11 +20,9 @@ namespace CloudViewer {
 CloudViewer::CloudViewer(const std::string & name) :
 		Base::Component(name),
     prop_window_name("window_name", std::string("3D PC Viewer")),
-    prop_coordinate_system("coordinate_system", true),
+    prop_coordinate_system("coordinate_system", boost::bind(&CloudViewer::onCSShowClick, this, _2), true),
     prop_two_viewports("two_viewports", false),
-    prop_background_r("background_r", 0),
-    prop_background_g("background_g", 0),
-    prop_background_b("background_b", 0),
+    prop_background_color("background_color", boost::bind(&CloudViewer::onBackgroundColorChange, this, _2), std::string("0,0,0")),
     prop_bounding_box_r("bounding_box_r", 1.0),
     prop_bounding_box_g("bounding_box_g", 1.0),
     prop_bounding_box_b("bounding_box_b", 1.0),
@@ -37,9 +35,7 @@ CloudViewer::CloudViewer(const std::string & name) :
   registerProperty(prop_window_name);
   registerProperty(prop_coordinate_system);
   registerProperty(prop_two_viewports);
-  registerProperty(prop_background_r);
-  registerProperty(prop_background_g);
-  registerProperty(prop_background_b);
+  registerProperty(prop_background_color);
   registerProperty(prop_bounding_box_r);
   registerProperty(prop_bounding_box_g);
   registerProperty(prop_bounding_box_b);
@@ -49,6 +45,50 @@ CloudViewer::CloudViewer(const std::string & name) :
   registerProperty(prop_point_size);
   
 }
+
+
+void CloudViewer::onCSShowClick(const bool & new_show_cs_){
+    CLOG(LDEBUG) << "CloudViewer::onCSShowClick show="<<new_show_cs_;
+	if(new_show_cs_) {
+#if PCL_VERSION_COMPARE(>=,1,7,1)
+		viewer->addCoordinateSystem (1.0, "ClustersViewer", 0);
+#else
+		viewer->addCoordinateSystem (1.0);
+#endif
+	}
+	else {
+#if PCL_VERSION_COMPARE(>=,1,7,1)
+		viewer->removeCoordinateSystem ("ClustersViewer");
+#else
+		viewer->removeCoordinateSystem (1.0);
+#endif
+	}
+
+	prop_coordinate_system = new_show_cs_;
+}
+
+void CloudViewer::onBackgroundColorChange(std::string bcolor_){
+    CLOG(LDEBUG) << "CloudViewer::onBackgroundColorChange color="<<bcolor_;
+	try{
+		// Parse string.
+		vector<std::string> strs;
+		boost::split(strs,bcolor_,boost::is_any_of(","));
+        if (strs.size()!=3)
+        	throw std::exception();
+
+        // Try to cast to int.
+        int r =  boost::lexical_cast<int>(strs[0]);
+        int g =  boost::lexical_cast<int>(strs[1]);
+        int b =  boost::lexical_cast<int>(strs[2]);
+
+        // Change background color.
+        viewer->setBackgroundColor(r,g,b);
+	} catch (...) {
+		CLOG(LWARNING) << "CloudViewer::onBackgroundColorChange failed - invalid color format. Accepted format: r,g,b";
+	}
+
+}
+
 
 CloudViewer::~CloudViewer() {
 }
@@ -98,7 +138,7 @@ void CloudViewer::prepareInterface() {
 bool CloudViewer::onInit() {
 
 	if(prop_two_viewports){
-        LOG(LTRACE) << "CloudViewer::onInit, prop_two_viewports==true\n";
+        CLOG(LTRACE) << "CloudViewer::onInit, prop_two_viewports==true\n";
 		viewer = new pcl::visualization::PCLVisualizer (prop_window_name);
 		v1 = 0;
 		v2 = 1;
@@ -109,9 +149,30 @@ bool CloudViewer::onInit() {
 		viewer->setBackgroundColor (0.3, 0.3, 0.3, v2);			
 	}
 	else{
-        LOG(LTRACE) << "CloudViewer::onInit, prop_two_viewports==false\n";
+        CLOG(LTRACE) << "CloudViewer::onInit, prop_two_viewports==false\n";
 		viewer = new pcl::visualization::PCLVisualizer (prop_window_name);
-		viewer->setBackgroundColor(prop_background_r,prop_background_g, prop_background_b);
+		// Try to change background color.
+/*		TODO!!
+  		try{
+			// Parse string.
+			vector<std::string> strs;
+			std:string s = prop_background_color;
+			boost::split(strs,s,boost::is_any_of(","));
+	        if (strs.size()!=3)
+	        	throw std::exception();
+
+	        // Try to cast to int.
+	        int r =  boost::lexical_cast<int>(strs[0]);
+	        int g =  boost::lexical_cast<int>(strs[1]);
+	        int b =  boost::lexical_cast<int>(strs[2]);
+
+	        // Change background color.
+	        viewer->setBackgroundColor(r,g,b);
+		} catch (...) {
+			CLOG(LWARNING) << "CloudViewer::onBackgroundColorChange failed - invalid color format. Accepted format: r,g,b";
+		}
+*/
+
 
 		viewer->addPointCloud<pcl::PointXYZ> (pcl::PointCloud<pcl::PointXYZ>::Ptr(new pcl::PointCloud<pcl::PointXYZ>), "sample cloud");
 		viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 0.5, "sample cloud");
@@ -143,15 +204,15 @@ bool CloudViewer::onStart() {
 }
 
 void CloudViewer::on_cloud_xyz() {
-	LOG(LTRACE) << "CloudViewer::on_cloud_xyz\n";
+	CLOG(LTRACE) << "CloudViewer::on_cloud_xyz\n";
 	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud = in_cloud_xyz.read();
 	viewer->updatePointCloud<pcl::PointXYZ> (cloud, "sample cloud");
 }
 
 void CloudViewer::on_clouds_xyz() {
 	if(!prop_two_viewports)
-		LOG(LDEBUG) << "Set property two_viewports = 1\n";
-	LOG(LTRACE) << "CloudViewer::on_clouds_xyz\n";
+		CLOG(LDEBUG) << "Set property two_viewports = 1\n";
+	CLOG(LTRACE) << "CloudViewer::on_clouds_xyz\n";
 	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud = in_cloud_xyz.read();
 	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud2 = in_cloud_xyz2.read();
 
@@ -163,7 +224,7 @@ void CloudViewer::on_clouds_xyz() {
 }
 
 void CloudViewer::on_cloud_xyzrgb() {
-	LOG(LTRACE) << "CloudViewer::on_cloud_xyzrgb\n";
+	CLOG(LTRACE) << "CloudViewer::on_cloud_xyzrgb\n";
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud = in_cloud_xyzrgb.read();
 	
 	// Filter the NaN points.
@@ -178,8 +239,8 @@ void CloudViewer::on_cloud_xyzrgb() {
 
 void CloudViewer::on_clouds_xyzrgb() {
 	if(!prop_two_viewports)
-		LOG(LDEBUG) << "Set property two_viewports = 1\n";
-	LOG(LTRACE) << "CloudViewer::on_clouds_xyzrgb\n";
+		CLOG(LDEBUG) << "Set property two_viewports = 1\n";
+	CLOG(LTRACE) << "CloudViewer::on_clouds_xyzrgb\n";
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud = in_cloud_xyzrgb.read();
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud2 = in_cloud_xyzrgb2.read();
 

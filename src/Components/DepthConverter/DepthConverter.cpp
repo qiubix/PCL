@@ -71,11 +71,6 @@ void DepthConverter::prepareInterface() {
     registerHandler("process_depth_xyz", &h_process_depth_xyz);
     addDependency("process_depth_xyz", &in_depth_xyz);
 
-    h_process_depth_xyz_rgb.setup(boost::bind(&DepthConverter::process_depth_xyz_rgb, this));
-    registerHandler("process_depth_xyz_rgb", &h_process_depth_xyz_rgb);
-    addDependency("process_depth_xyz_rgb", &in_depth_xyz);
-    addDependency("process_depth_xyz_rgb", &in_color);
-
     h_process_depth_xyz_rgb_stereo.setup(boost::bind(&DepthConverter::process_depth_xyz_rgb_stereo, this));
     registerHandler("process_depth_xyz_rgb_stereo", &h_process_depth_xyz_rgb_stereo);
     addDependency("process_depth_xyz_rgb_stereo", &in_depth_xyz);
@@ -318,7 +313,7 @@ void DepthConverter::process_depth_color() {
 			
 			// Fill in RGB
 			//pt.rgba = color.at<float>(v, u);
-            cv::Vec3b bgr = color.at<cv::Vec3b>(v, u);
+			cv::Vec3b bgr = color.at<cv::Vec3b>(v, u);
 			int b = bgr[0];
 			int g = bgr[1];
 			int r = bgr[2];		
@@ -386,52 +381,6 @@ void DepthConverter::process_depth_xyz() {
         pcl::removeNaNFromPointCloud(*cloud, *cloud, indices);
     }
     out_cloud_xyz.write(cloud);
-}
-
-void DepthConverter::process_depth_xyz_rgb() {
-    LOG(LTRACE) << "DepthConverter::process_depth_xyz"<<endl;
-    cv::Mat depth_xyz = in_depth_xyz.read();
-    cv::Mat color = in_color.read();
-    pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGB>(depth_xyz.cols,depth_xyz.rows));
-
-    const double max_z = 1.0e4;
-    LOG(LINFO) << "Generating depth point cloud";
-    try {
-        for(int y = 0; y < depth_xyz.rows; y++)
-        {
-            for(int x = 0; x < depth_xyz.cols; x++)
-            {
-                cv::Vec3f point = depth_xyz.at<cv::Vec3f>(y, x);
-                if(fabs(point[2] - max_z) < FLT_EPSILON || fabs(point[2]) > max_z) continue;
-
-                //Insert info into point cloud structure
-                pcl::PointXYZRGB point1;
-                point1.x = point[0];
-                point1.y = point[1];
-                point1.z = point[2];
-                // Fill in RGB
-                cv::Vec3b bgr = color.at<cv::Vec3b>(y, x);
-                int b = bgr[0];
-                int g = bgr[1];
-                int r = bgr[2];
-                point1.r = r;
-                point1.g = g;
-                point1.b = b;
-                cloud->push_back(point1);
-            }
-        }
-    } catch (...)
-    {
-        LOG(LERROR) << "Error occured in processing input";
-    }
-
-
-    if(prop_remove_nan){
-        std::vector<int> indices;
-        cloud->is_dense = false;
-        pcl::removeNaNFromPointCloud(*cloud, *cloud, indices);
-    }
-    out_cloud_xyzrgb.write(cloud);
 }
 
 void DepthConverter::process_depth_xyz_rgb_stereo() {

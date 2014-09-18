@@ -11,6 +11,10 @@
 #include "Common/Logger.hpp"
 
 #include <boost/bind.hpp>
+#include <boost/lexical_cast.hpp>
+#include <boost/algorithm/string.hpp>
+
+
 
 namespace Processors {
 namespace XYZCloudViewer {
@@ -19,18 +23,20 @@ XYZCloudViewer::XYZCloudViewer(const std::string & name) :
 		Base::Component(name),
 		title("title", std::string("XYZ Cloud Viewer")),
 		count("count", 1),
-		clouds_colours("clouds_colours", cv::Mat(cv::Mat::zeros(1, 3, CV_8UC1)))
+		clouds_colours("clouds_colours", cv::Mat(cv::Mat::zeros(1, 3, CV_8UC1))),
+		prop_coordinate_system("coordinate_system", true)
 
 {
   LOG(LTRACE) << "XYZCloudViewer::constructor";
   registerProperty(title);
   registerProperty(count);
   registerProperty(clouds_colours);
+  registerProperty(prop_coordinate_system);
 
   // Set white as default.
-  ((cv::Mat)clouds_colours).at<int>(0,0) = 255;
-  ((cv::Mat)clouds_colours).at<int>(0,1) = 255;
-  ((cv::Mat)clouds_colours).at<int>(0,2) = 255;
+  ((cv::Mat)clouds_colours).at<uchar>(0,0) = 255;
+  ((cv::Mat)clouds_colours).at<uchar>(0,1) = 255;
+  ((cv::Mat)clouds_colours).at<uchar>(0,2) = 255;
 }
 
 
@@ -86,7 +92,13 @@ bool XYZCloudViewer::onInit() {
 	viewer = new pcl::visualization::PCLVisualizer (title);
 	viewer->initCameraParameters ();
 	// Add visible coortinate system.
-	viewer->addCoordinateSystem (1.0);
+	if(prop_coordinate_system) {
+#if PCL_VERSION_COMPARE(>=,1,7,1)
+	    viewer->addCoordinateSystem (1.0, title, 0);
+#else
+	    viewer->addCoordinateSystem (1.0);
+#endif
+	}
 
 	// Add clouds.
 	for (int i = 0; i < count; ++i) {
@@ -97,9 +109,9 @@ bool XYZCloudViewer::onInit() {
 		viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, std::string("in_cloud_xyz") + id);
 		// Set cloud colour depending on the property.
 		viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_COLOR, 
-			((cv::Mat)clouds_colours).at<int>(i, 0),
-			((cv::Mat)clouds_colours).at<int>(i, 1),
-			((cv::Mat)clouds_colours).at<int>(i, 2),
+			((cv::Mat)clouds_colours).at<uchar>(i, 0),
+			((cv::Mat)clouds_colours).at<uchar>(i, 1),
+			((cv::Mat)clouds_colours).at<uchar>(i, 2),
 			std::string("in_cloud_xyz") + id); 
 	}
 

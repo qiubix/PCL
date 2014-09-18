@@ -21,32 +21,18 @@ ADD_COMPONENT(ClusterExtraction)
 
 ADD_COMPONENT(SHOT)
 
-ADD_COMPONENT(SIFTAdder)
-
-ADD_COMPONENT(JSONWriter)
-
-ADD_COMPONENT(JSONReader)
-
-ADD_COMPONENT(FeatureCloudConverter)
-
-ADD_COMPONENT(CloudCutter)
-
-ADD_COMPONENT(SOMPCDReader)
-
-ADD_COMPONENT(Update)
-
-ADD_COMPONENT(SIFTObjectMatcher)
-
 ADD_COMPONENT(XYZCloudViewer)
-
-ADD_COMPONENT(Downsampling)
-
-ADD_COMPONENT(SOMJSONReader)
-
-ADD_COMPONENT(SOMJSONWriter)
 
 ADD_COMPONENT(PassThrough)
 
 ADD_COMPONENT(StatisticalOutlierRemoval)
 
-ADD_COMPONENT(PC2Octree)
+ADD_COMPONENT(StatisticalOutlierCounter)
+
+ADD_COMPONENT(Clustering)
+
+ADD_COMPONENT(FindBoundingBox)
+
+ADD_COMPONENT(CenterOfMass)
+
+ADD_COMPONENT(ClustersViewer)

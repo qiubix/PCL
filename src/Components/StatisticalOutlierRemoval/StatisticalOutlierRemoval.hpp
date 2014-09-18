@@ -70,18 +70,22 @@ protected:
 // Input data streams
 
 		Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> in_cloud_xyzrgb;
+		Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZ>::Ptr> in_cloud_xyz;
 
 // Output data streams
 
 		Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> out_cloud_xyzrgb;
+		Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZ>::Ptr> out_cloud_xyz;
 	// Handlers
-	Base::EventHandler2 h_filter;
+	Base::EventHandler2 h_filter_xyz;
+	Base::EventHandler2 h_filter_xyzrgb;
 		Base::Property<bool> negative;
 		Base::Property<float> StddevMulThresh;
 		Base::Property<float> MeanK;
 	
 	// Handlers
-	void filter();
+	void filter_xyz();
+	void filter_xyzrgb();
 
 };
 
